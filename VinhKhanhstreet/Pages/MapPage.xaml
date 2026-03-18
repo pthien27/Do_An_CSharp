@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             x:Class="VinhKhanhstreet.Pages.MapPage"
+             Shell.NavBarIsVisible="False">
+    <Grid>
+        <maps:Map x:Name="mapVinhKhanh" IsShowingUser="True" />
+
+        <VerticalStackLayout VerticalOptions="Start" HorizontalOptions="End" 
+                             Margin="0,50,20,0" Spacing="10">
+            <Button Text="🎯" CornerRadius="25" WidthRequest="50" HeightRequest="50" 
+                    BackgroundColor="White" TextColor="Black" Shadow="{Shadow}"/>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout VerticalOptions="End" BackgroundColor="Transparent" Spacing="0">
+
+            <Frame BackgroundColor="White" CornerRadius="20" HasShadow="True" Padding="15,10" Margin="10,0,10,10">
+                <VerticalStackLayout Spacing="2">
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Ellipse x:Name="statusDot" WidthRequest="10" HeightRequest="10" Fill="Red" VerticalOptions="Center"/>
+                        <Label x:Name="lblStatus" Text="Hệ thống đã sẵn sàng" FontAttributes="Bold" VerticalOptions="Center" TextColor="Black"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="lblCoords" Text="Vị trí: 0, 0" FontSize="10" HorizontalOptions="Center" TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BackgroundColor="White" HasShadow="False" BorderColor="#EEEEEE" Padding="15" CornerRadius="0">
+                <Grid ColumnDefinitions="*,*,*,*">
+                    <VerticalStackLayout Grid.Column="0" Spacing="5" HorizontalOptions="Center">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnShowRestaurantListTapped" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="🍴" FontSize="24" HorizontalOptions="Center"/>
+                        <Label Text="Quán ăn" FontSize="11" HorizontalOptions="Center" TextColor="Gray"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="5" HorizontalOptions="Center">
+                        <Label Text="⭐" FontSize="24" HorizontalOptions="Center"/>
+                        <Label Text="Yêu thích" FontSize="11" HorizontalOptions="Center" TextColor="Gray"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="5" HorizontalOptions="Center">
+                        <Label Text="🕒" FontSize="24" HorizontalOptions="Center"/>
+                        <Label Text="Lịch sử" FontSize="11" HorizontalOptions="Center" TextColor="Gray"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="3" Spacing="5" HorizontalOptions="Center">
+                        <Label Text="☰" FontSize="24" HorizontalOptions="Center"/>
+                        <Label Text="Xem thêm" FontSize="11" HorizontalOptions="Center" TextColor="Gray"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <Button x:Name="btnStart" Text="BẮT ĐẦU THEO DÕI" 
+                    Clicked="OnStartGpsClicked"
+                    BackgroundColor="#2ECC71" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="65" CornerRadius="0"/>
+
+            <Frame x:Name="frmDanhSach" 
+                   IsVisible="False" 
+                   BackgroundColor="#F8F9FA" 
+                   CornerRadius="0" 
+                   Padding="15" 
+                   HeightRequest="250"
+                   BorderColor="Transparent">
+                <Grid RowDefinitions="Auto, *">
+                    <Label Grid.Row="0" Text="QUÁN ĂN TRÊN PHỐ VĨNH KHÁNH" FontSize="12" FontAttributes="Bold" TextColor="#2ECC71" Margin="0,0,0,10"/>
+                    <CollectionView Grid.Row="1" x:Name="lstQuánFull">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Margin="0,0,0,10" Padding="10" BackgroundColor="White" CornerRadius="10" HasShadow="False">
+                                    <HorizontalStackLayout Spacing="15">
+                                        <Label Text="🐚" FontSize="25" VerticalOptions="Center"/>
+                                        <VerticalStackLayout VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" FontAttributes="Bold" TextColor="Black" FontSize="14"/>
+                                            <Label Text="{Binding Description}" FontSize="11" TextColor="Gray" MaxLines="1"/>
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Frame>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
