@@ -8,9 +8,31 @@
         <maps:Map x:Name="mapVinhKhanh" IsShowingUser="True" />
 
         <VerticalStackLayout VerticalOptions="Start" HorizontalOptions="End" 
-                             Margin="0,50,20,0" Spacing="10">
-            <Button Text="🎯" CornerRadius="25" WidthRequest="50" HeightRequest="50" 
-                    BackgroundColor="White" TextColor="Black" Shadow="{Shadow}"/>
+                             Margin="0,50,20,0">
+            <Frame BackgroundColor="White" 
+                   CornerRadius="25" 
+                   HasShadow="True" 
+                   Padding="12,5"
+                   HeightRequest="45"
+                   BorderColor="#EEEEEE">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label x:Name="lblVi" Text="VN" FontSize="15" FontAttributes="Bold" TextColor="#2ECC71">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageViTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <BoxView WidthRequest="1" HeightRequest="15" Color="LightGray" />
+
+                    <Label x:Name="lblEn" Text="EN" FontSize="15" TextColor="Gray">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageEnTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    
+                    
+                </HorizontalStackLayout>
+            </Frame>
         </VerticalStackLayout>
 
         <VerticalStackLayout VerticalOptions="End" BackgroundColor="Transparent" Spacing="0">
@@ -21,7 +43,7 @@
                         <Ellipse x:Name="statusDot" WidthRequest="10" HeightRequest="10" Fill="Red" VerticalOptions="Center"/>
                         <Label x:Name="lblStatus" Text="Hệ thống đã sẵn sàng" FontAttributes="Bold" VerticalOptions="Center" TextColor="Black"/>
                     </HorizontalStackLayout>
-                    <Label x:Name="lblCoords" Text="Vị trí: 0, 0" FontSize="10" HorizontalOptions="Center" TextColor="Gray"/>
+                    <Label x:Name="lblCoords" Text="Nhấn vào ghim trên bản đồ để nghe thuyết minh" FontSize="10" HorizontalOptions="Center" TextColor="Gray"/>
                 </VerticalStackLayout>
             </Frame>
 
@@ -50,24 +72,23 @@
                 </Grid>
             </Frame>
 
-            <Button x:Name="btnStart" Text="BẮT ĐẦU THEO DÕI" 
-                    Clicked="OnStartGpsClicked"
-                    BackgroundColor="#2ECC71" TextColor="White"
-                    FontAttributes="Bold" HeightRequest="65" CornerRadius="0"/>
-
             <Frame x:Name="frmDanhSach" 
                    IsVisible="False" 
                    BackgroundColor="#F8F9FA" 
                    CornerRadius="0" 
                    Padding="15" 
-                   HeightRequest="250"
+                   HeightRequest="280"
                    BorderColor="Transparent">
                 <Grid RowDefinitions="Auto, *">
-                    <Label Grid.Row="0" Text="QUÁN ĂN TRÊN PHỐ VĨNH KHÁNH" FontSize="12" FontAttributes="Bold" TextColor="#2ECC71" Margin="0,0,0,10"/>
-                    <CollectionView Grid.Row="1" x:Name="lstQuánFull">
+                    <Label Grid.Row="0" x:Name="lblListTitle" Text="QUÁN ĂN TRÊN PHỐ VĨNH KHÁNH" FontSize="12" FontAttributes="Bold" TextColor="#2ECC71" Margin="0,0,0,10"/>
+
+                    <CollectionView Grid.Row="1" 
+                                    x:Name="lstQuánFull"
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnRestaurantSelected">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Frame Margin="0,0,0,10" Padding="10" BackgroundColor="White" CornerRadius="10" HasShadow="False">
+                                <Frame Margin="0,0,0,10" Padding="12" BackgroundColor="White" CornerRadius="12" HasShadow="False" BorderColor="#F0F0F0">
                                     <HorizontalStackLayout Spacing="15">
                                         <Label Text="🐚" FontSize="25" VerticalOptions="Center"/>
                                         <VerticalStackLayout VerticalOptions="Center">
