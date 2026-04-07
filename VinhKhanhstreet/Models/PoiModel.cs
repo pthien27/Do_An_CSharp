@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using SQLite;
 
 namespace VinhKhanhstreet.Models
 {
     public class PoiModel : INotifyPropertyChanged
     {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; } // Khóa chính cho SQLite
+
         public string Name { get; set; }        // Tên quán (vd: Ốc Oanh)
         public double Latitude { get; set; }   // Kinh độ
         public double Longitude { get; set; }  // Vĩ độ
@@ -21,7 +25,7 @@ namespace VinhKhanhstreet.Models
         public string DescriptionZh { get; set; } // Nội dung thuyết minh (Tiếng Trung)
         
         // Chuỗi hiển thị ở danh sách UI
-        private string _currentDisplayDescription;
+        [Ignore]
         public string CurrentDisplayDescription 
         { 
             get => _currentDisplayDescription ?? Description; 
@@ -34,6 +38,7 @@ namespace VinhKhanhstreet.Models
                 }
             }
         }
+        private string _currentDisplayDescription;
 
         public string AudioFile { get; set; }  // Tên file audio thu sẵn
         public int Priority { get; set; }      // Mức ưu tiên
@@ -46,7 +51,14 @@ namespace VinhKhanhstreet.Models
         public int ReviewCount { get; set; } = 100;
         public string ClosingTime { get; set; } = "22:30";
         public string PhoneNumber { get; set; } = "0901234567";
-        public string ImageUrl { get; set; } = "dotnet_bot.png"; // Ảnh mặc định
+        
+        // 5 Slot hình ảnh cho mỗi quán
+        public string ImageUrl1 { get; set; } = "dotnet_bot.png";
+        public string ImageUrl2 { get; set; } = "";
+        public string ImageUrl3 { get; set; } = "";
+        public string ImageUrl4 { get; set; } = "";
+        public string ImageUrl5 { get; set; } = "";
+        
         public string CategoryVi { get; set; } = "Nhà hàng Việt Nam";
         
         // Trạng thái yêu thích
@@ -64,26 +76,70 @@ namespace VinhKhanhstreet.Models
             }
         }
 
+        [Ignore]
         public string SaveBgColor => IsFavorite ? "#FFEBEE" : "#E3F2FD";
+        [Ignore]
         public string SaveTextColor => IsFavorite ? "#D32F2F" : "#0D47A1";
 
         // --- CÁC THUỘC TÍNH CHỨA CHỮ ĐƯỢC DỊCH SẴN ---
-        private string _strCategoryAndDistance = "Quán ăn · 4,3 km";
-        public string StrCategoryAndDistance { get => _strCategoryAndDistance; set { _strCategoryAndDistance = value; OnPropertyChanged(); } }
+        private double _distanceInMeters;
+        [Ignore]
+        public double DistanceInMeters
+        {
+            get => _distanceInMeters;
+            set {
+                if (_distanceInMeters != value) {
+                    _distanceInMeters = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(StrCategoryAndDistance));
+                }
+            }
+        }
+
+        private string _translatedCategory = "Quán ăn";
+        [Ignore]
+        public string TranslatedCategory
+        {
+            get => _translatedCategory;
+            set {
+                if (_translatedCategory != value) {
+                    _translatedCategory = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(StrCategoryAndDistance));
+                }
+            }
+        }
+
+        [Ignore]
+        public string StrCategoryAndDistance 
+        { 
+            get 
+            {
+                if (DistanceInMeters <= 0) return $"{TranslatedCategory}";
+                return DistanceInMeters >= 1000 
+                    ? $"{TranslatedCategory} · {(DistanceInMeters / 1000.0):F1} km" 
+                    : $"{TranslatedCategory} · {DistanceInMeters:F0} m";
+            }
+        }
 
         private string _strStatusOpen = "Đang mở cửa";
+        [Ignore]
         public string StrStatusOpen { get => _strStatusOpen; set { _strStatusOpen = value; OnPropertyChanged(); } }
 
         private string _strClosingTime = "Đóng cửa vào 22:30";
+        [Ignore]
         public string StrClosingTime { get => _strClosingTime; set { _strClosingTime = value; OnPropertyChanged(); } }
 
         private string _strPlay = "Phát";
+        [Ignore]
         public string StrPlay { get => _strPlay; set { _strPlay = value; OnPropertyChanged(); } }
 
         private string _strCall = "Gọi";
+        [Ignore]
         public string StrCall { get => _strCall; set { _strCall = value; OnPropertyChanged(); } }
 
         private string _strSave = "Lưu";
+        [Ignore]
         public string StrSave { get => _strSave; set { _strSave = value; OnPropertyChanged(); } }
 
         // Implement INotifyPropertyChanged để cập nhật tự động lên giao diện
