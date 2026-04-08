@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Trải Nghiệm Ẩm Thực Vĩnh Khánh — Presentation</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            /* Đổi sang tông Xanh Lá cho App Vĩnh Khánh */
+            --primary-light: #60ad5e;
+            --primary-dark: #005005;
+            --accent: #2e7d32;
+            --accent-light: #60ad5e;
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #212121;
+            --text-secondary: #616161;
+            --border: #e0e0e0;
+            --code-bg: #263238;
+            --code-text: #eeffff;
+            --success: #2e7d32;
+            --warning: #f57f17;
+            --info: #1565c0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--primary);
+            color: white;
+            padding: 0 2rem;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -.5px;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: .5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav .nav-links a {
+            color: rgba(255, 255, 255, .85);
+            text-decoration: none;
+            font-size: .82rem;
+            padding: .35rem .7rem;
+            border-radius: 4px;
+            transition: background .2s;
+        }
+
+        nav .nav-links a:hover,
+        nav .nav-links a.active {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            margin-top: 56px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+            color: white;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: .5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.15rem;
+            opacity: .9;
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .hero .badges {
+            display: flex;
+            justify-content: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+        }
+
+        .hero .badge {
+            background: rgba(255, 255, 255, .2);
+            padding: .3rem .8rem;
+            border-radius: 20px;
+            font-size: .8rem;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        section:nth-child(even) {
+            background: var(--surface);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .section-header .section-num {
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* ===== CARDS ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: box-shadow .2s, transform .2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .08);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            font-size: 1.05rem;
+            margin-bottom: .4rem;
+            color: var(--primary-dark);
+        }
+
+        .card p,
+        .card li {
+            font-size: .9rem;
+            color: var(--text-secondary);
+        }
+
+        .card ul {
+            padding-left: 1.2rem;
+            margin-top: .4rem;
+        }
+
+        .card li {
+            margin-bottom: .2rem;
+        }
+
+        /* ===== CODE ===== */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: .82rem;
+            line-height: 1.7;
+            margin: 1rem 0;
+        }
+
+        .code-block .comment {
+            color: #546e7a;
+        }
+
+        code {
+            background: #eceff1;
+            padding: .15rem .4rem;
+            border-radius: 3px;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: .85em;
+        }
+
+        /* ===== FLOW DIAGRAMS ===== */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .flow-step {
+            background: var(--primary);
+            color: white;
+            padding: .4rem .9rem;
+            border-radius: 8px;
+            font-size: .82rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .flow-step.alt {
+            background: var(--accent);
+        }
+
+        .flow-step.success {
+            background: var(--success);
+        }
+
+        .flow-step.warning {
+            background: var(--warning);
+            color: var(--text);
+        }
+
+        .flow-arrow {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== STATS ROW ===== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.2rem .8rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-card .label {
+            font-size: .78rem;
+            color: var(--text-secondary);
+            margin-top: .2rem;
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .timeline-item h4 {
+            font-size: .95rem;
+            color: var(--primary-dark);
+            margin-bottom: .3rem;
+        }
+
+        .timeline-item p {
+            font-size: .85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== HIGHLIGHT BOX ===== */
+        .highlight {
+            border-left: 4px solid var(--primary);
+            background: #e8f5e9;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .highlight.info {
+            border-color: var(--info);
+            background: #e3f2fd;
+        }
+
+        .highlight.warning {
+            border-color: var(--warning);
+            background: #fff3e0;
+        }
+
+        /* ===== ARCHITECTURE DIAGRAM ===== */
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .8rem;
+            margin: 1.5rem 0;
+        }
+
+        .arch-module {
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: all .2s;
+        }
+
+        .arch-module:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 12px rgba(46, 125, 50, .15);
+        }
+
+        .arch-module .mod-icon {
+            font-size: 1.8rem;
+            margin-bottom: .3rem;
+        }
+
+        .arch-module .mod-name {
+            font-weight: 700;
+            font-size: .9rem;
+            color: var(--primary-dark);
+        }
+
+        .arch-module .mod-desc {
+            font-size: .75rem;
+            color: var(--text-secondary);
+            margin-top: .2rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+
+            section {
+                padding: 2rem 1rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .arch-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            nav .nav-links {
+                display: none;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--code-bg);
+            color: rgba(255, 255, 255, .6);
+            font-size: .8rem;
+        }
+
+        footer strong {
+            color: rgba(255, 255, 255, .9);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="logo">🍲 Trải Nghiệm Vĩnh Khánh</div>
+        <ul class="nav-links">
+            <li><a href="#overview">Tổng quan</a></li>
+            <li><a href="#startup">Dữ liệu & Khởi động</a></li>
+            <li><a href="#geofence">GPS/Geofence</a></li>
+            <li><a href="#qr">QR Scanner</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <h1>Ứng Dụng Hướng Dẫn Kỹ Thuật Số Vĩnh Khánh</h1>
+        <p class="subtitle">Ứng dụng đa nền tảng .NET MAUI: Định vị Geofencing thời gian thực, quét mã QR thông minh,
+            Thuyết minh đa ngôn ngữ TTS — số hoá Trải nghiệm ẩm thực Đường phố.</p>
+        <div class="badges">
+            <span class="badge">.NET 8 MAUI</span>
+            <span class="badge">C# 12 XAML</span>
+            <span class="badge">SQLite-net-pcl</span>
+            <span class="badge">Google MAPS API</span>
+            <span class="badge">ZXing.Net Barcode</span>
+            <span class="badge">Google Translate API</span>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <section>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="value">4</div>
+                <div class="label">Ngôn Ngữ (Vi, En, Ja, Zh)</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">100%</div>
+                <div class="label">Khởi Động Lần Đầu (Cold Start)</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">30m</div>
+                <div class="label">Bán Kính Geofencing</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OVERVIEW -->
+    <section id="overview">
+        <div class="section-header">
+            <div class="icon" style="background:#e8f5e9;color:var(--primary);">🏗️</div>
+            <div>
+                <div class="section-num">Phần 01</div>
+                <h2>Kiến Trúc Thành Phần (Những Điểm Đã Làm Được)</h2>
+            </div>
+        </div>
+
+        <p style="margin-bottom:1rem;color:var(--text-secondary);">Core hệ thống ứng dụng di động được phân chia theo
+            kiến trúc Native kết nối chặt chẽ với cảm biến thiết bị (GPS, Camera, TTS Motor).</p>
+
+        <div class="arch-grid">
+            <div class="arch-module">
+                <div class="mod-icon">🗺️</div>
+                <div class="mod-name">Maps & Layout</div>
+                <div class="mod-desc">Chồng lớp AbsoluteLayout chứa bản đồ, hiển thị Pin và quét Vòng tròn 30m bằng
+                    Map.Circle</div>
+            </div>
+            <div class="arch-module">
+                <div class="mod-icon">💾</div>
+                <div class="mod-name">Offline DB</div>
+                <div class="mod-desc">SQLite Cục bộ. Tự động nạp Seed-Data cho list POI ngay lúc App khởi động lần 1.
+                </div>
+            </div>
+            <div class="arch-module">
+                <div class="mod-icon">🔊</div>
+                <div class="mod-name">TTS Engine</div>
+                <div class="mod-desc">Chạy lệnh PhatThuyetMinh dựa trên Text-To-Speech gốc, xử lý chồng lấn Delay &
+                    Cancelation.</div>
+            </div>
+            <div class="arch-module">
+                <div class="mod-icon">📷</div>
+                <div class="mod-name">Camera QR</div>
+                <div class="mod-desc">Sử dụng ZXing.Net.Maui tích hợp cấp quyền tự động, bóc tách chuỗi regex text tức
+                    thời.</div>
+            </div>
+            <div class="arch-module">
+                <div class="mod-icon">🧠</div>
+                <div class="mod-name">On-demand Translate</div>
+                <div class="mod-desc">Hệ thống dịch ngầm HTTP HttpClient gọi qua thư viện Google Translate cho Category,
+                    Status, Script.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STARTUP & GEOLOCATION -->
+    <section id="geofence">
+        <div class="section-header">
+            <div class="icon" style="background:#e3f2fd;color:var(--info);">📡</div>
+            <div>
+                <div class="section-num">Phần 02</div>
+                <h2>Cơ Chế Auto-Tracking & Kích Hoạt Âm Thanh</h2>
+            </div>
+        </div>
+
+        <p style="margin-bottom:1.5rem;color:var(--text-secondary);">Ứng dụng không chỉ có dạng list nhàm chán. Chức
+            năng chính là quét tương tác để "Ngạc nhiên" phát âm thanh cho du khách.</p>
+
+        <div class="highlight info">
+            <strong>Geofencing Cục bộ:</strong> Đo đạc bằng <code>CalculateDistance(p, Km) * 1000</code> vòng quét mặc
+            định của mỗi quán là <strong>30 mét</strong>. Khi thiết bị xâm nhập, Cờ <code>HasAutoPlayed</code> được dựng
+            lên để tránh lặp (Spam).
+        </div>
+
+        <h3>Quá trình kích hoạt (Life-cycle)</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <h4>1. Tín Hiệu Nền - StartTracking()</h4>
+                <p>GPS Engine đẩy luồng sự kiện mỗi giây (1s). Cập nhật <code>mapVinhKhanh.MoveToRegion</code> và toạ độ
+                    lõi <code>_userScanCircle</code>.</p>
+            </div>
+            <div class="timeline-item">
+                <h4>2. Quét Toàn Mảng & Tính Toán Haversine</h4>
+                <p><code>foreach (var p in _vinhKhanhPois)</code>: Cập nhật biến <code>DistanceInMeters</code>
+                    real-time.</p>
+            </div>
+            <div class="timeline-item">
+                <h4>3. Kích Hoạt Điểm Đến (Radius Breach)</h4>
+                <p>Nếu khoảng cách ≤ <code>poi.Radius</code> và chưa phát -> Đổi cờ Status Trạng Thái màu Xanh lá -> Ép
+                    List hiện Tab <strong>"Gần Đây"</strong> -> OrderBy Distance.</p>
+            </div>
+            <div class="timeline-item">
+                <h4>4. Khóa chống Spam (Reset Flag)</h4>
+                <p>Nếu khoảng cách vượt ra xa quán hơn 30m so với Radius (<code>poi.Radius + 30m</code>), thiết bị tiến
+                    hành dỡ cờ <code>HasAutoPlayed = false</code>, sẵn sàng lần báo tiếp theo.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- QR SCANNER -->
+    <section id="qr">
+        <div class="section-header">
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">📷</div>
+            <div>
+                <div class="section-num">Phần 03</div>
+                <h2>Tính Năng QRCode Scanner (ZXing)</h2>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Thẩm định Tên quán</h3>
+                <p>Cho phép in hàng loạt QR Code chứa "Tên Tiếng Việt" tĩnh của các điểm. App không cần dùng Web-link
+                    trung gian.</p>
+            </div>
+            <div class="card">
+                <h3>Luồng Logic Khớp Nhãn</h3>
+                <p><code>result.Value.ToLower()</code> vs <code>poi.Name.ToLower()</code>. Khớp 1 cái là gọi Navigate ra
+                    Modal về MapPage.</p>
+            </div>
+            <div class="card">
+                <h3>Auto-Pan Mapping</h3>
+                <p>App tự giật góc map ghim thẳng tới toạ độ Quán Vừa Quét, lọc UI duy nhất điểm đó thành "THÔNG TIN CHI
+                    TIẾT".</p>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <span class="comment">// Kịch bản đẩy ngược luồng MainThread lập tức khi Quét Xong</span><br>
+            <span class="keyword">void</span> <span class="fn">zxing_BarcodesDetected</span>(<span
+                class="keyword">object</span> sender, <span class="keyword">BarcodeDetectionEventArgs</span> e) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">var</span> result = e.Results.FirstOrDefault();<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;MainThread.BeginInvokeOnMainThread(<span class="keyword">async</span> () => {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">var</span> matchedPoi =
+            _pois.FirstOrDefault(p => p.Name.Contains(result));<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">await</span>
+            PhatThuyetMinh(matchedPoi);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Navigation.PopModalAsync();<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;});<br>
+            }
+        </div>
+    </section>
+
+
+
+</body>
+
+</html>

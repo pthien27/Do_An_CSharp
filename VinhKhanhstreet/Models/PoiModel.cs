@@ -45,6 +45,9 @@ namespace VinhKhanhstreet.Models
 
         // Thuộc tính để chống spam
         public DateTime LastActivated { get; set; }
+        
+        [Ignore]
+        public bool HasAutoPlayed { get; set; } = false;
 
         // --- CÁC THUỘC TÍNH MỚI CHO GIAO DIỆN GOOGLE MAPS CARD ---
         public double Rating { get; set; } = 4.5;
@@ -141,6 +144,9 @@ namespace VinhKhanhstreet.Models
         private string _strSave = "Lưu";
         [Ignore]
         public string StrSave { get => _strSave; set { _strSave = value; OnPropertyChanged(); } }
+
+        [Ignore]
+        public string QrImageUrl => $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={Uri.EscapeDataString(Name ?? "")}";
 
         // Implement INotifyPropertyChanged để cập nhật tự động lên giao diện
         public event PropertyChangedEventHandler? PropertyChanged;

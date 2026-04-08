@@ -1,6 +1,7 @@
-﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Toolkit.Hosting;
+using ZXing.Net.Maui.Controls;
 
 namespace VinhKhanhstreet
 {
@@ -13,6 +14,7 @@ namespace VinhKhanhstreet
                 .UseMauiApp<App>()
                 .UseMauiMaps()
                 .UseMauiCommunityToolkit()
+                .UseBarcodeReader()
                 .ConfigureSyncfusionToolkit()
                 .ConfigureMauiHandlers(handlers =>
                 {

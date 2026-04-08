@@ -1,0 +1,184 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>Báo Cáo Đồ Án Vĩnh Khánh</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.5;
+        color: #333333;
+    }
+    h1 {
+        color: #2e7d32;
+        text-align: center;
+        font-size: 24pt;
+        margin-bottom: 20pt;
+    }
+    h2 {
+        color: #1b5e20;
+        font-size: 18pt;
+        border-bottom: 1px solid #4caf50;
+        padding-bottom: 5px;
+        margin-top: 30pt;
+        margin-bottom: 10pt;
+    }
+    h3 {
+        color: #388e3c;
+        font-size: 14pt;
+        margin-top: 15pt;
+    }
+    table.stats {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20pt;
+    }
+    table.stats td {
+        border: 1px solid #c8e6c9;
+        text-align: center;
+        padding: 15pt;
+        background-color: #e8f5e9;
+    }
+    table.stats .val {
+        font-size: 20pt;
+        font-weight: bold;
+        color: #2e7d32;
+    }
+    table.grid {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15pt;
+    }
+    table.grid td {
+        border: 1px solid #e0e0e0;
+        padding: 10pt;
+        vertical-align: top;
+        width: 50%;
+    }
+    ul {
+        margin-top: 0;
+        padding-left: 20pt;
+    }
+    .highlight {
+        background-color: #e3f2fd;
+        border-left: 4px solid #1976d2;
+        padding: 10px;
+        margin-bottom: 10pt;
+    }
+    .code {
+        font-family: 'Courier New', Courier, monospace;
+        background-color: #f5f5f5;
+        padding: 10pt;
+        border: 1px dashed #bdbdbd;
+        font-size: 10pt;
+    }
+</style>
+<!--[if gte mso 9]>
+<xml>
+ <w:WordDocument>
+  <w:View>Print</w:View>
+  <w:Zoom>100</w:Zoom>
+  <w:DoNotOptimizeForBrowser/>
+ </w:WordDocument>
+</xml>
+<![endif]-->
+</head>
+<body>
+
+<h1>BÁO CÁO KỸ THUẬT CNPM NÂNG CAO<br>Hệ Thống Trải Nghiệm Ẩm Thực Vĩnh Khánh</h1>
+<p style="text-align:center;"><i>Ứng dụng đa nền tảng .NET MAUI: Định vị Geofencing, QR Scanner và TTS Đa ngôn ngữ</i></p>
+<hr>
+
+<h2>THỐNG KÊ TỔNG QUAN</h2>
+<table class="stats">
+    <tr>
+        <td>
+            <div class="val">4</div>
+            <div>Ngôn Ngữ (Vi, En, Ja, Zh)</div>
+        </td>
+        <td>
+            <div class="val">100%</div>
+            <div>Khởi Động Lần Đầu (Cold Start)</div>
+        </td>
+        <td>
+            <div class="val">30m</div>
+            <div>Bán Kính Geofencing</div>
+        </td>
+    </tr>
+</table>
+
+<h2>PHẦN 01: KIẾN TRÚC THÀNH PHẦN</h2>
+<p>Core hệ thống ứng dụng di động được phân chia theo kiến trúc Native kết nối chặt chẽ với cảm biến thiết bị (GPS, Camera, TTS Motor).</p>
+
+<table class="grid">
+    <tr>
+        <td>
+            <h3>🗺️ Maps & Layout</h3>
+            <p>Chồng lớp AbsoluteLayout chứa bản đồ, hiển thị Pin và quét Vòng tròn mặc định bằng <code>Map.Circle</code>.</p>
+        </td>
+        <td>
+            <h3>💾 Tích hợp Offline Database</h3>
+            <p>Sử dụng <code>SQLite-net-pcl</code> cục bộ. Hệ thống tự động nạp Seed-Data cho list POI ngay lúc App khởi động lần 1.</p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>🔊 Text-To-Speech (TTS Engine)</h3>
+            <p>Chạy thuật toán đọc <code>PhatThuyetMinh()</code> dựa trên Text-To-Speech gốc của hệ điều hành, xử lý chồng lấn Delay & Cancelation tự động theo hàng chờ.</p>
+        </td>
+        <td>
+            <h3>📷 ZXing Camera QR Scanner</h3>
+            <p>Tương tác Module <code>ZXing.Net.Maui</code> tích hợp cấp quyền hệ thống tự động, bóc tách chuỗi regex text tức thời ngay trên luồng ảnh động.</p>
+        </td>
+    </tr>
+</table>
+
+<p><b>Dữ liệu Động (On-demand Translate):</b> Hệ thống dịch ngầm qua HTTP <code>HttpClient</code> gọi thư viện <b>Google Translate API</b> cho các trường <i>Category</i>, <i>Status</i>, và nội dung <i>Script</i> tại thời gian chạy (Runtime).</p>
+
+<h2>PHẦN 02: CƠ CHẾ AUTO-TRACKING & GEOFENCING</h2>
+<p>Ứng dụng được thiết kế không phải theo dạng List thông thường, mà chủ đích là quá trình "quét tương tác thời gian thực" nhằm tự động kích hoạt tính năng âm thanh khi du khách dạo quanh phố.</p>
+
+<div class="highlight">
+    <b>Geofencing Cục bộ:</b> Tính khoảng cách thực bằng <code>CalculateDistance(p, Km) * 1000</code>. Vòng quét của quán ăn (POI) được khóa cứng ở <b>30 mét</b>. Hệ thống gắn cờ <code>HasAutoPlayed</code> để ngăn việc đọc lặp đi lặp lại.
+</div>
+
+<h3>Quy trình hoạt động vòng lặp:</h3>
+<ul>
+    <li><b>Tín Hiệu Nền:</b> Dispatcher đẩy luồng sự kiện mỗi giây (1s). Cập nhật Camera bản đồ <code>map.MoveToRegion</code> dựa vào biến quét trung tâm <code>_userScanCircle</code>.</li>
+    <li><b>Thuật toán đo đạc:</b> Duyệt danh sách <code>foreach (var p in pois)</code> cập nhật đo vẽ <code>DistanceInMeters</code> real-time theo Haversine.</li>
+    <li><b>Radius Breach (Tiến vào Zone):</b> Nếu khoảng cách ≤ <code>poi.Radius</code>, tự động ép màn hình hiển thị Tab <i>"Gần Đây"</i>, Sort lại List và đẩy vào máy phát âm.</li>
+    <li><b>Dọn Dẹp Rác Đệm:</b> Xóa cờ <code>HasAutoPlayed = false</code> khi người dùng đã bước qua khỏi bán kính vượt ngưỡng an toàn (ví dụ: +30 mét), sẵn sàng đón lần lặp quét tới.</li>
+</ul>
+
+<h2>PHẦN 03: TÍNH NĂNG QR SCANNER SIÊU TỐC</h2>
+<p>Dự án sử dụng cơ chế đọc String trực tiếp vào dữ liệu thay vì link web dẫn đường vòng nhằm tăng tốc độ tải khung hình và tương tác Bản đồ.</p>
+
+<table class="grid">
+    <tr>
+        <td>
+            <h3>Luồng Logic Khớp Nhãn</h3>
+            <p>Đồng bộ Text <code>result.Value.ToLower()</code> vs Model <code>poi.Name.ToLower()</code>. Khớp Partial String lập tức gửi lệnh Pop Modal về trang MapPage cũ.</p>
+        </td>
+        <td>
+            <h3>Auto-Pan Mapping View</h3>
+            <p>App tự giật góc map ghim thẳng tới toạ độ Quán Thực Tế Vừa Quét, lọc UI duy nhất điểm đó thành "THÔNG TIN CHI TIẾT" cho thực khách tra cứu Menu, hình.</p>
+        </td>
+    </tr>
+</table>
+
+<h3>Đoạn Code Trích Xuất Luồng Camera:</h3>
+<div class="code">
+// Đẩy sự kiện bắt Label về Tầng UI bằng MainThread API<br>
+void zxing_BarcodesDetected(object sender, BarcodeDetectionEventArgs e) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;var result = e.Results.FirstOrDefault();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;MainThread.BeginInvokeOnMainThread(async () => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var matchedPoi = _pois.FirstOrDefault(p => p.Name.Contains(result));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await PhatThuyetMinh(matchedPoi);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await Navigation.PopModalAsync();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+}
+</div>
+
+</body>
+</html>

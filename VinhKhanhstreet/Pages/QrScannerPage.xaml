@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.Maui.Controls"
+             x:Class="VinhKhanhstreet.Pages.QrScannerPage"
+             Title="Quét mã QR">
+    <Grid>
+        <zxing:CameraBarcodeReaderView x:Name="barcodeReader"
+                                       BarcodesDetected="CameraBarcodeReaderView_BarcodesDetected" />
+                                       
+        <!-- Nút Đóng đè lên trên Camera -->
+        <Button Text="ĐÓNG" 
+                Clicked="OnCloseClicked" 
+                BackgroundColor="#D32F2F" 
+                TextColor="White"
+                CornerRadius="8"
+                WidthRequest="120"
+                HeightRequest="45"
+                FontAttributes="Bold"
+                HorizontalOptions="Center" 
+                VerticalOptions="End" 
+                Margin="0,0,0,50"/>
+        
+        <!-- Line target ở giữa -->
+        <BoxView Color="#882ECC71" 
+                 HeightRequest="2" 
+                 WidthRequest="250" 
+                 HorizontalOptions="Center" 
+                 VerticalOptions="Center" 
+                 InputTransparent="True"/>
+    </Grid>
+</ContentPage>
