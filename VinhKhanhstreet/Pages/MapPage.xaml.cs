@@ -17,6 +17,7 @@ public partial class MapPage : ContentPage
     private Microsoft.Maui.Controls.Maps.Circle _userScanCircle; // Vòng tròn quét GPS
     private bool _isSearchBarFocused = false;
 
+    // [UC1 - Xem Bản Đồ & Danh Sách Quán: Khởi tạo dữ liệu SQLite lên bản đồ]
     // --- CẬP NHẬT DANH SÁCH SONG NGỮ ---
     // Mảng sẽ được nạp từ SQLite thay vì Fix cứng
     private readonly System.Collections.ObjectModel.ObservableCollection<PoiModel> _vinhKhanhPois = new();
@@ -67,6 +68,7 @@ public partial class MapPage : ContentPage
         StartAutoTracking();
     }
 
+    // [UC5 - Đổi Ngôn Ngữ Giao Diện/Script: Thay đổi State biến Cờ _currentLang]
     // --- HÀM XỬ LÝ CHỌN NGÔN NGỮ ---
     private async void OnLanguageViTapped(object sender, EventArgs e)
     {
@@ -263,6 +265,7 @@ public partial class MapPage : ContentPage
         }
     }
 
+    // [UC4 - Nghe Thuyết Minh Âm Thanh (TTS): Khởi tạo giọng đọc Text To Speech]
     // --- HÀM THUYẾT MINH ĐA NGÔN NGỮ ---
     private async Task PhatThuyetMinh(PoiModel poi)
     {
@@ -417,6 +420,7 @@ public partial class MapPage : ContentPage
         ScrollListToTop();
     }
 
+    // [UC3 - Quét Mã QR Tại Bàn: Mở Camera ZXing quét nhanh không chạm]
     private async void OnScanQRTapped(object sender, EventArgs e)
     {
         // Kiểm tra quyền Camera trước khi mở máy quét
@@ -588,17 +592,40 @@ public partial class MapPage : ContentPage
         _isSearchBarFocused = false;
     }
 
+    private string RemoveDiacritics(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return text;
+        
+        var normalizedString = text.Normalize(System.Text.NormalizationForm.FormD);
+        var stringBuilder = new System.Text.StringBuilder(capacity: normalizedString.Length);
+
+        for (int i = 0; i < normalizedString.Length; i++)
+        {
+            char c = normalizedString[i];
+            var unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
+            if (unicodeCategory != System.Globalization.UnicodeCategory.NonSpacingMark)
+            {
+                stringBuilder.Append(c);
+            }
+        }
+
+        return stringBuilder.ToString().Normalize(System.Text.NormalizationForm.FormC).Replace('đ', 'd').Replace('Đ', 'D');
+    }
+
+    // [UC2 - Tìm Kiếm Quán Ăn / Món Ăn: Chống văng dấu và bỏ dấu Tiếng Việt]
     private void OnSearchButtonPressed(object sender, EventArgs e)
     {
-        string keyword = searchBar.Text?.ToLower().Trim() ?? "";
+        string keyword = searchBar.Text?.Trim() ?? "";
 
         if (!string.IsNullOrEmpty(keyword))
         {
+            string keywordNoDiacritics = RemoveDiacritics(keyword).ToLower();
+
             // Perform Search across all POIs (regardless of Tab)
             var filtered = _vinhKhanhPois.Where(p => 
-                (p.Name != null && p.Name.ToLower().Contains(keyword)) || 
-                (p.CategoryVi != null && p.CategoryVi.ToLower().Contains(keyword)) ||
-                (p.Description != null && p.Description.ToLower().Contains(keyword))
+                (p.Name != null && RemoveDiacritics(p.Name).ToLower().Contains(keywordNoDiacritics)) || 
+                (p.CategoryVi != null && RemoveDiacritics(p.CategoryVi).ToLower().Contains(keywordNoDiacritics)) ||
+                (p.Description != null && RemoveDiacritics(p.Description).ToLower().Contains(keywordNoDiacritics))
             ).ToList();
             
             lstQuánFull.ItemsSource = filtered;
@@ -789,6 +816,7 @@ public partial class MapPage : ContentPage
         }
     }
 
+    // [UC6 - Đo Lường Vị Trí GPS (Geofencing): Vòng lặp tracking thiết bị mỗi 1s tính toán Haversine]
     private async void StartAutoTracking()
     {
         await _gpsService.StartTracking((location) => {
