@@ -2,27 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 using SQLite;
+using Plugin.CloudFirestore.Attributes;
 
 namespace VinhKhanhstreet.Models
 {
     public class PoiModel : INotifyPropertyChanged
     {
+        [Id]
+        public string DocumentId { get; set; } // ID dùng cho Firebase (R01, R02...)
+
         [PrimaryKey, AutoIncrement]
-        public int Id { get; set; } // Khóa chính cho SQLite
+        public int Id { get; set; } // Giữ lại cho tương thích SQLite nếu cần
 
-        public string Name { get; set; }        // Tên quán (vd: Ốc Oanh)
+        [MapTo("name")]
+        public string Name { get; set; }        // Tên quán
+
+        [MapTo("Latitude")]
         public double Latitude { get; set; }   // Kinh độ
+        
+        [MapTo("Longitude")]
         public double Longitude { get; set; }  // Vĩ độ
-        public double Radius { get; set; }     // Bán kính kích hoạt (mét) - vd: 20m
+        
+        [MapTo("Radius")]
+        public double Radius { get; set; }     // Bán kính
 
-        public string Description { get; set; } // Nội dung thuyết minh (Tiếng Việt)
+        [MapTo("DescriptionVI")]
+        public string Description { get; set; } 
 
-        // --- DÒNG QUAN TRỌNG: Thêm dòng này để hết lỗi đỏ ---
-        public string DescriptionEn { get; set; } // Nội dung thuyết minh (Tiếng Anh)
-        public string DescriptionJa { get; set; } // Nội dung thuyết minh (Tiếng Nhật)
-        public string DescriptionZh { get; set; } // Nội dung thuyết minh (Tiếng Trung)
+        [MapTo("DescriptionEN")]
+        public string DescriptionEn { get; set; } 
+
+        [MapTo("DescriptionJA")]
+        public string DescriptionJa { get; set; } 
+
+        [MapTo("DescriptionZH")]
+        public string DescriptionZh { get; set; } 
         
         // Chuỗi hiển thị ở danh sách UI
         [Ignore]
@@ -40,28 +55,49 @@ namespace VinhKhanhstreet.Models
         }
         private string _currentDisplayDescription;
 
+        [MapTo("AudioFile")]
         public string AudioFile { get; set; }  // Tên file audio thu sẵn
+        
+        [MapTo("Priority")]
         public int Priority { get; set; }      // Mức ưu tiên
 
         // Thuộc tính để chống spam
-        public DateTime LastActivated { get; set; }
+        [MapTo("LastActivated")]
+        public DateTime LastActivated { get; set; } = DateTime.Now;
         
         [Ignore]
         public bool HasAutoPlayed { get; set; } = false;
 
         // --- CÁC THUỘC TÍNH MỚI CHO GIAO DIỆN GOOGLE MAPS CARD ---
+        [MapTo("Rating")]
         public double Rating { get; set; } = 4.5;
+        
+        [MapTo("ReviewCount")]
         public int ReviewCount { get; set; } = 100;
+        
+        [MapTo("ClosingTime")]
         public string ClosingTime { get; set; } = "22:30";
+        
+        [MapTo("PhoneNumber")]
         public string PhoneNumber { get; set; } = "0901234567";
         
         // 5 Slot hình ảnh cho mỗi quán
+        [MapTo("ImageUrl1")]
         public string ImageUrl1 { get; set; } = "dotnet_bot.png";
+        
+        [MapTo("ImageUrl2")]
         public string ImageUrl2 { get; set; } = "";
+        
+        [MapTo("ImageUrl3")]
         public string ImageUrl3 { get; set; } = "";
+        
+        [MapTo("ImageUrl4")]
         public string ImageUrl4 { get; set; } = "";
+        
+        [MapTo("ImageUrl5")]
         public string ImageUrl5 { get; set; } = "";
         
+        [MapTo("CategoryVi")]
         public string CategoryVi { get; set; } = "Nhà hàng Việt Nam";
         
         // Trạng thái yêu thích

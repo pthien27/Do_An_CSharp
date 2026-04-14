@@ -46,6 +46,7 @@ namespace VinhKhanhstreet
     		builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
 
+            builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<ProjectRepository>();
             builder.Services.AddSingleton<TaskRepository>();
             builder.Services.AddSingleton<CategoryRepository>();
@@ -56,7 +57,6 @@ namespace VinhKhanhstreet
             builder.Services.AddSingleton<ProjectListPageModel>();
             builder.Services.AddSingleton<ManageMetaPageModel>();
 
-         //   builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
             builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
 
             return builder.Build();

@@ -9,7 +9,14 @@ namespace VinhKhanhstreet.Services
     public static class GoogleTranslateService
     {
         // Sử dụng HttpClient dạng static để tái sử dụng connection, tránh cạn kiệt socket.
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient;
+
+        static GoogleTranslateService()
+        {
+            _httpClient = new HttpClient();
+            // Thêm User-Agent để Google nhận diện là trình duyệt, tránh bị block 403
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+        }
 
         /// <summary>
         /// Dịch văn bản thông qua Google Translate API (Free endpoint không cần API Key)
@@ -32,17 +39,29 @@ namespace VinhKhanhstreet.Services
                 string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl={fromLanguage}&tl={toLanguage}&dt=t&q={encodedText}";
 
                 // Gọi request lấy chuỗi JSON
-                var response = await _httpClient.GetStringAsync(url);
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"[Translation Error] Google returned {response.StatusCode}");
+                    return null;
+                }
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
                 
                 // Cấu trúc Data Google trả về khá phức tạp: [[["Bản dịch", "Bản Gốc", null, null, 1]]]
                 // Nên chúng ta sẽ lấy mảng gốc (RootElement) -> phần tử 0 -> phần tử 0 -> phần tử 0 chứa text dịch.
-                using JsonDocument doc = JsonDocument.Parse(response);
+                using JsonDocument doc = JsonDocument.Parse(jsonResponse);
                 
                 string translatedText = "";
-                // Duyệt qua tất cả các câu (vì Google có thể tách text dài thành nhiều câu trong mảng)
-                foreach (JsonElement sentence in doc.RootElement[0].EnumerateArray())
+                // Duyệt qua tất cả các câu trong mảng kết quả
+                var parts = doc.RootElement[0].EnumerateArray();
+                foreach (JsonElement sentence in parts)
                 {
-                    translatedText += sentence[0].GetString();
+                    // Phần tử đầu tiên của mỗi câu là text đã dịch
+                    if (sentence.ValueKind == JsonValueKind.Array)
+                    {
+                        translatedText += sentence[0].GetString();
+                    }
                 }
                 
                 return translatedText;

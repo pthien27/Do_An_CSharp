@@ -21,8 +21,8 @@ namespace VinhKhanhstreet.Services
             try
             {
                 await _semaphore.WaitAsync();
-                if (Shell.Current is Shell shell)
-                    await shell.DisplayAlertAsync("Error", ex.Message, "OK");
+                if (Application.Current?.MainPage is Page mainPage)
+                    await mainPage.DisplayAlert("Error", ex.Message, "OK");
             }
             finally
             {

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VinhKhanhstreet.Pages.LoginPage"
+             NavigationPage.HasNavigationBar="False"
+             Title="Đăng nhập Chủ quán">
+
+    <Grid>
+        <!-- Background Gradient rực rỡ -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#00B09B" Offset="0.1" />
+                    <GradientStop Color="#96C93D" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <ScrollView VerticalOptions="Center">
+            <VerticalStackLayout Spacing="25" Padding="30" VerticalOptions="Center">
+                
+                <!-- Logo hoặc Icon -->
+                <Image Source="dotnet_bot.png" 
+                       HeightRequest="100" 
+                       HorizontalOptions="Center" 
+                       Margin="0,0,0,10" />
+
+                <Label Text="VINH KHÁNH STREET" 
+                       TextColor="White" 
+                       FontSize="28" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center" />
+                
+                <Label Text="Hệ thống dành cho Chủ quán" 
+                       TextColor="White" 
+                       FontSize="16" 
+                       Opacity="0.8"
+                       HorizontalOptions="Center" 
+                       Margin="0,-20,0,10"/>
+
+                <!-- Card Đăng nhập (Glassmorphism) -->
+                <Border StrokeShape="RoundRectangle 20"
+                        BackgroundColor="#CCFFFFFF"
+                        Padding="25"
+                        Margin="10"
+                        StrokeThickness="0">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,10" Radius="20" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="ĐĂNG NHẬP" 
+                               FontSize="20" 
+                               FontAttributes="Bold" 
+                               TextColor="#2C3E50" 
+                               HorizontalOptions="Center" 
+                               Margin="0,0,0,10"/>
+
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Tài khoản" FontSize="14" TextColor="#7F8C8D" />
+                            <Entry x:Name="entUsername" 
+                                   Placeholder="Tên đăng nhập" 
+                                   BackgroundColor="White" 
+                                   HeightRequest="45" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Mật khẩu" FontSize="14" TextColor="#7F8C8D" />
+                            <Entry x:Name="entPassword" 
+                                   Placeholder="********" 
+                                   IsPassword="True"
+                                   BackgroundColor="White" 
+                                   HeightRequest="45" />
+                        </VerticalStackLayout>
+
+                        <Button Text="ĐĂNG NHẬP" 
+                                Clicked="OnLoginClicked"
+                                BackgroundColor="#2ECC71" 
+                                TextColor="White" 
+                                FontAttributes="Bold"
+                                HeightRequest="50"
+                                CornerRadius="25"
+                                Margin="0,10,0,0">
+                            <Button.Shadow>
+                                <Shadow Brush="#2ECC71" Offset="0,4" Radius="10" Opacity="0.3" />
+                            </Button.Shadow>
+                        </Button>
+
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,10,0,0">
+                            <Label Text="Chưa có tài khoản?" TextColor="#7F8C8D" VerticalOptions="Center" />
+                            <Label Text="Đăng ký ngay" 
+                                   TextColor="#2ECC71" 
+                                   FontAttributes="Bold" 
+                                   VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnRegisterTapped" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Nút Quay lại cho khách -->
+                <Label Text="Quay lại Bản đồ" 
+                       TextColor="White" 
+                       FontSize="14"
+                       TextDecorations="Underline"
+                       HorizontalOptions="Center"
+                       Margin="0,10,0,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackClicked" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

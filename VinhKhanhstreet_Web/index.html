@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin quán | Vinh Khánh Street</title>
+    <!-- Thư viện Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Lớp nền ảnh động -->
+    <div class="bg-background" id="bgImage"></div>
+    <div class="bg-overlay"></div>
+
+    <div class="app-container">
+        <!-- Vùng xanh trang trí phía trên -->
+        <div class="top-decoration"></div>
+
+        <div class="card">
+            <!-- Language Switcher -->
+            <div class="language-switcher" id="langSwitcher">
+                <button class="lang-btn active" data-lang="vi">VI</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="zh">ZH</button>
+                <button class="lang-btn" data-lang="ja">JA</button>
+            </div>
+
+            <!-- Icon Cửa hàng -->
+            <div class="store-icon-container">
+                <i class="fa-solid fa-store"></i>
+            </div>
+
+            <!-- Nội dung (Dữ liệu động) -->
+            <h1 class="restaurant-name" id="resName">Đang tải...</h1>
+            <p class="restaurant-desc" id="resDesc">Vui lòng chờ trong giây lát.</p>
+
+            <!-- Nút Phát Audio -->
+            <button class="play-btn" id="playBtn">
+                <i class="fa-solid fa-play"></i>
+            </button>
+            
+            <audio id="audioPlayer" src=""></audio>
+        </div>
+    </div>
+
+    <!-- Firebase SDK v8 (Bản tương thích để chạy local không bị lỗi CORS) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Script xử lý UI (Thêm v=1.1 để tránh cache cũ) -->
+    <script src="app.js?v=1.1"></script>
+</body>
+</html>

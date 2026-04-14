@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "250371727417",
+    "project_id": "vinhkhanhstreet-dda5d",
+    "storage_bucket": "vinhkhanhstreet-dda5d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:250371727417:android:eef32eb9c4ca382379ade8",
+        "android_client_info": {
+          "package_name": "com.companyname.vinhkhanhstreet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs1JN0yK87a7AHPFHveD1rIZmTVCHebns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
