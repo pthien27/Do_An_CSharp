@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Địa điểm – Vĩnh Khánh Street</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .logout-btn:hover {
+            color: #f43f5e;
+        }
+
+        /* Sidebar Drawer */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.open {
+            display: block;
+            opacity: 1;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: -280px;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            z-index: 1001;
+            transition: left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 30px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+        }
+
+        .menu-item.active {
+            border-right: 3px solid var(--primary);
+        }
+
+        .menu-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Sidebar User Info */
+        .sidebar-user {
+            padding: 24px;
+            background: rgba(16, 185, 129, 0.05);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .user-info-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .user-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+        }
+
+
+        /* QR Code Placeholder on Card */
+        .qr-placeholder {
+            width: 65px;
+            height: 65px;
+            border: 2px dashed rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(16, 185, 129, 0.05);
+            margin-top: 8px; /* Khoảng cách với badge ở trên */
+        }
+
+        .badge-qr-group {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            z-index: 10;
+        }
+
+        .qr-placeholder:hover {
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.15);
+            transform: scale(1.05);
+        }
+
+        .qr-placeholder i {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .qr-placeholder span {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        /* QR Modal */
+        .qr-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+
+        .qr-modal.open {
+            display: flex;
+        }
+
+        .qr-box {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            animation: popIn 0.3s cubic-bezier(.22, .68, 0, 1.2) both;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .qr-img-placeholder {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 20px;
+            border: 4px solid #f1f5f9;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            color: #cbd5e1;
+            font-size: 60px;
+            position: relative;
+        }
+
+        .qr-img-placeholder::after {
+            content: 'CHƯA CÓ MÃ QR';
+            position: absolute;
+            bottom: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #94a3b8;
+        }
+
+        .btn-qr-close {
+            margin-top: 10px;
+            padding: 10px 30px;
+            border: none;
+            background: var(--bg);
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+
+        /* Main Content */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+        }
+
+        .title-group h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .title-group p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-add:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.4);
+        }
+
+        /* Grid */
+        .poi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        /* POI Card */
+        .poi-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 24px;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .poi-card:hover {
+            transform: scale(1.02);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .poi-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .poi-desc {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            height: 42px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Info Chips */
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #cbd5e1;
+        }
+
+        .chip i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .audio-chips {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .audio-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .audio-vi {
+            background: #ef44441a;
+            color: #f87171;
+        }
+
+        .audio-en {
+            background: #f59e0b1a;
+            color: #fbbf24;
+        }
+
+        .lang-en {
+            background: #3b82f61a;
+            color: #60a5fa;
+        }
+
+        /* Actions */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-edit,
+        .btn-delete {
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .btn-delete {
+            background: rgba(244, 63, 94, 0.15);
+            color: #fb7185;
+        }
+
+        .btn-edit:hover,
+        .btn-delete:hover {
+            opacity: 0.8;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--border);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Skeleton / Loading */
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .poi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .btn-add {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar & Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-group">
+                <i class="fa-solid fa-map-location-dot logo-icon"></i>
+                <span class="logo-text">Vĩnh Khánh Street</span>
+            </div>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div class="user-info-text">
+                <span class="user-role">Chủ quán</span>
+                <span id="sidebarUserName" class="user-name">Đang tải...</span>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item active">
+                <i class="fa-solid fa-store"></i> Quản lý quán
+            </a>
+            <a href="javascript:void(0)" class="menu-item" onclick="viewStatsSummary()">
+                <i class="fa-solid fa-chart-line"></i> Thống kê
+            </a>
+        </div>
+        <div style="padding: 24px; border-top: 1px solid var(--border);">
+            <p style="font-size: 12px; color: var(--text-muted); text-align: center;">Phiên bản 1.0.0</p>
+        </div>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div id="statsModal" class="qr-modal" onclick="closeStats()">
+        <div class="qr-box" onclick="event.stopPropagation()" style="max-width: 500px; width: 90%; background: white;">
+            <div class="modal-header" style="text-align: center; margin-bottom: 25px;">
+                <h2 id="statsTitle" style="color: #0f172a; margin: 0; font-size: 24px;">Thống kê chi tiết</h2>
+                <p id="statsSubtitle" style="color: #64748b; margin-top: 5px;">Dữ liệu thời gian thực</p>
+            </div>
+            
+            <div style="display: flex; justify-content: center; margin-bottom: 30px;">
+                <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; width: 100%; max-width: 250px;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">🎧</div>
+                    <div id="audioStatsCount" style="font-size: 28px; font-weight: 800; color: #0f172a;">--</div>
+                    <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Lượt nghe Web</div>
+                </div>
+            </div>
+
+            <button class="btn-qr-close" onclick="closeStats()" style="width: 100%; height: 50px; border-radius: 8px; font-weight: 600;">Đóng</button>
+        </div>
+    </div>
+
+    <!-- QR Lightbox Modal -->
+    <div id="qrModal" class="qr-modal" onclick="closeQR()">
+        <div class="qr-box" onclick="event.stopPropagation()">
+            <h3 id="qrTitle" style="color: #0f172a; margin-bottom: 20px;">Vĩnh Khánh Street</h3>
+            <div id="qrLargeContainer" class="qr-img-placeholder" style="background: white; border: none; padding: 10px; display: flex; justify-content: center; align-items: center;">
+                <!-- Large QR Code will be injected here -->
+            </div>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Quét mã này để xem thông tin quán trên ứng dụng.</p>
+            <button class="btn-qr-close" onclick="closeQR()">Đóng</button>
+        </div>
+    </div>
+
+    <div id="loadingOverlay">
+        <div class="loader"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo-group">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <i class="fa-solid fa-map-location-dot logo-icon"></i>
+            <span class="logo-text">Vĩnh Khánh Street</span>
+        </div>
+        <div class="user-nav">
+            <button class="logout-btn" onclick="logout()">Đăng xuất <i
+                    class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="title-group">
+                <h1>Quản lý Địa điểm</h1>
+                <p id="statsText">Đang tải danh sách...</p>
+            </div>
+            <button class="btn-add" onclick="window.location.href='register.html?mode=add'">
+                <i class="fa-solid fa-plus"></i> Thêm Địa điểm
+            </button>
+        </div>
+
+        <div id="poiList" class="poi-grid">
+            <!-- POI Cards will be injected here -->
+        </div>
+
+        <!-- No POIs Template -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon"><i class="fa-solid fa-store-slash"></i></div>
+            <h3>Chưa có địa điểm nào</h3>
+            <p style="color: var(--text-muted); margin-top: 8px;">Bắt đầu bằng cách đăng ký địa điểm kinh doanh của bạn.
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, deleteDoc }
+            from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAj0Lm-RYZ0_9BIqjxqJ5ja-QV4z5DXrFE",
+            authDomain: "vinhkhanhstreet-dda5d.firebaseapp.com",
+            projectId: "vinhkhanhstreet-dda5d",
+            storageBucket: "vinhkhanhstreet-dda5d.firebasestorage.app",
+            messagingSenderId: "250371727417",
+            appId: "1:250371727417:web:921e00a706d83b6379ade8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Auth Guard
+        const ownerId = sessionStorage.getItem('ownerUsername');
+        if (!ownerId) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('sidebarUserName').textContent = `@${ownerId}`;
+        }
+
+        const poiListContainer = document.getElementById('poiList');
+        const statsText = document.getElementById('statsText');
+        const emptyState = document.getElementById('emptyState');
+        const overlay = document.getElementById('loadingOverlay');
+        let _poiCount = 0;
+
+        // Real-time Query
+        const q = query(collection(db, "restaurants"), where("ownerId", "==", ownerId));
+
+        // Real-time Fetching (Moved to Statistics Logic section to prevent duplication)
+
+        function renderPoiCard(id, data) {
+            const card = document.createElement('div');
+            card.className = 'poi-card';
+
+            // Status logic
+            const statusText = data.isApproved ? "Đã duyệt" : "Chờ duyệt";
+            const statusClass = data.isApproved ? "" : "pending";
+
+            card.innerHTML = `
+            <div class="card-header">
+                <span class="poi-name">${data.name || 'Tên quán'}</span>
+            </div>
+            <div class="badge-qr-group">
+                <span class="status-badge ${statusClass}">${statusText}</span>
+                <div class="qr-placeholder" onclick="viewQR('${id}', '${data.name}')">
+                    <div id="qr-small-${id}" style="width: 50px; height: 50px; background: white; padding: 2px; border-radius: 4px; overflow: hidden;"></div>
+                    <span>Mã QR</span>
+                </div>
+            </div>
+            <p class="poi-desc">${data.DescriptionVI || 'Chưa có mô tả...'}</p>
+            
+            <div class="chip-group">
+                <div class="chip"><i class="fa-solid fa-location-dot"></i> ${data.Latitude ?? data.latitude}, ${data.Longitude ?? data.longitude}</div>
+                <div class="chip"><i class="fa-solid fa-circle-dot"></i> Bán kính: ${data.Radius ?? data.radius ?? 30} m</div>
+            </div>
+
+            <!-- Audio tags removed as per request -->
+
+            <div class="card-actions">
+                <button class="btn-edit" onclick="editPoi('${id}')">
+                    <i class="fa-solid fa-pen"></i> Sửa
+                </button>
+                <button class="btn-delete" onclick="deletePoi('${id}', '${data.name}')">
+                    <i class="fa-solid fa-trash"></i> Xóa
+                </button>
+            </div>
+        `;
+            poiListContainer.appendChild(card);
+
+            // Tự động tạo mã QR nhỏ cho từng quán
+            const baseUrl = window.location.href.split('?')[0].split('#')[0].replace('dashboard.html', 'index.html');
+            const qrUrl = baseUrl + '?id=' + id;
+            
+            new QRCode(document.getElementById(`qr-small-${id}`), {
+                text: qrUrl,
+                width: 50,
+                height: 50,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        window.editPoi = (id) => {
+            window.location.href = `register.html?mode=edit&id=${id}`;
+        };
+
+        window.deletePoi = async (id, name) => {
+            if (_poiCount <= 1) {
+                alert('⚠️ Hệ thống yêu cầu mỗi chủ quán phải có ít nhất 1 địa điểm. Bạn không thể xóa địa điểm cuối cùng này.');
+                return;
+            }
+            if (confirm(`Bạn có chắc chắn muốn xóa địa điểm "${name}" không? Hành động này không thể hoàn tác.`)) {
+                try {
+                    await deleteDoc(doc(db, "restaurants", id));
+                } catch (err) {
+                    alert("Lỗi khi xóa: " + err.message);
+                }
+            }
+        };
+
+        window.logout = () => {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        };
+
+        // UI Toggle functions
+        window.toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        };
+
+        window.viewQR = (id, name) => {
+            const modalContainer = document.getElementById('qrLargeContainer');
+            modalContainer.innerHTML = ''; // Clear previous
+            
+            document.getElementById('qrTitle').textContent = `Mã QR: ${name}`;
+            document.getElementById('qrModal').classList.add('open');
+
+            const baseUrl = window.location.href.split('?')[0].split('#')[0].replace('dashboard.html', 'index.html');
+            const qrUrl = baseUrl + '?id=' + id;
+            
+            // Generate large QR code in modal
+            new QRCode(modalContainer, {
+                text: qrUrl,
+                width: 250,
+                height: 250,
+                colorDark: "#0f172a",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        };
+
+        window.closeQR = () => {
+            document.getElementById('qrModal').classList.remove('open');
+        };
+
+        // --- STATISTICS & REAL-TIME LISTENER ---
+        let _allPoisData = []; 
+
+        onSnapshot(q, (snapshot) => {
+            overlay.style.display = 'none';
+            poiListContainer.innerHTML = '';
+            _poiCount = snapshot.docs.length;
+            statsText.textContent = `Tổng cộng: ${_poiCount} địa điểm`;
+            
+            _allPoisData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            if (_poiCount === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const id = docSnap.id;
+                renderPoiCard(id, data);
+            });
+        });
+
+        window.viewStats = async (id, name) => {
+            const modal = document.getElementById('statsModal');
+            document.getElementById('statsTitle').textContent = name;
+            document.getElementById('statsSubtitle').textContent = "Thống kê cho địa điểm này";
+            document.getElementById('audioStatsCount').textContent = "...";
+            modal.classList.add('open');
+
+            try {
+                // 1. Lấy lượt nghe Audio
+                const snap = await getDoc(doc(db, 'restaurants', id));
+                const audioCount = snap.data().audioListenCount || 0;
+                document.getElementById('audioStatsCount').textContent = audioCount;
+
+            } catch (err) {
+                console.error("Lỗi thống kê:", err);
+            }
+        };
+
+        window.viewStatsSummary = async () => {
+             const modal = document.getElementById('statsModal');
+            document.getElementById('statsTitle').textContent = "Tổng hợp Thống kê";
+            document.getElementById('statsSubtitle').textContent = "Toàn bộ các quán của bạn";
+            document.getElementById('audioStatsCount').textContent = "...";
+            modal.classList.add('open');
+
+            let totalAudio = 0;
+            for (const poi of _allPoisData) {
+                totalAudio += (poi.audioListenCount || 0);
+            }
+            document.getElementById('audioStatsCount').textContent = totalAudio;
+        };
+
+        window.closeStats = () => {
+            document.getElementById('statsModal').classList.remove('open');
+        };
+    </script>
+
+</body>
+
+</html>

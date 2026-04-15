@@ -3,13 +3,14 @@ using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using VinhKhanhstreet.Models;
 using VinhKhanhstreet.Services;
+using Plugin.CloudFirestore;
 
 namespace VinhKhanhstreet.Pages;
 
 public partial class MapPage : ContentPage
 {
     private GpsService _gpsService;
-    private string _currentLang = "vi"; // Mặc định là tiếng Việt
+    private string _currentLang = Preferences.Default.Get("AppLanguage", "vi");
     private CancellationTokenSource _ttsCts; // Biến dùng để ngắt thuyết minh cũ
     private float _currentPitch = 1.0f; // Độ vang giọng đọc
     private float _currentVolume = 1.0f; // Âm lượng giọng đọc
@@ -31,6 +32,9 @@ public partial class MapPage : ContentPage
     private float _tempPitch;
     private float _tempVolume;
     private string _nextLang = "vi"; // Ngôn ngữ đang chọn thử trong menu
+    private string _currentUsername; // Lưu tên người dùng hiện tại
+    private DateTime _lastFirestoreUpdateTime = DateTime.MinValue; // Throttling gửi tọa độ lên Firebase
+    private IListenerRegistration _lockListener; // Real-time listener kiểm tra khóa tài khoản
 
     // [UC1 - Xem Bản Đồ & Danh Sách Quán: Khởi tạo dữ liệu SQLite lên bản đồ]
     // --- CẬP NHẬT DANH SÁCH SONG NGỮ ---
@@ -63,40 +67,233 @@ public partial class MapPage : ContentPage
         _ = LoadDatabaseAndStartAsync();
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        try
+        {
+            _currentUsername = await SecureStorage.Default.GetAsync("CurrentUser");
+
+            // Kiểm tra tài khoản có bị khóa/xóa không
+            if (!string.IsNullOrEmpty(_currentUsername))
+            {
+                var authService = new UserAuthService();
+                bool isLockedOrDeleted = await authService.IsAccountLockedOrDeletedAsync(_currentUsername);
+                if (isLockedOrDeleted)
+                {
+                    SecureStorage.Default.Remove("IsUserLoggedIn");
+                    SecureStorage.Default.Remove("CurrentUser");
+                    await MainThread.InvokeOnMainThreadAsync(async () =>
+                    {
+                        await Application.Current.MainPage.DisplayAlert(
+                            "⛔ Tài khoản bị khóa",
+                            "Tài khoản của bạn đã bị khóa hoặc bị xóa bởi quản trị viên.",
+                            "OK");
+                        Application.Current.MainPage = new NavigationPage(new VinhKhanhstreet.Pages.UserLoginPage());
+                    });
+                    return;
+                }
+            }
+
+            // Bắt đầu lắng nghe real-time thay đổi tài khoản (khóa/xóa)
+            if (!string.IsNullOrEmpty(_currentUsername))
+            {
+                StartLockListener(_currentUsername);
+            }
+
+            await UpdateStaticUI();
+        }
+        catch { }
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        // Hủy listener khi rời khỏi trang để tránh memory leak
+        _lockListener?.Remove();
+        _lockListener = null;
+    }
+
+    /// <summary>Lắng nghe real-time Firestore — khi Admin khóa tài khoản, user bị văng ra ngay lập tức.</summary>
+    private void StartLockListener(string username)
+    {
+        // Hủy listener cũ nếu có
+        _lockListener?.Remove();
+
+        var userDocRef = CrossCloudFirestore.Current.Instance
+            .GetCollection("users")
+            .GetDocument(username);
+
+        _lockListener = userDocRef.AddSnapshotListener((snapshot, error) =>
+        {
+            if (error != null || snapshot == null || !snapshot.Exists) 
+            {
+                // Tài khoản bị xóa → kick ra
+                if (snapshot != null && !snapshot.Exists)
+                {
+                    MainThread.BeginInvokeOnMainThread(async () => await ForceLogout());
+                }
+                return;
+            }
+
+            var user = snapshot.ToObject<UserModel>();
+            if (user?.IsLocked == true)
+            {
+                MainThread.BeginInvokeOnMainThread(async () => await ForceLogout());
+            }
+        });
+    }
+
+    private async Task ForceLogout()
+    {
+        _lockListener?.Remove();
+        _lockListener = null;
+        var authService = new UserAuthService();
+        await authService.SetOnlineStatusAsync(_currentUsername, false);
+
+        SecureStorage.Default.Remove("IsUserLoggedIn");
+        SecureStorage.Default.Remove("CurrentUser");
+        await Application.Current.MainPage.DisplayAlert(
+            "⛔ Tài khoản bị khóa",
+            "Tài khoản của bạn đã bị khóa bởi quản trị viên.",
+            "OK");
+        Application.Current.MainPage = new NavigationPage(new VinhKhanhstreet.Pages.UserLoginPage());
+    }
+
+    private async void OnLogoutTapped(object sender, EventArgs e)
+    {
+        bool confirm = await DisplayAlert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất không?", "Đồng ý", "Hủy");
+        if (confirm)
+        {
+            var authService = new UserAuthService();
+            await authService.SetOnlineStatusAsync(_currentUsername, false);
+
+            SecureStorage.Default.Remove("IsUserLoggedIn");
+            SecureStorage.Default.Remove("CurrentUser");
+            Application.Current.MainPage = new NavigationPage(new VinhKhanhstreet.Pages.UserLoginPage());
+        }
+    }
+
     private void SwitchToList(CollectionView listToShow)
     {
-        lstAll.IsVisible = (listToShow == lstAll);
-        lstFav.IsVisible = (listToShow == lstFav);
-        lstFocus.IsVisible = (listToShow == lstFocus);
+        // Sử dụng Opacity và InputTransparent thay vì IsVisible để giữ lại trạng thái Cuộn (Scroll)
+        lstAll.Opacity = (listToShow == lstAll) ? 1 : 0;
+        lstAll.InputTransparent = (listToShow != lstAll);
+        lstAll.ZIndex = (listToShow == lstAll) ? 1 : 0;
+        
+        lstFav.Opacity = (listToShow == lstFav) ? 1 : 0;
+        lstFav.InputTransparent = (listToShow != lstFav);
+        lstFav.ZIndex = (listToShow == lstFav) ? 1 : 0;
+
+        lstFocus.Opacity = (listToShow == lstFocus) ? 1 : 0;
+        lstFocus.InputTransparent = (listToShow != lstFocus);
+        lstFocus.ZIndex = (listToShow == lstFocus) ? 1 : 0;
     }
 
     private CollectionView GetActiveList()
     {
-        if (lstFocus.IsVisible) return lstFocus;
-        if (lstFav.IsVisible) return lstFav;
+        if (lstFocus.Opacity == 1) return lstFocus;
+        if (lstFav.Opacity == 1) return lstFav;
         return lstAll;
     }
 
     private async Task LoadDatabaseAndStartAsync()
     {
+        // 0. Xóa các Pin cũ nếu có (để hỗ trợ Refresh)
+        mapVinhKhanh.Pins.Clear();
+
         // 1. Kéo dữ liệu từ File DB lên
         var data = await _dbService.GetPoisAsync();
         
+        // --- MỚI: Khôi phục danh sách yêu thích theo User ---
+        string currentUser = await SecureStorage.Default.GetAsync("CurrentUser") ?? "Guest";
+        string savedFavorites = Preferences.Default.Get($"Favorites_{currentUser}", "");
+        var favList = savedFavorites.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
         // 2. Chuyển vào mảng giao diện
         _vinhKhanhPois.Clear();
         foreach (var item in data)
         {
+            item.IsFavorite = favList.Contains(item.DocumentId);
             _vinhKhanhPois.Add(item);
         }
+
+        // MỚI: Đồng bộ danh sách Yêu thích ngay khi nạp xong dữ liệu mới (Tránh stale data sau Refresh)
+        var activeFavorites = _vinhKhanhPois.Where(p => p.IsFavorite).ToList();
+        lstFav.ItemsSource = activeFavorites;
 
         // 3. Mới cập nhật ngôn ngữ (tiếng Việt mặc định)
         await UpdateStaticUI();
 
+        // 3.5. Tự động dịch các thông tin còn thiếu (Tên quán) sang đa ngôn ngữ
+        _ = Task.Run(async () => await TranslateMissingInfoAsync());
+
         // 4. Mới rải các cột mốc Pin lên Map (Vì phải chờ Data lên đủ)
         AddPinsToMap();
 
-        // 5. Mới bật Radar quét khoảng cách
+        // 5. Vẽ vòng tròn xanh lá mặc định ngay tại Vĩnh Khánh (không chờ GPS)
+        DrawOrMoveUserCircle(new Location(10.761204237032537, 106.703307923906));
+
+        // 6. Mới bật Radar quét khoảng cách
         StartAutoTracking();
+    }
+
+    private async void OnRefreshTapped(object sender, EventArgs e)
+    {
+        await LoadDatabaseAndStartAsync();
+        await Task.Delay(2000);
+        UpdateListTitle();
+    }
+
+    private async Task TranslateMissingInfoAsync()
+    {
+        bool hasChanges = false;
+        foreach (var poi in _vinhKhanhPois)
+        {
+            // Chỉ dịch nếu tên tiếng Anh/Nhật/Trung còn trống
+            if (string.IsNullOrWhiteSpace(poi.NameEn))
+            {
+                poi.NameEn = await GoogleTranslateService.TranslateAsync(poi.Name, "en") ?? "";
+                hasChanges = true;
+            }
+            if (string.IsNullOrWhiteSpace(poi.NameJa))
+            {
+                poi.NameJa = await GoogleTranslateService.TranslateAsync(poi.Name, "ja") ?? "";
+                hasChanges = true;
+            }
+            if (string.IsNullOrWhiteSpace(poi.NameZh))
+            {
+                poi.NameZh = await GoogleTranslateService.TranslateAsync(poi.Name, "zh-CN") ?? "";
+                hasChanges = true;
+            }
+        }
+
+        if (hasChanges)
+        {
+            // Cập nhật lại UI sau khi đã có tên mới
+            await MainThread.InvokeOnMainThreadAsync(async () => await UpdateStaticUI());
+        }
+    }
+
+    // Hàm vẽ/di chuyển vòng tròn xanh lá vị trí người dùng
+    private void DrawOrMoveUserCircle(Location location)
+    {
+        if (_userScanCircle == null)
+        {
+            _userScanCircle = new Microsoft.Maui.Controls.Maps.Circle
+            {
+                Center = location,
+                Radius = Distance.FromMeters(30),
+                StrokeColor = Color.FromArgb("#882ECC71"),
+                StrokeWidth = 8,
+                FillColor = Color.FromArgb("#332ECC71")
+            };
+            mapVinhKhanh.MapElements.Add(_userScanCircle);
+        }
+        else
+        {
+            _userScanCircle.Center = location;
+        }
     }
 
     // [UC5 - Đổi Ngôn Ngữ Giao Diện/Script: Thay đổi State biến Cờ _currentLang]
@@ -130,7 +327,6 @@ public partial class MapPage : ContentPage
         if (_currentLang == "en")
         {
             searchBar.Placeholder = "Search restaurants...";
-            lblCoords.Text = "Tap on a map pin to listen to narration";
             lblTabQuanAn.Text = "Restaurants";
             lblTabYeuThich.Text = "Favorites";
             lblTabXemThem.Text = "More";
@@ -138,7 +334,6 @@ public partial class MapPage : ContentPage
         else if (_currentLang == "ja")
         {
             searchBar.Placeholder = "レストランを検索...";
-            lblCoords.Text = "マップのピンをタップして音声案内を聞く";
             lblTabQuanAn.Text = "レストラン";
             lblTabYeuThich.Text = "お気に入り";
             lblTabXemThem.Text = "その他";
@@ -146,7 +341,6 @@ public partial class MapPage : ContentPage
         else if (_currentLang.StartsWith("zh"))
         {
             searchBar.Placeholder = "搜索餐厅...";
-            lblCoords.Text = "点击地图上的图钉以收听解说";
             lblTabQuanAn.Text = "餐厅";
             lblTabYeuThich.Text = "收藏";
             lblTabXemThem.Text = "更多";
@@ -154,7 +348,6 @@ public partial class MapPage : ContentPage
         else // vi
         {
             searchBar.Placeholder = "Tìm quán ăn...";
-            lblCoords.Text = "Nhấn vào ghim trên bản đồ để nghe thuyết minh";
             lblTabQuanAn.Text = "Quán ăn";
             lblTabYeuThich.Text = "Yêu thích";
             lblTabXemThem.Text = "Xem thêm";
@@ -166,7 +359,7 @@ public partial class MapPage : ContentPage
         // Cập nhật chữ trong Side Menu
         if (_currentLang == "en")
         {
-            lblSettingsTitle.Text = "Settings";
+            lblSettingsTitle.Text = string.IsNullOrEmpty(_currentUsername) ? "Settings" : $"Hello, {_currentUsername}";
             lblSettingsTheme.Text = "Dark Mode";
             lblSettingsLang.Text = "Narration Language";
             lblSettingsPitch.Text = $"Voice Pitch: {_currentPitch:F1}";
@@ -176,10 +369,11 @@ public partial class MapPage : ContentPage
             if (lblVolumeLow != null) lblVolumeLow.Text = "Low";
             if (lblVolumeHigh != null) lblVolumeHigh.Text = "High";
             if (btnSaveSettings != null) btnSaveSettings.Text = "SAVE SETTINGS";
+            if (lblLogout != null) lblLogout.Text = "Logout";
         }
         else if (_currentLang == "ja")
         {
-            lblSettingsTitle.Text = "設定";
+            lblSettingsTitle.Text = string.IsNullOrEmpty(_currentUsername) ? "設定" : $"こんにちは, {_currentUsername}";
             lblSettingsTheme.Text = "ダークモード";
             lblSettingsLang.Text = "音声言語";
             lblSettingsPitch.Text = $"声域 (Pitch): {_currentPitch:F1}";
@@ -189,10 +383,11 @@ public partial class MapPage : ContentPage
             if (lblVolumeLow != null) lblVolumeLow.Text = "小";
             if (lblVolumeHigh != null) lblVolumeHigh.Text = "大";
             if (btnSaveSettings != null) btnSaveSettings.Text = "設定を保存";
+            if (lblLogout != null) lblLogout.Text = "ログアウト";
         }
         else if (_currentLang.StartsWith("zh"))
         {
-            lblSettingsTitle.Text = "设置";
+            lblSettingsTitle.Text = string.IsNullOrEmpty(_currentUsername) ? "设置" : $"你好, {_currentUsername}";
             lblSettingsTheme.Text = "深色模式";
             lblSettingsLang.Text = "语音语言";
             lblSettingsPitch.Text = $"音高 (Pitch): {_currentPitch:F1}";
@@ -202,10 +397,11 @@ public partial class MapPage : ContentPage
             if (lblVolumeLow != null) lblVolumeLow.Text = "小";
             if (lblVolumeHigh != null) lblVolumeHigh.Text = "大";
             if (btnSaveSettings != null) btnSaveSettings.Text = "保存设置";
+            if (lblLogout != null) lblLogout.Text = "登出";
         }
         else 
         {
-            lblSettingsTitle.Text = "Cài đặt";
+            lblSettingsTitle.Text = string.IsNullOrEmpty(_currentUsername) ? "Cài đặt" : $"Chào, {_currentUsername}";
             lblSettingsTheme.Text = "Giao diện tối (Dark mode)";
             lblSettingsLang.Text = "Ngôn ngữ thuyết minh";
             lblSettingsPitch.Text = $"Độ vang giọng: {_currentPitch:F1}";
@@ -229,39 +425,69 @@ public partial class MapPage : ContentPage
         // Cập nhật ngôn ngữ cho danh sách CollectionView
         foreach (var poi in _vinhKhanhPois)
         {
-            string translated = poi.Description;
+            string translatedDesc = poi.Description;
+            string translatedName = poi.Name;
             
             // Text tĩnh của từng quán
             string category = poi.CategoryVi;
-            string open = "Đang mở cửa";
-            string close = "Đóng cửa vào";
+            string open = poi.IsOpen ? "Đang mở cửa" : "Đã đóng cửa";
+            string close = poi.IsOpen ? "Đóng cửa vào" : "Mở cửa dự kiến";
             string play = "Phát";
             string call = "Gọi";
             string save = poi.IsFavorite ? "Đã lưu" : "Lưu";
 
+            // Nếu là Tiếng Việt, giữ nguyên các giá trị mặc định trên
+            // Nếu là ngôn ngữ khác, nạp đè dữ liệu dịch
+
             if (_currentLang == "en")
             {
-                translated = !string.IsNullOrWhiteSpace(poi.DescriptionEn) ? poi.DescriptionEn : poi.Description;
-                open = "Open"; close = "Closes at"; play = "Play"; call = "Call"; save = poi.IsFavorite ? "Saved" : "Save";
-                category = (poi.CategoryVi == "Quán ốc") ? "Seafood Restaurant" : "System";
+                translatedName = !string.IsNullOrWhiteSpace(poi.NameEn) ? poi.NameEn : poi.Name;
+                translatedDesc = !string.IsNullOrWhiteSpace(poi.DescriptionEn) ? poi.DescriptionEn : poi.Description;
+                open = poi.IsOpen ? "Open" : "Closed"; 
+                close = poi.IsOpen ? "Closes at" : "Expected open";
+                play = "Play"; call = "Call"; save = poi.IsFavorite ? "Saved" : "Save";
+                
+                // Dịch Phân loại thông minh
+                if (poi.CategoryVi == "Quán ốc") category = "Seafood Restaurant";
+                else if (poi.CategoryVi == "Tráng miệng") category = "Dessert";
+                else if (poi.CategoryVi == "Buffet") category = "Buffet";
+                else if (poi.CategoryVi == "Cà phê") category = "Coffee Shop";
+                else category = "Restaurant";
             }
             else if (_currentLang == "ja")
             {
-                translated = !string.IsNullOrWhiteSpace(poi.DescriptionJa) ? poi.DescriptionJa : poi.Description;
-                open = "営業中"; close = "営業時間終了"; play = "再生"; call = "電話"; save = poi.IsFavorite ? "保存済み" : "保存";
-                category = (poi.CategoryVi == "Quán ốc") ? "シーフードレストラン" : "システム";
+                translatedName = !string.IsNullOrWhiteSpace(poi.NameJa) ? poi.NameJa : poi.Name;
+                translatedDesc = !string.IsNullOrWhiteSpace(poi.DescriptionJa) ? poi.DescriptionJa : poi.Description;
+                open = poi.IsOpen ? "営業中" : "準備中"; 
+                close = poi.IsOpen ? "営業時間 kết thúc" : "開店予定";
+                play = "再生"; call = "電話"; save = poi.IsFavorite ? "保存済み" : "保存";
+                
+                if (poi.CategoryVi == "Quán ốc") category = "シーフードレストラン";
+                else if (poi.CategoryVi == "Tráng miệng") category = "デザート";
+                else if (poi.CategoryVi == "Buffet") category = "ビュッフェ";
+                else if (poi.CategoryVi == "Cà phê") category = "カフェ";
+                else category = "レストラン";
             }
             else if (_currentLang.StartsWith("zh"))
             {
-                translated = !string.IsNullOrWhiteSpace(poi.DescriptionZh) ? poi.DescriptionZh : poi.Description;
-                open = "营业中"; close = "打烊时间"; play = "播放"; call = "打电话"; save = poi.IsFavorite ? "已保存" : "保存";
-                category = (poi.CategoryVi == "Quán ốc") ? "海鲜餐厅" : "系统";
+                translatedName = !string.IsNullOrWhiteSpace(poi.NameZh) ? poi.NameZh : poi.Name;
+                translatedDesc = !string.IsNullOrWhiteSpace(poi.DescriptionZh) ? poi.DescriptionZh : poi.Description;
+                open = poi.IsOpen ? "营业中" : "已打烊"; 
+                close = poi.IsOpen ? "打烊时间" : "预计开门";
+                play = "播放"; call = "打电话"; save = poi.IsFavorite ? "已保存" : "保存";
+                
+                if (poi.CategoryVi == "Quán ốc") category = "海鲜餐厅";
+                else if (poi.CategoryVi == "Tráng miệng") category = "甜点";
+                else if (poi.CategoryVi == "Buffet") category = "自助餐";
+                else if (poi.CategoryVi == "Cà phê") category = "咖啡馆";
+                else category = "餐厅";
             }
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 // Kích hoạt INotifyPropertyChanged trên luồng UI
-                poi.CurrentDisplayDescription = translated;
+                poi.CurrentDisplayName = translatedName;
+                poi.CurrentDisplayDescription = translatedDesc;
                 poi.TranslatedCategory = category;
                 poi.StrStatusOpen = open;
                 poi.StrClosingTime = $"{close} {poi.ClosingTime}";
@@ -329,14 +555,27 @@ public partial class MapPage : ContentPage
 
         var options = new SpeechOptions() { Locale = locale, Pitch = _currentPitch, Volume = _currentVolume };
         
+        string originalPlayText = poi.StrPlay;
+
         try
         {
+            poi.IsPlaying = true;
+            if (_currentLang == "en") poi.StrPlay = "Playing";
+            else if (_currentLang == "ja") poi.StrPlay = "再生中";
+            else if (_currentLang.StartsWith("zh")) poi.StrPlay = "播放中";
+            else poi.StrPlay = "Đang phát";
+
             // Sử dụng CancellationToken để có thể ngắt bất cứ lúc nào
             await TextToSpeech.Default.SpeakAsync(noidung, options, _ttsCts.Token);
         }
         catch (TaskCanceledException)
         {
             // Bỏ qua lỗi do người dùng chủ động bấm chuyển quán khác (Ngắt thành công)
+        }
+        finally
+        {
+            poi.IsPlaying = false;
+            poi.StrPlay = originalPlayText; 
         }
     }
 
@@ -347,25 +586,20 @@ public partial class MapPage : ContentPage
             var pin = new Pin { Label = poi.Name, Location = new Location(poi.Latitude, poi.Longitude), Type = PinType.Place };
             pin.MarkerClicked += async (s, e) => {
                 e.HideInfoWindow = true; // Ẩn bong bóng trắng hiện tên quán mặc định
-                statusDot.Fill = Colors.Green;
                 
-                if (_currentLang == "vi") lblStatus.Text = $"Đang thuyết minh: {poi.Name}";
-                else if (_currentLang == "en") lblStatus.Text = $"Narrating: {poi.Name}";
-                else if (_currentLang == "ja") lblStatus.Text = $"説明中: {poi.Name}";
-                else lblStatus.Text = $"解说中: {poi.Name}";
-                
-                // MỚI: Chỉ hiển thị thẻ thông tin của quán này trên danh sách
-                _currentTab = "AutoVoice"; // Chuyển Tab trạng thái để UI đồng bộ
-                UpdateTabAesthetics();    // Làm sáng menu Quán ăn
-                
-                SwitchToList(lstFocus);
-                lstFocus.ItemsSource = new List<PoiModel> { poi };
-                if (searchBar != null) searchBar.Text = string.Empty;
                 frmDanhSach.IsVisible = true;
-                UpdateListTitle();
+                if (searchBar != null) searchBar.Text = string.Empty;
+
+                var activeList = GetActiveList();
                 
-                // Khi xem chi tiết 1 quán mới thì vẫn nên Scroll lên đầu của list Focus
-                lstFocus.ScrollTo(0, position: ScrollToPosition.Start, animate: false);
+                // Cố gắng cuộn đến Item trong List hiện tại (nếu nó tồn tại trong danh sách đó)
+                // Phải Delay 1 chút để UI kịp dựng danh sách nếu frmDanhSach vừa mới IsVisible = true
+                await Task.Delay(100);
+                try 
+                {
+                    activeList.ScrollTo(poi, position: ScrollToPosition.Start, animate: true);
+                }
+                catch { } // An toàn nếu POI không nằm trong danh sách hiện tại (VD: TAB Favorites)
 
                 // MỚI: Chỉ hiển thị Spotlight khi nhấn ghim (Bỏ Zoom theo yêu cầu)
                 var location = new Location(poi.Latitude, poi.Longitude);
@@ -392,30 +626,24 @@ public partial class MapPage : ContentPage
         // Nếu ĐANG từ Tab khác (Yêu thích/QR/...) quay lại Tab Quán ăn
         if (_currentTab != "All" && _currentTab != "Nearby" && _currentTab != "AutoVoice")
         {
-            // CHỈ QUAY LẠI FOCUS NẾU ĐANG PHÁT THUYẾT MINH
-            if (_currentlyNarratingPoi != null || _isSequentialReading)
+            // MỚI: Luôn quay lại danh sách Tìm Quán Gần Đây nếu trước đó người dùng đã quét Gần Đây
+            // và chưa chủ động bấm nút "X" để thoát chế độ Gần Đây
+            if (_lastNearbyResults != null && _lastNearbyResults.Any())
             {
-                if (_lastNearbyResults != null && _lastNearbyResults.Any())
-                {
-                    _currentTab = "Nearby";
-                    SwitchToList(lstFocus);
-                    lstFocus.ItemsSource = _lastNearbyResults;
-                }
-                else if (_currentlyNarratingPoi != null)
-                {
-                    _currentTab = "AutoVoice";
-                    SwitchToList(lstFocus);
-                    lstFocus.ItemsSource = new List<PoiModel> { _currentlyNarratingPoi };
-                    
-                    if (_currentLang == "vi") lblStatus.Text = $"Đang thuyết minh: {_currentlyNarratingPoi.Name}";
-                    else if (_currentLang == "en") lblStatus.Text = $"Narrating: {_currentlyNarratingPoi.Name}";
-                    else if (_currentLang == "ja") lblStatus.Text = $"説明中: {_currentlyNarratingPoi.Name}";
-                    else lblStatus.Text = $"解说中: {_currentlyNarratingPoi.Name}";
-                }
+                _currentTab = "Nearby";
+                SwitchToList(lstFocus);
+                lstFocus.ItemsSource = _lastNearbyResults;
+            }
+            else if (_currentlyNarratingPoi != null)
+            {
+                // Nếu đang phát 1 quán độc lập do bấm nút Search hoặc tương tự
+                _currentTab = "AutoVoice";
+                SwitchToList(lstFocus);
+                lstFocus.ItemsSource = new List<PoiModel> { _currentlyNarratingPoi };
             }
             else
             {
-                // MẶC ĐỊNH: Nếu không có gì đang phát, quay về danh sách All
+                // MẶC ĐỊNH: Nếu không có lịch sử Gần Đây, quay về danh sách All
                 _currentTab = "All";
                 SwitchToList(lstAll);
             }
@@ -580,7 +808,7 @@ public partial class MapPage : ContentPage
         if (string.IsNullOrWhiteSpace(searchBar?.Text))
         {
             // ẨN nút X nếu đang ở danh sách tổng (ALL) hoặc danh sách Yêu thích đầy đủ
-            if ((_currentTab == "All" || _currentTab == "Favorites") && currentSource != null && currentSource.Count > 1)
+            if (_currentTab == "All" || _currentTab == "Favorites")
             {
                 showX = false;
             }
@@ -589,7 +817,7 @@ public partial class MapPage : ContentPage
 
         if (frmDanhSach.IsVisible && !_isSequentialReading) 
         {
-            lblStatus.Text = lblListTitle.Text;
+            // Removed status update
         }
         
         // MỚI: Chỉ hiển thị Nút "Vị trí gần đây" nếu đang ở màn hình Danh sách Mặc Định (All) và KHÔNG tìm kiếm, KHÔNG xem chi tiết 1 quán
@@ -694,11 +922,7 @@ public partial class MapPage : ContentPage
                 searchBar?.Unfocus();
 
                 // GIỐNG HỆT NHƯ CLICK GHIM: Bật trạng thái Thuyết minh
-                statusDot.Fill = Colors.Green;
-                if (_currentLang == "vi") lblStatus.Text = $"Đang thuyết minh: {target.Name}";
-                else if (_currentLang == "en") lblStatus.Text = $"Narrating: {target.Name}";
-                else if (_currentLang == "ja") lblStatus.Text = $"説明中: {target.Name}";
-                else lblStatus.Text = $"解说中: {target.Name}";
+                // Ép chỉ nạp đúng 1 quán để UI hiển thị chuẩn thẻ THÔNG TIN: TÊN QUÁN
 
                 // Ép chỉ nạp đúng 1 quán để UI hiển thị chuẩn thẻ THÔNG TIN: TÊN QUÁN
                 _currentTab = "AutoVoice";
@@ -718,10 +942,7 @@ public partial class MapPage : ContentPage
             }
             else
             {
-                if (_currentLang == "vi") lblStatus.Text = "❌ Không tìm thấy quán!";
-                else if (_currentLang == "en") lblStatus.Text = "❌ No results found!";
-                else if (_currentLang == "ja") lblStatus.Text = "❌ 結果が見つかりません";
-                else lblStatus.Text = "❌ 未找到结果";
+                // Removed status update for no results
                 
                 searchBar?.Unfocus();
             }
@@ -870,6 +1091,7 @@ public partial class MapPage : ContentPage
 
         // 2. Chốt ngôn ngữ mới từ lựa chọn nháp
         _currentLang = _nextLang;
+        Preferences.Default.Set("AppLanguage", _currentLang);
 
         // 3. Áp dụng Giao diện tối/sáng theo trạng thái Toggle hiện tại
         Application.Current.UserAppTheme = swDarkMode.IsToggled ? AppTheme.Dark : AppTheme.Light;
@@ -937,10 +1159,7 @@ public partial class MapPage : ContentPage
         // Hiện danh sách menu lại
         frmDanhSach.IsVisible = true; 
         
-        if (_currentLang == "vi") lblStatus.Text = "Đã lưu thiết lập thành công";
-        else if (_currentLang == "en") lblStatus.Text = "Settings saved successfully";
-        else if (_currentLang == "ja") lblStatus.Text = "設定が正常に保存されました";
-        else lblStatus.Text = "设置已成功保存";
+        // Removed settings saved status statusDot and lblStatus
 
         // MỚI: Tự động quay lại tiêu đề chính sau 3 giây
         _ = Task.Run(async () => {
@@ -1008,13 +1227,6 @@ public partial class MapPage : ContentPage
     {
         if (sender is Button btn && btn.CommandParameter is PoiModel poi)
         {
-            _currentlyNarratingPoi = poi; // Ghi nhớ quán đang đọc thủ công
-
-            // MỚI: Luôn hiện giao diện chi tiết (1 quán) bất kể đang ở Tab nào
-            SwitchToList(lstFocus);
-            lstFocus.ItemsSource = new List<PoiModel> { poi };
-            UpdateListTitle();
-
             // HIỆN SPOTLIGHT TRÊN BẢN ĐỒ
             var location = new Location(poi.Latitude, poi.Longitude);
             if (_spotlightCircle != null) mapVinhKhanh.MapElements.Remove(_spotlightCircle);
@@ -1061,7 +1273,7 @@ public partial class MapPage : ContentPage
         }
     }
 
-    private void OnCardSaveClicked(object sender, EventArgs e)
+    private async void OnCardSaveClicked(object sender, EventArgs e)
     {
         if (sender is Button btn && btn.CommandParameter is PoiModel poi)
         {
@@ -1075,12 +1287,14 @@ public partial class MapPage : ContentPage
             
             poi.StrSave = save;
 
-            // MỚI: Thả Tym phát là lưu vĩnh viễn vào Database SQLite
-            _ = _dbService.UpdatePoiAsync(poi);
+            // MỚI: Thả Tym phát là lưu vĩnh viễn vào Preferences theo từng người dùng hiện tại
+            string currentUser = await SecureStorage.Default.GetAsync("CurrentUser") ?? "Guest";
+            var favorites = _vinhKhanhPois.Where(p => p.IsFavorite).Select(p => p.DocumentId).ToList();
+            Preferences.Default.Set($"Favorites_{currentUser}", string.Join(",", favorites));
 
             // Cập nhật lại nội dung lstFav nếu nó đang hiện hoặc nếu cần đồng bộ
-            var favorites = _vinhKhanhPois.Where(p => p.IsFavorite).ToList();
-            lstFav.ItemsSource = favorites;
+            var activeFavorites = _vinhKhanhPois.Where(p => p.IsFavorite).ToList();
+            lstFav.ItemsSource = activeFavorites;
         }
     }
 
@@ -1088,7 +1302,6 @@ public partial class MapPage : ContentPage
     {
         if (e.CurrentSelection.FirstOrDefault() is PoiModel selectedPoi)
         {
-            statusDot.Fill = Colors.Green;
             var location = new Location(selectedPoi.Latitude, selectedPoi.Longitude);
             mapVinhKhanh.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromMeters(200)));
             // Chỉ di chuyển tâm bản đồ tới địa điểm, việc phát âm thanh nhường cho nút Play ở thẻ
@@ -1110,24 +1323,8 @@ public partial class MapPage : ContentPage
 
                 mapVinhKhanh.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromMeters(200)));
                 
-                // Vẽ vòng tròn quét (bán kính quét mặc định 30m)
-                if (_userScanCircle == null)
-                {
-                    _userScanCircle = new Microsoft.Maui.Controls.Maps.Circle
-                    {
-                        Center = location,
-                        Radius = Distance.FromMeters(30),
-                        StrokeColor = Color.FromArgb("#882ECC71"), // Viền xanh lá mờ
-                        StrokeWidth = 8,
-                        FillColor = Color.FromArgb("#332ECC71") // Lõi xanh lá rất mờ
-                    };
-                    mapVinhKhanh.MapElements.Add(_userScanCircle);
-                }
-                else
-                {
-                    // Di chuyển vòng tròn đi theo người dùng
-                    _userScanCircle.Center = location;
-                }
+                // Vẽ/di chuyển vòng tròn xanh lá theo vị trí GPS thực tế
+                DrawOrMoveUserCircle(location);
 
                 // 1. CẬP NHẬT KHOẢNG CÁCH CHUẨN XÁC CHO MỌI QUÁN TRƯỚC
                 foreach (var p in _vinhKhanhPois)
@@ -1135,8 +1332,29 @@ public partial class MapPage : ContentPage
                     p.DistanceInMeters = location.CalculateDistance(new Location(p.Latitude, p.Longitude), DistanceUnits.Kilometers) * 1000;
                 }
 
+                // 1.5. ĐỒNG BỘ VỊ TRÍ LÊN FIREBASE ĐỂ LÀM THỐNG KÊ (Throttling 30 giây)
+                if (!string.IsNullOrEmpty(_currentUsername) && (DateTime.Now - _lastFirestoreUpdateTime).TotalSeconds > 30)
+                {
+                    _lastFirestoreUpdateTime = DateTime.Now;
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await CrossCloudFirestore.Current.Instance.GetCollection("users")
+                                .GetDocument(_currentUsername)
+                                .UpdateDataAsync(new
+                                {
+                                    LastLatitude = location.Latitude,
+                                    LastLongitude = location.Longitude,
+                                    LastActiveAt = DateTime.UtcNow
+                                });
+                        }
+                        catch { /* Bỏ qua nếu lỗi mạng */ }
+                    });
+                }
+
                 bool foundAny = _vinhKhanhPois.Any(p => p.DistanceInMeters <= p.Radius);
-                statusDot.Fill = foundAny ? Colors.Green : Colors.Red;
+                // Removed statusDot.Fill update
 
                 // 2. Tắt chế độ Tự Động Thuyết Minh. Nhường quyền quyết định lại cho người dùng khi bấm Nút "Tìm Quán Gần Đây"
             });
@@ -1162,20 +1380,24 @@ public partial class MapPage : ContentPage
         {
             _isSequentialReading = true; 
             _lastNearbyResults = poisToRead; // Ghi nhớ kết quả quét
-            _currentTab = "AutoVoice"; // Ép chuyển sang chế độ thuyết minh để hiện UI ngay
             
+            // XÓA logic 1-item, HIỆN NGUYÊN DANH SÁCH GẦN ĐÂY NGAY LẬP TỨC
+            _currentTab = "Nearby"; 
+            frmDanhSach.IsVisible = true;
+            SwitchToList(lstFocus);
+            lstFocus.ItemsSource = poisToRead;
+            UpdateListTitle();
+            UpdateTabAesthetics();
+            
+            // Tạm thời cuộn lên đầu trước khi bắt đầu đọc
+            try { lstFocus.ScrollTo(0, position: ScrollToPosition.Start, animate: false); } catch { }
+
             foreach (var poi in poisToRead)
             {
                 // KIỂM TRA: Nếu cờ dừng đã được bật (do phát thủ công hoặc hành động khác ở Tab khác)
                 if (!_isSequentialReading) break;
 
                 _currentlyNarratingPoi = poi; // Ghi nhớ quán đang đọc
-
-                // 1. CẬP NHẬT TOÀN CỤC (Luôn chạy dù ở Tab nào)
-                if (_currentLang == "vi") lblStatus.Text = $"Đang thuyết minh: {poi.Name}";
-                else if (_currentLang == "en") lblStatus.Text = $"Narrating: {poi.Name}";
-                else if (_currentLang == "ja") lblStatus.Text = $"説明中: {poi.Name}";
-                else lblStatus.Text = $"解说中: {poi.Name}";
 
                 // Spotlight toàn cục
                 var location = new Location(poi.Latitude, poi.Longitude);
@@ -1190,17 +1412,10 @@ public partial class MapPage : ContentPage
                 };
                 mapVinhKhanh.MapElements.Add(_spotlightCircle);
 
-                // 2. CẬP NHẬT RIÊNG CHO TAB (Chỉ chiếm UI nếu người dùng đang ở tab 'nhà' của nó)
-                bool isUserInNarrationTab = (_currentTab == "Nearby" || _currentTab == "AutoVoice");
-                if (isUserInNarrationTab)
+                // Cuộn tới quán đang được đọc trong danh sách Gần đây
+                if (_currentTab == "Nearby")
                 {
-                    _currentTab = "AutoVoice";
-                    frmDanhSach.IsVisible = true; 
-                    SwitchToList(lstFocus);
-                    lstFocus.ItemsSource = new List<PoiModel> { poi };
-                    
-                    UpdateListTitle();
-                    lstFocus.ScrollTo(0, position: ScrollToPosition.Start, animate: false);
+                    try { lstFocus.ScrollTo(poi, position: ScrollToPosition.Start, animate: true); } catch { }
                     await Task.Delay(600); 
                 }
 
@@ -1219,46 +1434,12 @@ public partial class MapPage : ContentPage
                 await Task.Delay(400); 
             }
             
-            // XỬ LÝ KẾT THÚC:
-            // Chỉ xóa _currentlyNarratingPoi nếu nó vẫn là kết quả của việc đọc tuần tự (không bị ghi đè bởi manual play)
+            // XỬ LÝ KẾT THÚC
             if (_isSequentialReading)
             {
                 _currentlyNarratingPoi = null;
             }
-            
-            // Chỉ thực hiện nạp lại UI danh sách kết quả nếu người dùng vẫn 'đang chờ' ở các Tab liên quan
-            if (_isSequentialReading && (_currentTab == "Nearby" || _currentTab == "AutoVoice"))
-            {
-                _isSequentialReading = false; 
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    _currentTab = "Nearby";
-                    SwitchToList(lstFocus);
-                    lstFocus.ItemsSource = poisToRead; 
-                    UpdateListTitle();
-                    lstFocus.ScrollTo(0, position: ScrollToPosition.Start, animate: false);
-                    
-                    if (_currentLang == "vi") lblStatus.Text = "Đã xong thuyết minh lân cận";
-                    else if (_currentLang == "en") lblStatus.Text = "Nearby narration finished";
-                    else if (_currentLang == "ja") lblStatus.Text = "近くの案内が終了しました";
-                    else lblStatus.Text = "附近解说已结束";
-
-                    _ = Task.Run(async () => {
-                        await Task.Delay(3000);
-                        MainThread.BeginInvokeOnMainThread(() => {
-                            if (_currentTab == "Nearby") 
-                            {
-                                UpdateListTitle();
-                                UpdateTabAesthetics(); // Cập nhật lại màu Tab
-                            }
-                        });
-                    });
-                });
-            }
-            else
-            {
-                _isSequentialReading = false;
-            }
+            _isSequentialReading = false;
         }
         else
         {
@@ -1324,15 +1505,6 @@ public partial class MapPage : ContentPage
                 lblIconXemThem.Shadow = activeShadow;
                 break;
         }
-    }
-
-    private async void OnOwnerLoginClicked(object sender, EventArgs e)
-    {
-        // Ẩn menu cài đặt trước khi chuyển trang
-        frmSettings.TranslationX = 280;
-        bgOverlay.IsVisible = false;
-
-        await Navigation.PushAsync(new LoginPage());
     }
 
 #if ANDROID

@@ -148,6 +148,13 @@ function startReading() {
 
     window.speechSynthesis.speak(speechUtterance);
     
+    // Ghi nhận lượt nghe vào Firestore
+    try {
+        db.collection("restaurants").doc(resId).update({
+            audioListenCount: firebase.firestore.FieldValue.increment(1)
+        });
+    } catch(e) { console.error("Không thể cập nhật lượt nghe:", e); }
+
     isPlaying = true;
     playBtn.classList.add("playing");
     playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VinhKhanhstreet.Pages.UserRegisterPage"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid>
+        <!-- Background Gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#0f172a" Offset="0.1" />
+                <GradientStop Color="#1e293b" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <ScrollView VerticalOptions="Center">
+            <VerticalStackLayout Spacing="30" Padding="40" MaximumWidthRequest="500">
+                
+                <!-- Title Area -->
+                <VerticalStackLayout Spacing="10">
+                    <Label x:Name="lblTitle" Text="Tạo Tài Khoản" 
+                           TextColor="White" FontSize="28" FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="lblSubtitle" Text="Tham gia cộng đồng Vĩnh Khánh Street" 
+                           TextColor="#94a3b8" FontSize="14"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!-- Language Selector -->
+                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+                    <Button x:Name="btnLangVi" Text="VN" Grid.Column="0" Clicked="OnLanguageTapped" CommandParameter="vi" BackgroundColor="#10b981" TextColor="White" Padding="0" HeightRequest="40" CornerRadius="8"/>
+                    <Button x:Name="btnLangEn" Text="EN" Grid.Column="1" Clicked="OnLanguageTapped" CommandParameter="en" BackgroundColor="#334155" TextColor="#94a3b8" Padding="0" HeightRequest="40" CornerRadius="8"/>
+                    <Button x:Name="btnLangJa" Text="JA" Grid.Column="2" Clicked="OnLanguageTapped" CommandParameter="ja" BackgroundColor="#334155" TextColor="#94a3b8" Padding="0" HeightRequest="40" CornerRadius="8"/>
+                    <Button x:Name="btnLangZh" Text="ZH" Grid.Column="3" Clicked="OnLanguageTapped" CommandParameter="zh-CN" BackgroundColor="#334155" TextColor="#94a3b8" Padding="0" HeightRequest="40" CornerRadius="8"/>
+                </Grid>
+
+                <!-- Form Area -->
+                <VerticalStackLayout Spacing="15">
+                    <VerticalStackLayout Spacing="8">
+                        <Label x:Name="lblUsername" Text="Tên đăng nhập" TextColor="White" FontSize="14" Margin="5,0"/>
+                        <Frame BackgroundColor="White" CornerRadius="12" Padding="15,5" HasShadow="False" BorderColor="#ffffff1a">
+                            <Entry x:Name="RegUsernameEntry" Placeholder="Ví dụ: vanthien27" 
+                                   TextColor="Black" PlaceholderColor="#94a3b8" />
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label x:Name="lblPassword" Text="Mật khẩu" TextColor="White" FontSize="14" Margin="5,0"/>
+                        <Frame BackgroundColor="White" CornerRadius="12" Padding="15,5" HasShadow="False" BorderColor="#ffffff1a">
+                            <Entry x:Name="RegPasswordEntry" Placeholder="********" IsPassword="True"
+                                   TextColor="Black" PlaceholderColor="#94a3b8" />
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label x:Name="lblConfirmPassword" Text="Nhập lại mật khẩu" TextColor="White" FontSize="14" Margin="5,0"/>
+                        <Frame BackgroundColor="White" CornerRadius="12" Padding="15,5" HasShadow="False" BorderColor="#ffffff1a">
+                            <Entry x:Name="RegConfirmPasswordEntry" Placeholder="********" IsPassword="True"
+                                   TextColor="Black" PlaceholderColor="#94a3b8" />
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <!-- Register Button -->
+                    <Button x:Name="btnRegister" Text="ĐĂNG KÝ NGAY" 
+                            BackgroundColor="#10b981" TextColor="White"
+                            FontAttributes="Bold" HeightRequest="55" CornerRadius="12"
+                            Clicked="OnRegisterClicked" Margin="0,15,0,0">
+                    </Button>
+                </VerticalStackLayout>
+
+                <!-- Back Link -->
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="10">
+                    <Label x:Name="lblHasAccount" Text="Đã có tài khoản?" TextColor="#94a3b8" HorizontalOptions="Center" />
+                    <Label x:Name="lblBackToLogin" Text="Quay lại Đăng nhập" TextColor="#ffffff" 
+                           FontAttributes="Bold" TextDecorations="Underline"
+                           HorizontalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBackToLoginTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

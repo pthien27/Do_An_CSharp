@@ -18,6 +18,24 @@ namespace VinhKhanhstreet.Models
         [MapTo("name")]
         public string Name { get; set; }        // Tên quán
 
+        [MapTo("NameEn")]
+        public string NameEn { get; set; } = "";
+
+        [MapTo("NameJa")]
+        public string NameJa { get; set; } = "";
+
+        [MapTo("NameZh")]
+        public string NameZh { get; set; } = "";
+        
+        // Thuộc tính hiển thị tên theo ngôn ngữ đang chọn
+        private string _currentDisplayName;
+        [Ignore]
+        public string CurrentDisplayName
+        {
+            get => _currentDisplayName ?? Name;
+            set { if (_currentDisplayName != value) { _currentDisplayName = value; OnPropertyChanged(); } }
+        }
+
         [MapTo("Latitude")]
         public double Latitude { get; set; }   // Kinh độ
         
@@ -63,7 +81,7 @@ namespace VinhKhanhstreet.Models
 
         // Thuộc tính để chống spam
         [MapTo("LastActivated")]
-        public DateTime LastActivated { get; set; } = DateTime.Now;
+        public DateTime LastActivated { get; set; }
         
         [Ignore]
         public bool HasAutoPlayed { get; set; } = false;
@@ -99,6 +117,29 @@ namespace VinhKhanhstreet.Models
         
         [MapTo("CategoryVi")]
         public string CategoryVi { get; set; } = "Nhà hàng Việt Nam";
+
+        [MapTo("ownerId")]
+        public string OwnerId { get; set; } = "";
+
+        [MapTo("isApproved")]
+        public bool IsApproved { get; set; } = false;
+
+        [MapTo("IsOpen")]
+        private bool _isOpen = true;
+        public bool IsOpen 
+        { 
+            get => _isOpen; 
+            set { 
+                if (_isOpen != value) {
+                    _isOpen = value; 
+                    OnPropertyChanged(); 
+                    OnPropertyChanged(nameof(StatusTextColor)); 
+                }
+            } 
+        }
+
+        [MapTo("qrUrl")]
+        public string QrUrl { get; set; } = "";
         
         // Trạng thái yêu thích
         private bool _isFavorite;
@@ -114,6 +155,9 @@ namespace VinhKhanhstreet.Models
                 }
             }
         }
+
+        [Ignore]
+        public string StatusTextColor => IsOpen ? "#2ECC71" : "#EF4444"; // Xanh khi mở, Đỏ khi đóng
 
         [Ignore]
         public string SaveBgColor => IsFavorite ? "#FFEBEE" : "#E3F2FD";
@@ -172,6 +216,26 @@ namespace VinhKhanhstreet.Models
         private string _strPlay = "Phát";
         [Ignore]
         public string StrPlay { get => _strPlay; set { _strPlay = value; OnPropertyChanged(); } }
+
+        private bool _isPlaying = false;
+        [Ignore]
+        public bool IsPlaying
+        {
+            get => _isPlaying;
+            set {
+                if (_isPlaying != value) {
+                    _isPlaying = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(PlayBgColor));
+                    OnPropertyChanged(nameof(PlayTextColor));
+                }
+            }
+        }
+
+        [Ignore]
+        public string PlayBgColor => IsPlaying ? "#EF4444" : "#E3F2FD"; // Red when playing, light blue when normal
+        [Ignore]
+        public string PlayTextColor => IsPlaying ? "#FFFFFF" : "#0D47A1"; // White text on red, dark blue on light blue
 
         private string _strCall = "Gọi";
         [Ignore]

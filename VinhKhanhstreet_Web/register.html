@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng Ký Chủ Quán – Vĩnh Khánh Street</title>
+  <meta name="description" content="Đăng ký tài khoản chủ quán và POI tại Vĩnh Khánh Street."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #667EEA;
+      --primary2: #764BA2;
+      --green: #38A169;
+      --orange: #F59E0B;
+      --red: #EF4444;
+      --surface: #fff;
+      --bg: #f0f4ff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --input-bg: #f8faff;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(102,126,234,.12);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* ─── TOP HEADER ─────────────────────────── */
+    .page-header {
+      background: linear-gradient(135deg, #667EEA, #764BA2);
+      padding: 20px 24px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::after {
+      content: '';
+      position: absolute; bottom: -30px; left: 0; right: 0;
+      height: 60px;
+      background: var(--bg);
+      border-radius: 40px 40px 0 0;
+    }
+    .header-inner {
+      max-width: 680px; margin: auto;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .header-icon {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,.2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      border: 2px solid rgba(255,255,255,.35);
+      flex-shrink: 0;
+    }
+    .header-title { color: #fff; font-size: 22px; font-weight: 800; }
+    .header-sub   { color: rgba(255,255,255,.8); font-size: 13px; margin-top: 2px; }
+    .back-link {
+      margin-left: auto;
+      background: rgba(255,255,255,.2);
+      border: 1.5px solid rgba(255,255,255,.4);
+      color: #fff; border-radius: 10px;
+      padding: 7px 14px; font-size: 13px; font-weight: 600;
+      text-decoration: none; white-space: nowrap;
+      transition: background .2s;
+    }
+    .back-link:hover { background: rgba(255,255,255,.35); }
+
+    /* ─── MAIN CONTENT ───────────────────────── */
+    .container {
+      max-width: 680px; margin: 0 auto;
+      padding: 0 16px 60px;
+    }
+
+    /* ─── SECTION CARD ───────────────────────── */
+    .section-card {
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 24px 24px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      animation: fadeIn .4s ease both;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .section-card:nth-child(1) { animation-delay: .05s; }
+    .section-card:nth-child(2) { animation-delay: .10s; }
+    .section-card:nth-child(3) { animation-delay: .15s; }
+    .section-card:nth-child(4) { animation-delay: .20s; }
+
+    .section-head {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .section-emoji { font-size: 22px; }
+    .section-title { font-size: 16px; font-weight: 700; color: var(--text); }
+
+    /* ─── FIELD ──────────────────────────────── */
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    label.lbl {
+      display: block;
+      font-size: 13px; font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .hint { font-size: 11px; color: #94a3b8; margin-top: 5px; }
+
+    .input-wrap { position: relative; }
+    .input-wrap .ico {
+      position: absolute; left: 13px; top: 50%;
+      transform: translateY(-50%); font-size: 15px;
+      pointer-events: none;
+    }
+    .input-wrap input,
+    .input-wrap select {
+      width: 100%; height: 50px;
+      background: var(--input-bg);
+      border: 1.8px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 14px 0 40px;
+      font-size: 15px; font-family: inherit;
+      color: var(--text); outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      appearance: none;
+    }
+    .input-wrap input:focus,
+    .input-wrap select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102,126,234,.15);
+      background: #fff;
+    }
+    .input-wrap input.invalid { border-color: var(--red); }
+
+    /* eye toggle */
+    .eye-btn {
+      position: absolute; right: 13px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      font-size: 17px; color: var(--muted);
+      transition: color .2s;
+    }
+    .eye-btn:hover { color: var(--primary); }
+
+    /* Textarea */
+    .ta-wrap textarea {
+      width: 100%; min-height: 90px;
+      background: var(--input-bg);
+      border: 1.8px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 15px; font-family: inherit;
+      color: var(--text); outline: none; resize: vertical;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .ta-wrap textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102,126,234,.15);
+      background: #fff;
+    }
+    .ta-wrap.lang-en textarea { border-color: #bfdbfe; background: #eff6ff; color: #1e3a5f; }
+    .ta-wrap.lang-ja textarea { border-color: #fecaca; background: #fff5f5; color: #7f1d1d; }
+    .ta-wrap.lang-zh textarea { border-color: #fde68a; background: #fffbeb; color: #78350f; }
+
+    /* 2 columns */
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ─── Radio buttons ──────────────────────── */
+    .radio-group {
+      display: flex; gap: 12px;
+    }
+    .radio-option {
+      flex: 1;
+      border: 1.8px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 13px; font-weight: 600;
+      color: var(--muted);
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .radio-option input { display: none; }
+    .radio-option:has(input:checked) {
+      border-color: var(--green);
+      background: #f0fff4;
+      color: var(--green);
+    }
+    .radio-option.closed:has(input:checked) {
+      border-color: var(--red);
+      background: #fff5f5;
+      color: var(--red);
+    }
+
+    /* ─── Select ─────────────────────────────── */
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+    .select-wrap select { padding-right: 36px; }
+
+    /* ─── GPS button ─────────────────────────── */
+    .btn-gps {
+      width: 100%; height: 44px;
+      background: #eef2ff; border: 1.5px solid var(--primary);
+      border-radius: var(--radius);
+      color: var(--primary); font-size: 13px; font-weight: 700;
+      font-family: inherit; cursor: pointer;
+      transition: background .2s, transform .15s;
+      margin-top: 8px;
+    }
+    .btn-gps:hover { background: #e0e7ff; transform: translateY(-1px); }
+    .btn-gps:active { transform: none; }
+
+    /* ─── Translate button ───────────────────── */
+    .btn-translate {
+      width: 100%; height: 46px;
+      background: #f0fff4; border: 1.5px solid var(--green);
+      border-radius: var(--radius);
+      color: var(--green); font-size: 14px; font-weight: 700;
+      font-family: inherit; cursor: pointer;
+      transition: all .2s; margin: 10px 0 4px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-translate:hover   { background: #dcfce7; transform: translateY(-1px); }
+    .btn-translate:disabled{ opacity: .6; cursor: not-allowed; transform: none; }
+    .translate-spin {
+      display: none; width: 16px; height: 16px;
+      border: 2px solid rgba(56,161,105,.4);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Photo grid ─────────────────────────── */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .photo-slot {
+      position: relative;
+      height: 120px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--input-bg);
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color .2s, background .2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .photo-slot:hover { border-color: var(--primary); background: #eef2ff; }
+    .photo-slot.filled { border-style: solid; border-color: var(--green); }
+    .photo-slot.span-2 { grid-column: 1 / -1; }
+    .photo-placeholder {
+      text-align: center; pointer-events: none;
+    }
+    .photo-placeholder .cam { font-size: 26px; }
+    .photo-placeholder .lbl-ph {
+      font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600;
+    }
+    .photo-slot.filled .photo-placeholder { display: none; }
+    .photo-slot img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+    .photo-slot.filled img { display: block; }
+    .photo-remove {
+      display: none;
+      position: absolute; top: 6px; right: 6px;
+      width: 24px; height: 24px;
+      background: rgba(239,68,68,.9);
+      border-radius: 50%;
+      border: none; color: #fff;
+      font-size: 13px; line-height: 1;
+      cursor: pointer;
+      align-items: center; justify-content: center;
+    }
+    .photo-slot.filled .photo-remove { display: flex; }
+    .photo-status {
+      text-align: center; font-size: 12px;
+      color: var(--orange); margin-top: 8px; font-weight: 600;
+    }
+    .photo-status.ok { color: var(--green); }
+
+    /* ─── Error banner ───────────────────────── */
+    .error-banner {
+      display: none;
+      background: #fff5f5;
+      border: 1.5px solid #fca5a5;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: var(--red);
+      font-size: 13px;
+      margin-bottom: 16px;
+      gap: 10px; align-items: flex-start;
+    }
+    .error-banner.show { display: flex; }
+    .error-banner .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ─── Action buttons ─────────────────────── */
+    .btn-payment {
+      width: 100%; height: 56px;
+      background: linear-gradient(135deg, #F59E0B, #EF4444);
+      color: #fff; border: none;
+      border-radius: var(--radius);
+      font-size: 17px; font-weight: 800;
+      font-family: inherit; cursor: pointer;
+      box-shadow: 0 8px 24px rgba(239,68,68,.35);
+      transition: transform .15s, box-shadow .15s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 4px;
+    }
+    .btn-payment:hover  { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(239,68,68,.45); }
+    .btn-payment:active { transform: none; }
+    .btn-payment:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+    .pay-spinner {
+      display: none; width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,.5);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    .btn-payment.loading .pay-text   { display: none; }
+    .btn-payment.loading .pay-spinner { display: block; }
+
+    /* ─── Step indicator ─────────────────────── */
+    .steps {
+      display: flex; gap: 0;
+      margin-bottom: 24px;
+      border-radius: 12px; overflow: hidden;
+    }
+    .step {
+      flex: 1; padding: 9px 4px; text-align: center;
+      font-size: 11px; font-weight: 700;
+      background: #e2e8f0; color: var(--muted);
+      position: relative;
+    }
+    .step.active { background: linear-gradient(135deg, #667EEA, #764BA2); color: #fff; }
+    .step.done   { background: var(--green); color: #fff; }
+
+    /* ─── Username check ─────────────────────── */
+    .check-indicator {
+      position: absolute; right: 13px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+    }
+
+    /* ─── PAYMENT MODAL ──────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center; justify-content: center;
+      padding: 16px;
+      animation: fadeIn .25s ease;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 24px;
+      width: 100%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,.3);
+      animation: slideUp .3s cubic-bezier(.22,.68,0,1.2) both;
+    }
+    @keyframes slideUp {
+      from { opacity:0; transform: translateY(30px) scale(.97); }
+      to   { opacity:1; transform: none; }
+    }
+    .modal-header {
+      background: linear-gradient(135deg, #F59E0B, #EF4444);
+      padding: 22px 24px 18px;
+      border-radius: 24px 24px 0 0;
+    }
+    .modal-header h2 { color:#fff; font-size:20px; font-weight:800; }
+    .modal-header p  { color:rgba(255,255,255,.85); font-size:13px; margin-top:4px; }
+    .modal-body { padding: 24px; }
+    .summary-row {
+      display: flex; gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row .s-icon { font-size: 18px; flex-shrink:0; width:24px; text-align:center; }
+    .summary-row .s-label { color: var(--muted); font-weight:600; min-width:120px; }
+    .summary-row .s-val   { color: var(--text); font-weight:700; }
+    .photo-preview-strip {
+      display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .photo-preview-strip img {
+      width: 72px; height: 72px;
+      object-fit: cover; border-radius: 10px;
+      border: 2px solid var(--green);
+    }
+    .modal-price {
+      background: linear-gradient(135deg,#FFF7ED,#FEF3C7);
+      border: 1.5px solid #FCD34D;
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      margin: 18px 0 10px;
+    }
+    .modal-price .price-label { font-size:13px; color:#92400E; margin-bottom:4px; }
+    .modal-price .price-amount {
+      font-size:32px; font-weight:900;
+      background: linear-gradient(135deg,#F59E0B,#EF4444);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .modal-price .price-note { font-size:11px; color:#B45309; margin-top:4px; margin-bottom: 12px; }
+    .qr-payment-img {
+      width: 180px; height: 180px;
+      margin: 10px auto; border-radius: 12px;
+      border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: block;
+    }
+    .modal-actions { display:flex; gap:10px; margin-top:16px; }
+    .btn-cancel {
+      flex:1; height:48px;
+      background:#F1F5F9; border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size:15px; font-weight:700; font-family:inherit;
+      color: var(--muted); cursor:pointer;
+      transition: background .2s;
+    }
+    .btn-cancel:hover { background:#E2E8F0; }
+    .btn-confirm {
+      flex:2; height:48px;
+      background: linear-gradient(135deg,#F59E0B,#EF4444);
+      border:none; border-radius: var(--radius);
+      font-size:15px; font-weight:800; font-family:inherit;
+      color:#fff; cursor:pointer;
+      box-shadow: 0 6px 20px rgba(239,68,68,.3);
+      transition: transform .15s, box-shadow .15s;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .btn-confirm:hover    { transform:translateY(-2px); box-shadow:0 10px 28px rgba(239,68,68,.4); }
+    .btn-confirm:disabled { opacity:.7; cursor:not-allowed; transform:none; }
+    .btn-confirm.loading .conf-text    { display:none; }
+    .btn-confirm.loading .conf-spinner { display:block; }
+    .conf-spinner {
+      display:none; width:18px; height:18px;
+      border:2.5px solid rgba(255,255,255,.4);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+
+    /* ─── Success overlay ────────────────────── */
+    .success-overlay {
+      display:none;
+      position:fixed; inset:0;
+      background: linear-gradient(135deg,#667EEA,#764BA2);
+      z-index:2000;
+      align-items:center; justify-content:center;
+      flex-direction:column; gap:16px;
+      text-align:center; padding:24px;
+    }
+    .success-overlay.open { display:flex; }
+    .success-icon { font-size:80px; animation: bounce .6s cubic-bezier(.22,.68,0,1.8) both; }
+    @keyframes bounce {
+      from { transform: scale(0); } to { transform: scale(1); }
+    }
+    .success-title { color:#fff; font-size:26px; font-weight:900; }
+    .success-sub   { color:rgba(255,255,255,.8); font-size:15px; }
+    .btn-go-login  {
+      margin-top:12px;
+      background:#fff; color:#667EEA;
+      border:none; border-radius:14px;
+      padding:14px 36px; font-size:16px; font-weight:800;
+      font-family:inherit; cursor:pointer;
+      box-shadow:0 8px 24px rgba(0,0,0,.2);
+      transition: transform .15s;
+    }
+    .btn-go-login:hover { transform: translateY(-2px); }
+
+    @media (max-width: 480px) {
+      .row-2 { grid-template-columns: 1fr; }
+      .section-card { padding: 18px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-inner">
+      <div class="header-icon">📋</div>
+      <div>
+        <div class="header-title" id="pageTitle">Đăng Ký Chủ Quán</div>
+        <div class="header-sub">Vĩnh Khánh Street – Quận 4, TP.HCM</div>
+      </div>
+      <a href="login.html" class="back-link">← Đăng nhập</a>
+    </div>
+  </div>
+
+  <!-- Main container -->
+  <div class="container">
+
+    <!-- Step bar -->
+    <div class="steps" id="stepBar">
+      <div class="step active">1. Tài khoản</div>
+      <div class="step active">2. Thông tin quán</div>
+      <div class="step active">3. Thuyết minh</div>
+      <div class="step active">4. Hình ảnh</div>
+    </div>
+
+    <!-- ══ PHẦN 1: TÀI KHOẢN ══════════════════════════════════════════════ -->
+    <div class="section-card" id="accountSection">
+      <div class="section-head">
+        <span class="section-emoji">🔐</span>
+        <span class="section-title">Thông tin tài khoản</span>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="regUsername">Tên tài khoản *</label>
+        <div class="input-wrap">
+          <span class="ico">👤</span>
+          <input type="text" id="regUsername" placeholder="Ví dụ: ocoanh_owner" autocomplete="off"
+                 oninput="checkUsernameDebounced()"/>
+          <span class="check-indicator" id="userCheck"></span>
+        </div>
+        <p class="hint" id="userHint">Chỉ chứa chữ thường, số, dấu gạch dưới. Tối thiểu 4 ký tự.</p>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="regPassword">Mật khẩu *</label>
+        <div class="input-wrap">
+          <span class="ico">🔒</span>
+          <input type="password" id="regPassword" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password"/>
+          <button type="button" class="eye-btn" onclick="togglePwd('regPassword', this)">👁️</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="regPasswordConfirm">Nhập lại mật khẩu *</label>
+        <div class="input-wrap">
+          <span class="ico">🔑</span>
+          <input type="password" id="regPasswordConfirm" placeholder="Xác nhận mật khẩu" autocomplete="new-password"/>
+          <button type="button" class="eye-btn" onclick="togglePwd('regPasswordConfirm', this)">👁️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PHẦN 2: THÔNG TIN QUÁN ════════════════════════════════════════ -->
+    <div class="section-card">
+      <div class="section-head">
+        <span class="section-emoji">🏪</span>
+        <span class="section-title">Thông tin quán (POI)</span>
+      </div>
+
+      <!-- Tên quán -->
+      <div class="field">
+        <label class="lbl" for="shopName">Tên quán *</label>
+        <div class="input-wrap">
+          <span class="ico">🍜</span>
+          <input type="text" id="shopName" placeholder="Ví dụ: Ốc Oanh"/>
+        </div>
+      </div>
+
+      <!-- Tọa độ -->
+      <div class="field">
+        <label class="lbl">Tọa độ *</label>
+        <div class="row-2">
+          <div class="input-wrap">
+            <span class="ico">📍</span>
+            <input type="number" id="latitude" placeholder="Vĩ độ (VD: 10.7612)" step="any"/>
+          </div>
+          <div class="input-wrap">
+            <span class="ico">📍</span>
+            <input type="number" id="longitude" placeholder="Kinh độ (VD: 106.7033)" step="any"/>
+          </div>
+        </div>
+        <p class="hint">Ví dụ: 10.761204 / 106.703307</p>
+        <button class="btn-gps" type="button" id="btnGps" onclick="getGPS()">
+          📡 Lấy vị trí hiện tại (GPS)
+        </button>
+      </div>
+
+      <!-- Bán kính -->
+      <div class="field">
+        <label class="lbl" for="radius">Bán kính quán (mét) *</label>
+        <div class="input-wrap">
+          <span class="ico">⭕</span>
+          <input type="number" id="radius" placeholder="Ví dụ: 30" value="30" min="5" max="500"/>
+        </div>
+      </div>
+
+      <!-- Tình trạng -->
+      <div class="field">
+        <label class="lbl">Tình trạng quán *</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="shopStatus" value="open" checked/>
+            🟢 Đang mở cửa
+          </label>
+          <label class="radio-option closed">
+            <input type="radio" name="shopStatus" value="closed"/>
+            🔴 Đóng cửa
+          </label>
+        </div>
+      </div>
+
+      <!-- Phân loại -->
+      <div class="field">
+        <label class="lbl" for="category">Phân loại *</label>
+        <div class="select-wrap">
+          <div class="input-wrap">
+            <span class="ico">🏷️</span>
+            <select id="category">
+              <option value="">-- Chọn phân loại --</option>
+              <option value="Quán ốc">🐚 Quán ốc</option>
+              <option value="Tráng miệng">🍮 Tráng miệng</option>
+              <option value="Buffet">🍖 Buffet</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Giờ đóng cửa -->
+      <div class="field">
+        <label class="lbl" for="closingTime">Giờ đóng cửa *</label>
+        <div class="input-wrap">
+          <span class="ico">🕙</span>
+          <input type="time" id="closingTime" value="22:30"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PHẦN 3: THUYẾT MINH + DỊCH THUẬT ════════════════════════════ -->
+    <div class="section-card">
+      <div class="section-head">
+        <span class="section-emoji">🌐</span>
+        <span class="section-title">Thuyết minh quán</span>
+      </div>
+
+      <div class="field">
+        <label class="lbl">🇻🇳 Nội dung tiếng Việt *</label>
+        <div class="ta-wrap">
+          <textarea id="descVI" placeholder="Viết nội dung thuyết minh bằng tiếng Việt...&#10;Ví dụ: Chào mừng bạn đến với Ốc Oanh. Đây là địa điểm ẩm thực không thể bỏ qua..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn-translate" id="btnTranslate" type="button" onclick="translateAll()">
+        <div class="translate-spin" id="transSpinner"></div>
+        <span id="transText">🌍 Dịch ra EN / JA / ZH</span>
+      </button>
+
+      <div class="field">
+        <label class="lbl">🇬🇧 Tiếng Anh (EN)</label>
+        <div class="ta-wrap lang-en">
+          <textarea id="descEN" placeholder="(Nhấn dịch để tự động điền hoặc nhập tay...)"></textarea>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl">🇯🇵 Tiếng Nhật (JA)</label>
+        <div class="ta-wrap lang-ja">
+          <textarea id="descJA" placeholder="(Nhấn dịch để tự động điền hoặc nhập tay...)"></textarea>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl">🇨🇳 Tiếng Trung (ZH)</label>
+        <div class="ta-wrap lang-zh">
+          <textarea id="descZH" placeholder="(Nhấn dịch để tự động điền hoặc nhập tay...)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PHẦN 4: UPLOAD ẢNH ════════════════════════════════════════════ -->
+    <div class="section-card">
+      <div class="section-head">
+        <span class="section-emoji">🖼️</span>
+        <span class="section-title">Hình ảnh quán (bắt buộc 5 ảnh)</span>
+      </div>
+      <p class="hint" style="margin-bottom:12px; color:#F59E0B; font-size:12px;">
+        ⚠️ Phải chọn đủ 5 ảnh, mỗi ảnh phải khác nhau (sẽ kiểm tra tự động).
+      </p>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="fileInput1" accept="image/*" style="display:none" onchange="handleFile(1,this)"/>
+      <input type="file" id="fileInput2" accept="image/*" style="display:none" onchange="handleFile(2,this)"/>
+      <input type="file" id="fileInput3" accept="image/*" style="display:none" onchange="handleFile(3,this)"/>
+      <input type="file" id="fileInput4" accept="image/*" style="display:none" onchange="handleFile(4,this)"/>
+      <input type="file" id="fileInput5" accept="image/*" style="display:none" onchange="handleFile(5,this)"/>
+
+      <div class="photo-grid">
+        <div class="photo-slot" id="slot1" onclick="triggerFile(1)">
+          <img id="preview1" alt="Ảnh 1"/>
+          <div class="photo-placeholder"><div class="cam">📷</div><div class="lbl-ph">Ảnh 1</div></div>
+          <button class="photo-remove" onclick="removePhoto(event,1)">✕</button>
+        </div>
+        <div class="photo-slot" id="slot2" onclick="triggerFile(2)">
+          <img id="preview2" alt="Ảnh 2"/>
+          <div class="photo-placeholder"><div class="cam">📷</div><div class="lbl-ph">Ảnh 2</div></div>
+          <button class="photo-remove" onclick="removePhoto(event,2)">✕</button>
+        </div>
+        <div class="photo-slot" id="slot3" onclick="triggerFile(3)">
+          <img id="preview3" alt="Ảnh 3"/>
+          <div class="photo-placeholder"><div class="cam">📷</div><div class="lbl-ph">Ảnh 3</div></div>
+          <button class="photo-remove" onclick="removePhoto(event,3)">✕</button>
+        </div>
+        <div class="photo-slot" id="slot4" onclick="triggerFile(4)">
+          <img id="preview4" alt="Ảnh 4"/>
+          <div class="photo-placeholder"><div class="cam">📷</div><div class="lbl-ph">Ảnh 4</div></div>
+          <button class="photo-remove" onclick="removePhoto(event,4)">✕</button>
+        </div>
+        <div class="photo-slot span-2" id="slot5" onclick="triggerFile(5)">
+          <img id="preview5" alt="Ảnh 5"/>
+          <div class="photo-placeholder"><div class="cam">📷</div><div class="lbl-ph">Ảnh 5 (đại diện)</div></div>
+          <button class="photo-remove" onclick="removePhoto(event,5)">✕</button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:20px;">
+        <label class="lbl">🔗 Hoặc Dán link ảnh trực tiếp (Ưu tiên)</label>
+        <div class="row-2" style="margin-bottom:10px;">
+          <div class="input-wrap">
+            <span class="ico">1️⃣</span>
+            <input type="text" id="imgUrl1" placeholder="Dán URL Ảnh 1" oninput="previewFromUrl(1, this.value)"/>
+          </div>
+          <div class="input-wrap">
+            <span class="ico">2️⃣</span>
+            <input type="text" id="imgUrl2" placeholder="Dán URL Ảnh 2" oninput="previewFromUrl(2, this.value)"/>
+          </div>
+        </div>
+        <div class="row-2" style="margin-bottom:10px;">
+          <div class="input-wrap">
+            <span class="ico">3️⃣</span>
+            <input type="text" id="imgUrl3" placeholder="Dán URL Ảnh 3" oninput="previewFromUrl(3, this.value)"/>
+          </div>
+          <div class="input-wrap">
+            <span class="ico">4️⃣</span>
+            <input type="text" id="imgUrl4" placeholder="Dán URL Ảnh 4" oninput="previewFromUrl(4, this.value)"/>
+          </div>
+        </div>
+        <div class="input-wrap">
+          <span class="ico">5️⃣</span>
+          <input type="text" id="imgUrl5" placeholder="Dán URL Ảnh 5 (Đại diện)" oninput="previewFromUrl(5, this.value)"/>
+        </div>
+        <p class="hint" style="color: #667EEA; font-weight: 600;">💡 Mẹo: Tải ảnh lên <a href="https://postimages.org/" target="_blank" style="color:#667EEA">PostImages.org</a> rồi lấy "Link trực tiếp" dán vào đây.</p>
+      </div>
+
+      <p class="photo-status" id="photoStatus">⬜ Chưa có ảnh nào. Vui lòng chọn đủ 5 ảnh hoặc dán 5 link.</p>
+    </div>
+
+    <!-- ══ ERROR BANNER ══════════════════════════════════════════════════ -->
+    <div class="error-banner" id="globalError">
+      <span class="icon">⚠️</span>
+      <span id="globalErrorText"></span>
+    </div>
+
+    <!-- ══ NÚT ĐẾN THANH TOÁN ══════════════════════════════════════════ -->
+    <button class="btn-payment" id="btnPayment" type="button" onclick="goToPayment()">
+      <span class="pay-text">💳 Tiếp tục đến Thanh Toán</span>
+      <div class="pay-spinner"></div>
+    </button>
+
+  </div><!-- /container -->
+
+  <!-- ══ MODAL THANH TOÁN ═════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>💳 Xác nhận Thanh Toán</h2>
+        <p>Kiểm tra lại thông tin trước khi hoàn tất đăng ký</p>
+      </div>
+      <div class="modal-body">
+
+        <!-- Tóm tắt -->
+        <div id="summaryRows"></div>
+
+        <!-- Preview ảnh -->
+        <div class="photo-preview-strip" id="photoPreviewStrip"></div>
+
+        <!-- Giá -->
+        <div class="modal-price">
+          <div class="price-label">💰 Phí đăng ký POI lần đầu</div>
+          <div class="price-amount" id="modalPriceAmount">500.000đ</div>
+          <div class="price-note" id="modalPriceNote">Vui lòng quét mã QR dưới đây để thanh toán phí đăng ký</div>
+          <img src="QR.png" alt="Mã QR Thanh Toán" class="qr-payment-img">
+        </div>
+
+        <!-- Error trong modal -->
+        <div class="error-banner" id="modalError" style="margin-bottom:0;margin-top:8px;">
+          <span class="icon">⚠️</span>
+          <span id="modalErrorText"></span>
+        </div>
+
+        <!-- Actions -->
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeModal()">← Quay lại</button>
+          <button class="btn-confirm" id="btnConfirm" onclick="confirmRegister()">
+            <div class="conf-spinner"></div>
+            <span class="conf-text">✅ Xác nhận Đăng Ký</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUCCESS OVERLAY ═════════════════════════════════════════════════ -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-icon">🎉</div>
+      <div class="success-title" id="successTitle">Đăng Ký Thành Công!</div>
+      <div class="success-sub" id="successSub">Tài khoản của bạn đã sẵn sàng. Hãy bắt đầu quản lý ngay thôi!</div>
+      <button class="success-btn" onclick="goToDashboard()">Về Trang Quản Lý</button>
+    </div>
+  </div>
+
+  <script>
+    function goToDashboard() {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+
+  <script type="module">
+    // ── Firebase ────────────────────────────────────────────────────────────
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, getDocs, collection, query, where, setDoc }
+      from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAj0Lm-RYZ0_9BIqjxqJ5ja-QV4z5DXrFE",
+      authDomain: "vinhkhanhstreet-dda5d.firebaseapp.com",
+      projectId: "vinhkhanhstreet-dda5d",
+      storageBucket: "vinhkhanhstreet-dda5d.firebasestorage.app",
+      messagingSenderId: "250371727417",
+      appId: "1:250371727417:web:921e00a706d83b6379ade8"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    // ── SHA-256 ──────────────────────────────────────────────────────────────
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+
+    // ── State ────────────────────────────────────────────────────────────────
+    const photoFiles = { 1: null, 2: null, 3: null, 4: null, 5: null };
+    const photoHashes = {};
+    let usernameTimer = null;
+    // Draft lưu trong memory (không dùng sessionStorage)
+    let _draft = null;
+    let _mode = null;
+    let _editId = null;
+
+    // ── Mode Handling ────────────────────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      _mode   = params.get('mode');
+      _editId = params.get('id');
+
+      if (_mode) {
+        document.getElementById('accountSection').style.display = 'none';
+        document.getElementById('stepBar').style.display = 'none';
+        
+        // Ẩn nút "Đăng nhập"
+        const backLink = document.querySelector('.back-link');
+        if (backLink) backLink.style.display = 'none';
+
+        if (_mode === 'add') {
+          document.getElementById('pageTitle').textContent = 'Thêm Địa Điểm Mới';
+        } else if (_mode === 'edit') {
+          document.getElementById('pageTitle').textContent = 'Chỉnh Sửa Địa Điểm';
+          // Đổi tên nút thành Lưu Thay Đổi
+          const payText = document.querySelector('#btnPayment .pay-text');
+          if (payText) payText.textContent = '💾 Lưu Thay Đổi';
+          
+          loadPOI(_editId);
+        }
+      }
+    });
+
+    async function loadPOI(id) {
+      try {
+        const snap = await getDoc(doc(db, 'restaurants', id));
+        if (!snap.exists()) { alert('Không tìm thấy địa điểm!'); return; }
+        const d = snap.data();
+        
+        document.getElementById('shopName').value = d.name || '';
+        document.getElementById('latitude').value = d.Latitude ?? d.latitude ?? '';
+        document.getElementById('longitude').value = d.Longitude ?? d.longitude ?? '';
+        document.getElementById('radius').value = d.Radius ?? d.radius ?? 30;
+        document.getElementById('closingTime').value = d.ClosingTime || '';
+        document.getElementById('category').value = d.CategoryVi || '';
+        document.getElementById('descVI').value = d.DescriptionVI || '';
+        document.getElementById('descEN').value = d.DescriptionEN || '';
+        document.getElementById('descJA').value = d.DescriptionJA || '';
+        document.getElementById('descZH').value = d.DescriptionZH || '';
+        
+        const statusRadio = document.querySelector(`input[name="shopStatus"][value="${d.IsOpen ? 'open' : 'closed'}"]`);
+        if (statusRadio) statusRadio.checked = true;
+
+        // Note: Ảnh không thể pre-fill file input vì lý do bảo mật, 
+        // User sẽ cần chọn lại ảnh nếu muốn thay đổi, hoặc chúng ta bỏ qua việc bắt buộc chọn 5 ảnh khi Edit.
+        if (_mode === 'edit') {
+          document.getElementById('photoStatus').innerHTML = '💡 <b>Chế độ sửa:</b> Link ảnh đã được nạp. Bạn có thể thay đổi link bên dưới.';
+          
+          // Hiển thị trực tiếp tấm ảnh cũ lên giao diện
+          for (let i = 1; i <= 5; i++) {
+            const imgUrl = d[`ImageUrl${i}`];
+            if (imgUrl) {
+              const preview = document.getElementById(`preview${i}`);
+              const slot = document.getElementById(`slot${i}`);
+              const urlInput = document.getElementById(`imgUrl${i}`);
+              
+              // Nạp ảnh
+              preview.src = imgUrl; 
+              slot.classList.add('filled');
+              if (urlInput) urlInput.value = imgUrl;
+            }
+          }
+        }
+      } catch (err) { alert('Lỗi tải dữ liệu: ' + err.message); }
+    }
+
+    // ── Expose to global ─────────────────────────────────────────────────────
+    window.togglePwd = (id, btn) => {
+      const el = document.getElementById(id);
+      const show = el.type === 'password';
+      el.type = show ? 'text' : 'password';
+      btn.textContent = show ? '🙈' : '👁️';
+    };
+
+    window.getGPS = () => {
+      const btn = document.getElementById('btnGps');
+      btn.textContent = '⏳ Đang lấy vị trí...';
+      btn.disabled = true;
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          document.getElementById('latitude').value  = pos.coords.latitude.toFixed(6);
+          document.getElementById('longitude').value = pos.coords.longitude.toFixed(6);
+          btn.textContent = '✅ Đã lấy vị trí GPS';
+          btn.disabled = false;
+        },
+        () => {
+          btn.textContent = '❌ Không lấy được vị trí. Nhập tay.';
+          btn.disabled = false;
+        }
+      );
+    };
+
+    window.checkUsernameDebounced = () => {
+      clearTimeout(usernameTimer);
+      usernameTimer = setTimeout(checkUsername, 600);
+    };
+
+    async function checkUsername() {
+      const val       = document.getElementById('regUsername').value.trim();
+      const indicator = document.getElementById('userCheck');
+      const hint      = document.getElementById('userHint');
+      if (!val || val.length < 4) {
+        indicator.textContent = '';
+        hint.style.color = '#94a3b8';
+        hint.textContent = 'Chỉ chứa chữ thường, số, dấu gạch dưới. Tối thiểu 4 ký tự.';
+        return;
+      }
+      if (!/^[a-z0-9_]+$/.test(val)) {
+        indicator.textContent = '❌';
+        hint.style.color = '#e53e3e';
+        hint.textContent = 'Không được chứa ký tự đặc biệt hoặc chữ hoa.';
+        return;
+      }
+      indicator.textContent = '⏳';
+      hint.style.color = '#94a3b8';
+      hint.textContent = 'Đang kiểm tra...';
+      const snap = await getDoc(doc(db, 'owners', val));
+      if (snap.exists()) {
+        indicator.textContent = '❌';
+        hint.style.color = '#e53e3e';
+        hint.textContent = 'Tên tài khoản đã tồn tại. Hãy chọn tên khác.';
+      } else {
+        indicator.textContent = '✅';
+        hint.style.color = '#38a169';
+        hint.textContent = 'Tên tài khoản hợp lệ!';
+      }
+    }
+
+    // ── Translate ─────────────────────────────────────────────────────────────
+    window.translateAll = async () => {
+      const viText = document.getElementById('descVI').value.trim();
+      if (!viText) { alert('Hãy nhập nội dung tiếng Việt trước!'); return; }
+      const btn = document.getElementById('btnTranslate');
+      const spinner = document.getElementById('transSpinner');
+      const label   = document.getElementById('transText');
+      btn.disabled = true; spinner.style.display = 'block'; label.textContent = 'Đang dịch...';
+      async function translate(text, to) {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=vi&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+        const res = await fetch(url); const json = await res.json();
+        return json[0].map(s => s[0]).join('');
+      }
+      try {
+        const [en, ja, zh] = await Promise.all([
+          translate(viText,'en'), translate(viText,'ja'), translate(viText,'zh-CN')
+        ]);
+        document.getElementById('descEN').value = en;
+        document.getElementById('descJA').value = ja;
+        document.getElementById('descZH').value = zh;
+      } catch(e) { alert('Lỗi dịch: '+e.message); }
+      finally {
+        btn.disabled = false; spinner.style.display = 'none'; label.textContent = '🌍 Dịch lại';
+      }
+    };
+
+    // ── Photo handling ────────────────────────────────────────────────────────
+    window.triggerFile = (n) => document.getElementById('fileInput'+n).click();
+
+    async function fileHash(file) {
+      const buf = await file.arrayBuffer();
+      const h = await crypto.subtle.digest('SHA-256', buf);
+      return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    window.handleFile = async (n, input) => {
+      const file = input.files[0]; if (!file) return;
+      const hash = await fileHash(file);
+      for (const [slot, h] of Object.entries(photoHashes)) {
+        if (parseInt(slot) !== n && h === hash) {
+          alert(`⚠️ Ảnh này trùng với ảnh số ${slot}! Vui lòng chọn ảnh khác.`);
+          input.value = ''; return;
+        }
+      }
+      photoFiles[n] = file; photoHashes[n] = hash;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('preview'+n).src = e.target.result;
+        document.getElementById('slot'+n).classList.add('filled');
+      };
+      reader.readAsDataURL(file);
+      updatePhotoStatus();
+    };
+
+    window.previewFromUrl = (n, url) => {
+      const val = url.trim();
+      if (!val) {
+        if (!photoFiles[n]) {
+          document.getElementById('preview' + n).src = '';
+          document.getElementById('slot' + n).classList.remove('filled');
+        }
+        updatePhotoStatus();
+        return;
+      }
+
+      // Kiểm tra trùng lặp link
+      for (let i = 1; i <= 5; i++) {
+        if (i !== n) {
+          const otherUrl = document.getElementById('imgUrl' + i).value.trim();
+          if (otherUrl === val) {
+            alert(`⚠️ Link ảnh này đã được sử dụng ở ô số ${i}! Vui lòng chọn ảnh khác.`);
+            document.getElementById('imgUrl' + n).value = '';
+            return;
+          }
+        }
+      }
+
+      const preview = document.getElementById('preview' + n);
+      const slot = document.getElementById('slot' + n);
+      preview.src = val;
+      slot.classList.add('filled');
+      updatePhotoStatus();
+    };
+
+    window.removePhoto = (e, n) => {
+      e.stopPropagation();
+      photoFiles[n] = null; delete photoHashes[n];
+      document.getElementById('preview'+n).src = '';
+      document.getElementById('slot'+n).classList.remove('filled');
+      document.getElementById('fileInput'+n).value = '';
+      const urlInput = document.getElementById('imgUrl'+n);
+      if (urlInput) urlInput.value = '';
+      updatePhotoStatus();
+    };
+
+    function updatePhotoStatus() {
+      let filled = Object.values(photoFiles).filter(Boolean).length;
+      // Cộng dồn với các slot có dán URL trực tiếp
+      for (let i = 1; i <= 5; i++) {
+        const urlVal = document.getElementById('imgUrl'+i).value.trim();
+        if (urlVal && !photoFiles[i]) filled++;
+      }
+
+      const el = document.getElementById('photoStatus');
+      if (filled >= 5) { el.textContent = '✅ Đủ 5 ảnh! Sẵn sàng đăng ký.'; el.className = 'photo-status ok'; }
+      else { el.textContent = `⬜ Đã chọn ${filled}/5 ảnh. Còn ${5-filled} ảnh nữa.`; el.className = 'photo-status'; }
+    }
+
+    function showError(msg) {
+      const b = document.getElementById('globalError');
+      document.getElementById('globalErrorText').textContent = msg;
+      b.classList.add('show');
+      b.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+    function hideError() { document.getElementById('globalError').classList.remove('show'); }
+
+    async function generateNextId() {
+      const snap = await getDocs(collection(db,'restaurants'));
+      return `R${String(snap.size + 1).padStart(2,'0')}`;
+    }
+
+    // ── Modal helpers ─────────────────────────────────────────────────────────
+    window.closeModal = () => {
+      document.getElementById('paymentModal').classList.remove('open');
+    };
+
+    function buildSummaryHTML(d) {
+      const rows = [
+        ['👤','Tài khoản', d.username],
+        ['🏪','Tên quán',  d.shopName],
+        ['📍','Tọa độ',   `${d.lat}, ${d.lng}`],
+        ['⭕','Bán kính', `${d.radius} mét`],
+        ['🕙','Đóng cửa', d.closingTime],
+        ['🏷️','Phân loại', d.category],
+        ['🚦','Tình trạng', d.isOpen ? '🟢 Đang mở cửa' : '🔴 Đóng cửa'],
+      ];
+      return rows.map(([ico,lbl,val]) =>
+        `<div class="summary-row">
+          <span class="s-icon">${ico}</span>
+          <span class="s-label">${lbl}</span>
+          <span class="s-val">${val}</span>
+        </div>`
+      ).join('');
+    }
+
+    // ── Validate + Open Modal (không dùng sessionStorage) ─────────────────────
+    window.goToPayment = async () => {
+      hideError();
+      const username    = document.getElementById('regUsername').value.trim();
+      const password    = document.getElementById('regPassword').value;
+      const pwdConfirm  = document.getElementById('regPasswordConfirm').value;
+      const shopName    = document.getElementById('shopName').value.trim();
+      const lat         = parseFloat(document.getElementById('latitude').value);
+      const lng         = parseFloat(document.getElementById('longitude').value);
+      const radius      = parseFloat(document.getElementById('radius').value);
+      const closingTime = document.getElementById('closingTime').value;
+      const category    = document.getElementById('category').value;
+      const descVI      = document.getElementById('descVI').value.trim();
+      const isOpen      = document.querySelector('input[name="shopStatus"]:checked').value === 'open';
+
+      // Kiểm tra trống (Bỏ qua username/pwd nếu là mode edit/add)
+      if (!_mode) {
+        if (!username)              { showError('Vui lòng nhập tên tài khoản.'); return; }
+        if (!password)              { showError('Vui lòng nhập mật khẩu.'); return; }
+        if (!pwdConfirm)            { showError('Vui lòng nhập lại mật khẩu.'); return; }
+        if (password.length < 6)    { showError('Mật khẩu phải ít nhất 6 ký tự.'); return; }
+        if (password !== pwdConfirm){ showError('Mật khẩu nhập lại không khớp!'); return; }
+        if (!/^[a-z0-9_]+$/.test(username)||username.length<4) {
+          showError('Tên tài khoản không hợp lệ.'); return;
+        }
+      }
+
+      if (!shopName)              { showError('Vui lòng nhập tên quán.'); return; }
+      if (isNaN(lat))             { showError('Vui lòng nhập vĩ độ hợp lệ.'); return; }
+      if (isNaN(lng))             { showError('Vui lòng nhập kinh độ hợp lệ.'); return; }
+      if (isNaN(radius)||radius<5){ showError('Bán kính phải ít nhất 5 mét.'); return; }
+      if (!closingTime)           { showError('Vui lòng nhập giờ đóng cửa.'); return; }
+      if (!category)              { showError('Vui lòng chọn phân loại quán.'); return; }
+      if (!descVI)                { showError('Vui lòng nhập thuyết minh tiếng Việt.'); return; }
+      
+      let filledCount = Object.values(photoFiles).filter(Boolean).length;
+      // Cộng dồn URL dán tay
+      for (let i = 1; i <= 5; i++) {
+        if (document.getElementById('imgUrl'+i).value.trim() && !photoFiles[i]) filledCount++;
+      }
+
+      if (!_mode && filledCount < 5) { 
+        showError(`Bắt buộc chọn đủ 5 ảnh (hoặc dán link). Hiện có ${filledCount}/5.`); return; 
+      }
+
+      const btn = document.getElementById('btnPayment');
+      btn.disabled = true; btn.classList.add('loading');
+
+      try {
+        if (!_mode) {
+          // Kiểm tra Firestore (Chỉ kiểm tra khi đăng ký mới)
+          const ownerSnap = await getDoc(doc(db,'owners',username));
+          if (ownerSnap.exists()) { showError('Tên tài khoản đã tồn tại.'); return; }
+          const nameSnap = await getDocs(query(collection(db,'restaurants'),where('name','==',shopName)));
+          if (!nameSnap.empty) { showError(`Tên quán "${shopName}" đã được đăng ký.`); return; }
+        }
+
+        // Lưu bản nháp (Draft)
+        const nextId  = _editId || (await generateNextId());
+        const pwdHash = password ? (await sha256(password)) : '';
+        const currentOwner = _mode ? (sessionStorage.getItem('ownerUsername')) : username;
+
+        _draft = {
+          username: currentOwner, passwordHash: pwdHash, restaurantId: nextId,
+          shopName, lat, lng, radius, closingTime, category, isOpen, descVI,
+          descEN: document.getElementById('descEN').value,
+          descJA: document.getElementById('descJA').value,
+          descZH: document.getElementById('descZH').value,
+        };
+
+        // Nếu là chế độ sửa thì lưu ngay luôn, bỏ qua modal xác nhận
+        if (_mode === 'edit') {
+          await confirmRegister();
+          return;
+        }
+
+        // Build modal content
+        document.getElementById('summaryRows').innerHTML = buildSummaryHTML(_draft);
+
+        // Preview ảnh trong modal
+        const strip = document.getElementById('photoPreviewStrip');
+        strip.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+          if (photoFiles[i]) {
+            const url = URL.createObjectURL(photoFiles[i]);
+            const img = document.createElement('img');
+            img.src = url; img.alt = `Ảnh ${i}`;
+            strip.appendChild(img);
+          }
+        }
+
+        // Cập nhật giá dựa trên chế độ (Đăng ký mới: 500k, Thêm POI: 200k)
+        const amountEl = document.getElementById('modalPriceAmount');
+        const noteEl   = document.getElementById('modalPriceNote');
+        if (!_mode) {
+          amountEl.textContent = '500.000đ';
+          noteEl.textContent = 'Phí khởi tạo tài khoản Chủ quán và POI đầu tiên.';
+        } else {
+          amountEl.textContent = '200.000đ';
+          noteEl.textContent = 'Phí đăng ký thêm Địa điểm địa phương (POI).';
+        }
+
+        document.getElementById('modalError').classList.remove('show');
+        document.getElementById('paymentModal').classList.add('open');
+
+      } catch(err) {
+        showError('Lỗi kết nối Firebase: ' + err.message);
+      } finally {
+        btn.disabled = false; btn.classList.remove('loading');
+      }
+    };
+
+    // ── Confirm đăng ký thật sự ───────────────────────────────────────────────
+    window.confirmRegister = async () => {
+      if (!_draft) return;
+      const btn = document.getElementById('btnConfirm');
+      btn.disabled = true; btn.classList.add('loading');
+      document.getElementById('modalError').classList.remove('show');
+
+      try {
+        const d = _draft;
+        // 1. Thu thập link ảnh (ưu tiên link dán tay, sau đó đến file local nếu đã được upload - trong bản này ta bỏ qua upload tốn phí)
+        const imgNames = {};
+        for (let i = 1; i <= 5; i++) {
+          const urlVal = document.getElementById('imgUrl'+i).value.trim();
+          if (urlVal) {
+            imgNames[`ImageUrl${i}`] = urlVal;
+          }
+        }
+
+        // 1. Lưu/Cập nhật tài khoản (Chỉ khi đăng ký mới)
+        if (!_mode) {
+          await setDoc(doc(db,'owners', d.username), {
+            username: d.username,
+            passwordHash: d.passwordHash,
+            restaurantId: d.restaurantId,
+            createdAt: new Date()
+          });
+        }
+
+        // 2. Lưu/Cập nhật POI
+        const poiData = {
+          name: d.shopName,
+          Latitude: d.lat,
+          Longitude: d.lng,
+          Radius: d.radius,
+          ClosingTime: d.closingTime,
+          CategoryVi: d.category,
+          IsOpen: d.isOpen,
+          DescriptionVI: d.descVI,
+          DescriptionEN: d.descEN,
+          DescriptionJA: d.descJA,
+          DescriptionZH: d.descZH,
+          NameEn: "", NameJa: "", NameZh: "", // Xóa để App tự dịch lại theo tên mới
+          ownerId: d.username,
+          updatedAt: new Date(),
+          ...imgNames
+        };
+
+        // Nếu mới hoàn toàn, khởi tạo các field mặc định
+        if (!_mode || _mode === 'add') {
+          poiData.Rating = 0;
+          poiData.ReviewCount = 0;
+          poiData.createdAt = new Date();
+        }
+
+        await setDoc(doc(db,'restaurants', d.restaurantId), poiData, { merge: true });
+
+        // Đóng modal, hiện success
+        document.getElementById('paymentModal').classList.remove('open');
+        let successTitle = 'Thành Công!';
+        let successMsg = `Địa điểm "${d.shopName}" đã được cập nhật thành công!`;
+        
+        if (!_mode) { successMsg = `Chào mừng ${d.username}! Tài khoản và quán "${d.shopName}" đã sẵn sàng.`; }
+        else if (_mode === 'add') { successTitle = 'Thêm Thành Công!'; successMsg = `Quán "${d.shopName}" đã được thêm vào hệ thống.`; }
+
+        document.getElementById('successTitle').textContent = successTitle;
+        document.getElementById('successSub').textContent = successMsg;
+        document.getElementById('successOverlay').classList.add('open');
+
+      } catch(err) {
+        const eb = document.getElementById('modalError');
+        document.getElementById('modalErrorText').textContent = 'Lỗi phát sinh: ' + (err.message || 'Không xác định');
+        eb.classList.add('show');
+      } finally {
+        btn.disabled = false; btn.classList.remove('loading');
+      }
+    };
+
+  </script>
+</body>
+</html>

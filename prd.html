@@ -447,25 +447,24 @@
     <nav>
         <div class="logo">🍲 Trải Nghiệm Vĩnh Khánh</div>
         <ul class="nav-links">
-            <li><a href="#overview">Tổng quan</a></li>
-            <li><a href="#startup">Dữ liệu & Khởi động</a></li>
-            <li><a href="#geofence">GPS/Geofence</a></li>
-            <li><a href="#qr">QR Scanner</a></li>
+            <li><a href="#overview">Phần 01</a></li>
+            <li><a href="#startup">Phần 02</a></li>
+            <li><a href="#geofence">Phần 03</a></li>
+            <li><a href="#qr">Phần 04</a></li>
+            <li><a href="#uml-usecase">Phần 05+</a></li>
         </ul>
     </nav>
 
     <!-- HERO -->
     <div class="hero">
-        <h1>Ứng Dụng Hướng Dẫn Kỹ Thuật Số Vĩnh Khánh</h1>
-        <p class="subtitle">Ứng dụng đa nền tảng .NET MAUI: Định vị Geofencing thời gian thực, quét mã QR thông minh,
-            Thuyết minh đa ngôn ngữ TTS — số hoá Trải nghiệm ẩm thực Đường phố.</p>
+        <h1>Hệ Sinh Thái Hướng Dẫn Kỹ Thuật Số Vĩnh Khánh</h1>
+        <p class="subtitle">Nền tảng đa thiết bị (MAUI App + Web Portal): Đồng bộ dữ liệu Firebase thời gian thực, quét mã QR thông minh qua Web, Thuyết minh đa ngôn ngữ TTS — số hoá Trải nghiệm ẩm thực Đường phố.</p>
         <div class="badges">
-            <span class="badge">.NET 8 MAUI</span>
-            <span class="badge">C# 12 XAML</span>
-            <span class="badge">SQLite-net-pcl</span>
+            <span class="badge">.NET 9 MAUI</span>
+            <span class="badge">Firebase Firestore</span>
+            <span class="badge">Web Speech API</span>
             <span class="badge">Google MAPS API</span>
-            <span class="badge">ZXing.Net Barcode</span>
-
+            <span class="badge">Realtime Sync</span>
         </div>
     </div>
 
@@ -478,11 +477,11 @@
             </div>
             <div class="stat-card">
                 <div class="value">100%</div>
-                <div class="label">Khởi Động Lần Đầu (Cold Start)</div>
+                <div class="label">Đồng bộ Cloud Realtime</div>
             </div>
             <div class="stat-card">
                 <div class="value">30m</div>
-                <div class="label">Bán Kính Geofencing</div>
+                <div class="label">Bán Kính Nhận diện Số</div>
             </div>
         </div>
     </section>
@@ -493,53 +492,99 @@
             <div class="icon" style="background:#e8f5e9;color:var(--primary);">🏗️</div>
             <div>
                 <div class="section-num">Phần 01</div>
-                <h2>Kiến Trúc Thành Phần (Những Điểm Đã Làm Được)</h2>
+                <h2>Kiến Trúc Thành Phần Hệ Sinh Thái</h2>
             </div>
         </div>
 
-        <p style="margin-bottom:1rem;color:var(--text-secondary);">Core hệ thống ứng dụng di động được phân chia theo
-            kiến trúc Native kết nối chặt chẽ với cảm biến thiết bị (GPS, Camera, TTS Motor).</p>
+        <p style="margin-bottom:1rem;color:var(--text-secondary);">Hệ thống đã được nâng cấp toàn diện từ cấu trúc Offline sang kiến trúc Điện toán đám mây (Cloud-based), phân quyền rõ ràng 3 cấp: Khách - Chủ - Admin.</p>
 
         <div class="arch-grid">
             <div class="arch-module">
-                <div class="mod-icon">🗺️</div>
-                <div class="mod-name">Maps & Layout</div>
-                <div class="mod-desc">Chồng lớp AbsoluteLayout chứa bản đồ, hiển thị Pin và quét Vòng tròn 30m bằng
-                    Map.Circle</div>
+                <div class="mod-icon">☁️</div>
+                <div class="mod-name">Cloud Firestore</div>
+                <div class="mod-desc">Chuyển đổi hoàn toàn từ SQLite sang Firebase. Dữ liệu POI, Tọa độ và Trạng thái người dùng được đồng bộ thời gian thực cho mọi thiết bị.</div>
             </div>
             <div class="arch-module">
-                <div class="mod-icon">💾</div>
-                <div class="mod-name">Offline DB</div>
-                <div class="mod-desc">SQLite Cục bộ. Tự động nạp Seed-Data cho list POI ngay lúc App khởi động lần 1.
-                </div>
+                <div class="mod-icon">🌐</div>
+                <div class="mod-name">Web Dashboard</div>
+                <div class="mod-desc">Cổng thông tin cho Chủ quán đăng ký (tích hợp phí 500k/200k), quản lý mô tả đa 4 ngôn ngữ và sinh mã QR động.</div>
             </div>
             <div class="arch-module">
                 <div class="mod-icon">🔊</div>
-                <div class="mod-name">TTS Engine</div>
-                <div class="mod-desc">Chạy lệnh PhatThuyetMinh dựa trên Text-To-Speech gốc, xử lý chồng lấn Delay &
-                    Cancelation.</div>
+                <div class="mod-name">Web Speech API</div>
+                <div class="mod-desc">Hệ thống chuyển đổi văn bản thành Giọng nói nhúng trực tiếp vào Web, cho phép nghe ngay lập tức không cần cài App.</div>
             </div>
             <div class="arch-module">
-                <div class="mod-icon">📷</div>
-                <div class="mod-name">Camera QR</div>
-                <div class="mod-desc">Sử dụng ZXing.Net.Maui tích hợp cấp quyền tự động, bóc tách chuỗi regex text tức
-                    thời.</div>
+                <div class="mod-icon">🛡️</div>
+                <div class="mod-name">Admin Control</div>
+                <div class="mod-desc">Cơ chế quản trị viên khóa tài khoản (Kick-out). Nhờ Firebase onSnapshot, thiết bị vi phạm sẽ bị văng ra ngay trong 0.5s.</div>
             </div>
             <div class="arch-module">
-                <div class="mod-icon">🧠</div>
-                <div class="mod-name">On-demand Translate</div>
-                <div class="mod-desc">Hệ thống dịch ngầm HTTP HttpClient gọi qua thư viện Google Translate cho Category,
-                    Status, Script.</div>
+                <div class="mod-icon">🗺️</div>
+                <div class="mod-name">Mobile Maps</div>
+                <div class="mod-desc">Ứng dụng .NET 9 MAUI vẽ bản đồ Google Maps native, tự động tracking Geofence khi người dùng đi vào phạm vi quán.</div>
             </div>
         </div>
     </section>
 
-    <!-- STARTUP & GEOLOCATION -->
+    <!-- STARTUP DATA & STATISTICS -->
+    <section id="startup">
+        <div class="section-header">
+            <div class="icon" style="background:#fff9c4;color:#f57f17;">📊</div>
+            <div>
+                <div class="section-num">Phần 02</div>
+                <h2>Dữ liệu Khởi động & Thống kê Thực tế</h2>
+            </div>
+        </div>
+
+        <p style="margin-bottom:1.5rem;color:var(--text-secondary);">Hệ thống tập trung vào trải nghiệm định vị và thuyết minh. Dữ liệu được số hóa dựa trên thực tế từ logic <code>SeedDataToCloudAsync()</code>, phản ánh chính xác các thực thể tại Phố ẩm thực Vĩnh Khánh.</p>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="value">04</div>
+                <div class="label">Quán ăn (POI) mồi (Seed Data)</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">100%</div>
+                <div class="label">Đồng bộ Cloud Real-time</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">30m - 50m</div>
+                <div class="label">Bán kính quét (Radius) tùy quán</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">4</div>
+                <div class="label">Ngôn ngữ TTS (VI, EN, JA, ZH)</div>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Thực thể POI (restaurants)</h3>
+                <ul>
+                    <li><strong>Ốc Oanh (R01):</strong> Tọa độ GPS & Audio 4 ngữ.</li>
+                    <li><strong>Ốc Vũ (R02):</strong> Tọa độ GPS & Audio 4 ngữ.</li>
+                    <li><strong>Bánh flan Ngọc Nga (R03):</strong> Radius 50m (POI lớn).</li>
+                    <li><strong>Quán Ốc Thảo (R04):</strong> Tọa độ GPS & Audio 4 ngữ.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Cấu trúc Firestore kỹ thuật</h3>
+                <ul>
+                    <li><strong>Collection:</strong> <code>restaurants</code></li>
+                    <li><strong>Đa ngôn ngữ:</strong> <code>DescriptionVI</code>, <code>DescriptionEN</code>, <code>DescriptionJA</code>, <code>DescriptionZH</code>.</li>
+                    <li><strong>Real-time Status:</strong> Quản lý cờ <code>isOpen</code> và <code>isLocked</code>.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- GEOLOCATION -->
     <section id="geofence">
         <div class="section-header">
             <div class="icon" style="background:#e3f2fd;color:var(--info);">📡</div>
             <div>
-                <div class="section-num">Phần 02</div>
+                <div class="section-num">Phần 03</div>
                 <h2>Cơ Chế Auto-Tracking & Kích Hoạt Âm Thanh</h2>
             </div>
         </div>
@@ -581,49 +626,781 @@
     <!-- QR SCANNER -->
     <section id="qr">
         <div class="section-header">
-            <div class="icon" style="background:#fff3e0;color:var(--warning);">📷</div>
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">🚀</div>
             <div>
-                <div class="section-num">Phần 03</div>
-                <h2>Tính Năng QRCode Scanner (ZXing)</h2>
+                <div class="section-num">Phần 04</div>
+                <h2>Trải Nghiệm Dịch Vụ Web-App Mở Rộng</h2>
             </div>
         </div>
 
         <div class="card-grid">
             <div class="card">
-                <h3>Thẩm định Tên quán</h3>
-                <p>Cho phép in hàng loạt QR Code chứa "Tên Tiếng Việt" tĩnh của các điểm. App không cần dùng Web-link
-                    trung gian.</p>
+                <h3>QR Code "Không chạm"</h3>
+                <p>Khách hàng không bị bắt buộc tải App. Chủ quán in mã QR từ Dashboard đặt tại bàn. Khách dùng camera gốc của điện thoại quét mã để mở thẳng trang thông tin quán (index.html).</p>
             </div>
             <div class="card">
-                <h3>Luồng Logic Khớp Nhãn</h3>
-                <p><code>result.Value.ToLower()</code> vs <code>poi.Name.ToLower()</code>. Khớp 1 cái là gọi Navigate ra
-                    Modal về MapPage.</p>
+                <h3>Thuyết Minh Rảnh Tay</h3>
+                <p>Sau khi Quét mã, khách chỉ việc nhấn 1 chạm. Trình duyệt tự động gọi <code>SpeechSynthesisUtterance</code> đọc mô tả chuẩn ngữ điệu (Vi, Anh, Nhật, Trung) nhờ AI của hệ điều hành.</p>
             </div>
             <div class="card">
-                <h3>Auto-Pan Mapping</h3>
-                <p>App tự giật góc map ghim thẳng tới toạ độ Quán Vừa Quét, lọc UI duy nhất điểm đó thành "THÔNG TIN CHI
-                    TIẾT".</p>
+                <h3>Auto-Tracking Thống kê</h3>
+                <p>Quá trình "Quét QR và Nhấn Nghe" sẽ tự động kích hoạt hàm <code>increment()</code> trên Firebase. Đẩy số liệu lượt nghe thẳng về bảng Dashboard cho Admin & Chủ quán phân tích thị hiếu.</p>
             </div>
         </div>
 
         <div class="code-block">
-            <span class="comment">// Kịch bản đẩy ngược luồng MainThread lập tức khi Quét Xong</span><br>
-            <span class="keyword">void</span> <span class="fn">zxing_BarcodesDetected</span>(<span
-                class="keyword">object</span> sender, <span class="keyword">BarcodeDetectionEventArgs</span> e) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">var</span> result = e.Results.FirstOrDefault();<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;MainThread.BeginInvokeOnMainThread(<span class="keyword">async</span> () => {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">var</span> matchedPoi =
-            _pois.FirstOrDefault(p => p.Name.Contains(result));<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">await</span>
-            PhatThuyetMinh(matchedPoi);<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Navigation.PopModalAsync();<br>
+            <span class="comment">// Kịch bản Web Speech API và Ghi nhận Thống kê (Firebase)</span><br>
+            <span class="keyword">function</span> <span class="fn">startReading</span>() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span> text = resDescEl.innerText;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span> utterance = <span class="keyword">new</span> SpeechSynthesisUtterance(text);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;utterance.lang = getBestVoice(currentLang);<br>
+            <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Call OS Level Engine</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;window.speechSynthesis.speak(utterance);<br>
+            <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Tăng bộ đếm Real-time trên Cloud</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;db.collection("restaurants").doc(resId).update({<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;audioListenCount: firebase.firestore.FieldValue.increment(<span class="class">1</span>)<br>
             &nbsp;&nbsp;&nbsp;&nbsp;});<br>
             }
         </div>
     </section>
 
+    <!-- ========================================= -->
+    <!-- PHẦN THIẾT KẾ ĐỒ ÁN CHI TIẾT (UML) -->
+    <!-- ========================================= -->
+    <style>
+        /* Tối ưu riêng cho phần Đặc tả và Sơ đồ */
+        .uml-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; background: var(--surface); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .uml-table th, .uml-table td { border: 1px solid var(--border); padding: 14px 18px; text-align: left; vertical-align: top; }
+        .uml-table th { background-color: rgba(46, 125, 50, 0.05); color: var(--primary-dark); font-weight: 700; width: 25%; }
+        .uml-diagram { display: none; }
+        .uml-render { display: flex; justify-content: center; background: white; padding: 2rem; border: 2px dashed #c8e6c9; border-radius: 12px; margin: 1.5rem 0; overflow-x: auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .uml-render img { max-width: 100%; height: auto; }
+        .uml-header { font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); margin-top: 2.5rem; border-left: 4px solid var(--primary); padding-left: 12px; }
+    </style>
 
+    <section id="uml-usecase">
+        <div class="section-header">
+            <div class="icon" style="background:#e8f5e9;color:var(--primary);">👥</div>
+            <div>
+                <div class="section-num">Phần 05</div>
+                <h2>Mô Hình Use-Case</h2>
+            </div>
+        </div>
 
+        <p style="color:var(--text-secondary);">Sơ đồ hóa các chức năng của hệ thống dưới góc độ của 3 nhóm người dùng: Khách hàng, Chủ quán và Quản trị viên.</p>
+
+        <div class="uml-header">1. Sơ đồ Tổng quan Hệ thống (Focused on Navigation & Audio)</div>
+        <textarea class="uml-diagram">
+@startuml
+actor "Khách hàng" as User
+actor "Chủ quán" as Owner
+actor "Quản trị viên" as Admin
+
+rectangle "Hệ thống Vĩnh Khánh Street" {
+  usecase "Khám phá bản đồ & POI" as UC_Map
+  usecase "Nghe thuyết minh đa ngôn ngữ" as UC_TTS
+  usecase "Quản lý hệ thống POI" as UC_ManagePOI
+  usecase "Quản lý tài khoản" as UC_ManageAccount
+  usecase "Xem thống kê lượt nghe" as UC_Stats
+}
+
+left to right direction
+skinparam usecaseBackgroundColor #e8f5e9
+skinparam usecaseBorderColor #2e7d32
+skinparam actorBackgroundColor #ffffff
+skinparam actorBorderColor #2e7d32
+
+User --> UC_Map
+User --> UC_TTS
+Owner --> UC_ManagePOI
+Owner --> UC_ManageAccount
+Admin --> UC_ManageAccount
+Admin --> UC_Stats
+@enduml
+        </textarea>
+        <div class="uml-render">Đang khởi tạo sơ đồ...</div>
+
+        <div class="uml-header">2.1 Khách hàng: Đăng nhập (Username/Password)</div>
+        <textarea class="uml-diagram">
+@startuml
+actor "Khách hàng" as User
+
+rectangle "Xác thực Tài khoản" {
+  usecase "Đăng nhập Username/Password" as UC_Login
+  usecase "Mã hóa SHA-256" as UC_Hash
+  usecase "Xác thực Firebase" as UC_Auth
+  usecase "Báo lỗi tài khoản" as UC_Err
+}
+
+left to right direction
+skinparam usecaseBackgroundColor #e8f5e9
+skinparam usecaseBorderColor #2e7d32
+
+User --> UC_Login
+UC_Login ..> UC_Hash : <<include>>
+UC_Hash ..> UC_Auth : <<include>>
+UC_Err ..> UC_Login : <<extend>>
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">2.2 Khách hàng: Khám phá & Quét QR</div>
+        <textarea class="uml-diagram">
+@startuml
+actor "Khách hàng" as User
+
+rectangle "Tương tác Bản đồ & QR" {
+  usecase "Xem bản đồ định vị" as UC_Map
+  usecase "Quét Geofence (30-50m)" as UC_Geo
+  usecase "Xem chi tiết quán" as UC_Detail
+  usecase "Quét mã QR tại bàn" as UC_Scan
+}
+
+left to right direction
+skinparam usecaseBackgroundColor #e8f5e9
+skinparam usecaseBorderColor #2e7d32
+
+User --> UC_Map
+UC_Map ..> UC_Geo : <<include>>
+UC_Map ..> UC_Detail : <<include>>
+User --> UC_Scan
+UC_Scan ..> UC_Detail : <<include>>
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">2.3 Khách hàng: Nghe Audio Thuyết minh</div>
+        <textarea class="uml-diagram">
+@startuml
+actor "Khách hàng" as User
+
+rectangle "Trải nghiệm Đa ngôn ngữ" {
+  usecase "Nghe Thuyết minh Audio" as UC_Audio
+  usecase "Tăng Atomic audioListenCount" as UC_Stats
+  usecase "Cảnh báo OS không hỗ trợ" as UC_Err
+  usecase "Thay đổi hệ Ngôn ngữ (4 ngữ)" as UC_Lang
+}
+
+left to right direction
+skinparam usecaseBackgroundColor #e8f5e9
+skinparam usecaseBorderColor #2e7d32
+
+User --> UC_Audio
+UC_Audio ..> UC_Stats : <<include>>
+UC_Err ..> UC_Audio : <<extend>>
+UC_Lang ..> UC_Audio : <<extend>>
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">3.1 Chủ quán: Đăng ký Khởi tạo</div>
+        <textarea class="uml-diagram">
+@startuml
+actor "Chủ quán" as Owner
+
+rectangle "Khởi tạo Tài khoản & POI" {
+  usecase "Đăng ký Khởi tạo" as UC_Reg
+  usecase "Kiểm duyệt Database trùng lặp" as UC_Check
+  usecase "Kích hoạt bởi Admin" as UC_Pay
+}
+
+left to right direction
+skinparam usecaseBackgroundColor #fff3e0
+skinparam usecaseBorderColor #e65100
+
+Owner --> UC_Reg
+UC_Reg ..> UC_Check : <<include>>
+UC_Reg ..> UC_Pay : <<include>>
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">3.2 Chủ quán: Đăng nhập & Mã hóa</div>
+        <textarea class="uml-diagram">
+@startuml
+actor "Chủ quán" as Owner
+
+rectangle "Xác thực Web Portal" {
+  usecase "Đăng nhập Web Portal" as UC_Login
+  usecase "Xác thực SHA-256 Hash" as UC_Hash
+  usecase "Ghi nhận IsOnline = true" as UC_Online
+  usecase "Báo lỗi hoặc IsLocked = true" as UC_Err
+}
+
+left to right direction
+skinparam usecaseBackgroundColor #fff3e0
+skinparam usecaseBorderColor #e65100
+
+Owner --> UC_Login
+UC_Login ..> UC_Hash : <<include>>
+UC_Login ..> UC_Online : <<include>>
+UC_Err ..> UC_Login : <<extend>>
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+        
+        <div class="uml-header">3.3 Chủ quán: Thêm & Quản lý Thông tin Quán</div>
+        <textarea class="uml-diagram">
+@startuml
+actor "Chủ quán" as Owner
+
+rectangle "Vận hành Kinh doanh" {
+  usecase "Thêm Quán phụ trợ mới" as UC_Add
+  usecase "Cập nhật Thông tin Quán" as UC_Edit
+  usecase "Ghép Tọa độ Maps Tracker" as UC_GPS
+  usecase "Dịch thuật (VI/EN/JA/ZH)" as UC_Lang
+  usecase "Tải Mã QR định danh" as UC_QR
+  usecase "Theo dõi Lượt nghe (Stats)" as UC_Stats
+}
+
+left to right direction
+skinparam usecaseBackgroundColor #fff3e0
+skinparam usecaseBorderColor #e65100
+
+Owner --> UC_Add
+Owner --> UC_Edit
+UC_Edit ..> UC_GPS : <<include>>
+UC_Edit ..> UC_Lang : <<include>>
+UC_QR ..> UC_Edit : <<extend>>
+Owner --> UC_Stats
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">4.1 Admin: Quản lý Bảo mật & Ép đăng xuất</div>
+        <textarea class="uml-diagram">
+@startuml
+actor "Quản trị viên" as Admin
+
+rectangle "Giám sát & Bảo mật" {
+  usecase "Đăng nhập Admin Panel" as UC_Login
+  usecase "Kiểm tra IsLocked Flag" as UC_Auth
+  usecase "Giám sát IsOnline Users" as UC_Monitor
+  usecase "Khóa tài khoản (Kick-out)" as UC_Kick
+  usecase "Trigger onSnapshot Event" as UC_Snap
+  usecase "Xem Dashboard Thống kê Lượt nghe" as UC_Stats
+}
+
+left to right direction
+skinparam usecaseBackgroundColor #e3f2fd
+skinparam usecaseBorderColor #1565c0
+
+Admin --> UC_Login
+UC_Login ..> UC_Auth : <<include>>
+Admin --> UC_Monitor
+UC_Kick ..> UC_Monitor : <<extend>>
+UC_Kick ..> UC_Snap : <<include>>
+Admin --> UC_Stats
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+    </section>
+
+    <!-- ĐẶC TẢ USE CASE -->
+    <section id="uml-specs">
+        <div class="section-header">
+            <div class="icon" style="background:#e3f2fd;color:var(--info);">📋</div>
+            <div>
+                <div class="section-num">Phần 06</div>
+                <h2>Đặc tả Use-Case Chi tiết (Specification)</h2>
+            </div>
+        </div>
+
+        <!-- 1. KHÁCH HÀNG: ĐĂNG NHẬP -->
+        <div class="uml-header">Use Case 2.1: Đăng nhập (Khách hàng)</div>
+        <table class="uml-table">
+            <tr><th>Tác nhân</th><td>Khách hàng (Người dùng cuối)</td></tr>
+            <tr><th>Mức độ ưu tiên</th><td>Trung bình</td></tr>
+            <tr><th>Tiền điều kiện</th><td>Người dùng đã tải App.</td></tr>
+            <tr><th>Chuỗi sự kiện chính</th><td>
+                1. Hệ thống hiển thị Form đăng nhập.<br>
+                2. Người dùng nhập Username/Password.<br>
+                3. Hệ thống thực hiện <strong>Hash SHA-256</strong> mật khẩu vừa nhập.<br>
+                4. Hệ thống so khớp PasswordHash với Firestore.<br>
+                5. Ghi nhận <code>LastActiveAt</code> và chuyển hướng vào Bản đồ chính.
+            </td></tr>
+            <tr><th>Ngoại lệ</th><td>Sai mật khẩu: Hệ thống thông báo lỗi "Tài khoản hoặc mật khẩu không chính xác".</td></tr>
+        </table>
+
+        <!-- 2. KHÁCH HÀNG: BẢN ĐỒ & GEOFENCE -->
+        <div class="uml-header">Use Case 2.2: Khám phá Bản đồ & Quét Geofence (Khách hàng)</div>
+        <table class="uml-table">
+            <tr><th>Tác nhân</th><td>Khách hàng, GPS System</td></tr>
+            <tr><th>Mức độ ưu tiên</th><td>Cao</td></tr>
+            <tr><th>Tiền điều kiện</th><td>Đã đăng nhập, đã bật Location Service.</td></tr>
+            <tr><th>Chuỗi sự kiện chính</th><td>
+                1. Hệ thống lấy tọa độ GPS thời gian thực.<br>
+                2. Hệ thống truy vấn Firestore lấy danh sách quán.<br>
+                3. Hiển thị Marker lên Google Maps.<br>
+                4. <strong>Lô-gic Geofence:</strong> Nếu người dùng bước vào bán kính của quán (Radius: 30-50m), hệ thống tự động đẩy thông báo.
+            </td></tr>
+            <tr><th>Ngoại lệ</th><td>Mất GPS: Báo "Đang tìm tín hiệu...".</td></tr>
+        </table>
+
+        <!-- 3. KHÁCH HÀNG: AUDIO -->
+        <div class="uml-header">Use Case 2.3: Nghe Thuyết minh Đa ngôn ngữ (Khách hàng)</div>
+        <table class="uml-table">
+            <tr><th>Tác nhân</th><td>Khách hàng, Web Speech API</td></tr>
+            <tr><th>Mức độ ưu tiên</th><td>Cao</td></tr>
+            <tr><th>Chuỗi sự kiện chính</th><td>
+                1. Người dùng chọn quán hoặc quét QR.<br>
+                2. Hệ thống tải văn bản mô tả (DescriptionVI/EN/JA/ZH).<br>
+                3. Người dùng chọn ngôn ngữ và ấn Play.<br>
+                4. Hệ thống gọi bộ máy TTS của hệ điều hành.<br>
+                5. Tăng nguyên tử (Atomic) giá trị <code>audioListenCount</code> lên +1.
+            </td></tr>
+            <tr><th>Ngoại lệ</th><td>Không hỗ trợ TTS: Hiển thị văn bản thuần.</td></tr>
+        </table>
+
+        <!-- 4. CHỦ QUÁN: ĐĂNG KÝ -->
+        <div class="uml-header">Use Case 3.1: Đăng ký & Kích hoạt (Chủ quán)</div>
+        <table class="uml-table">
+            <tr><th>Tác nhân</th><td>Chủ quán, Quản trị viên</td></tr>
+            <tr><th>Mức độ ưu tiên</th><td>Rất Cao</td></tr>
+            <tr><th>Chuỗi sự kiện chính</th><td>
+                1. Chủ quán nhập thông tin đăng ký.<br>
+                2. Hệ thống khởi tạo trạng thái <code>IsLocked = true</code>.<br>
+                3. Chủ quán thực hiện các bước xác thực danh tính.<br>
+                4. Admin duyệt và chuyển đổi <code>IsLocked = false</code>.
+            </td></tr>
+        </table>
+
+        <!-- 5. CHỦ QUÁN: QUẢN LÝ -->
+        <div class="uml-header">Use Case 3.3: Quản lý POI (Chủ quán)</div>
+        <table class="uml-table">
+            <tr><th>Tác nhân</th><td>Chủ quán</td></tr>
+            <tr><th>Mức độ ưu tiên</th><td>Cao</td></tr>
+            <tr><th>Chuỗi sự kiện chính</th><td>
+                1. Chủ quán đăng nhập Dashboard.<br>
+                2. Hệ thống hiển thị danh sách quán con.<br>
+                3. Chủ quán cập nhật menu và mô tả đa ngôn ngữ.<br>
+                4. Hệ thống tự động sinh mã QR định danh (qrUrl).<br>
+                5. Xem thống kê lượt nghe (audioListenCount).
+            </td></tr>
+        </table>
+
+        <!-- 6. CHỦ QUÁN: ĐĂNG NHẬP -->
+        <div class="uml-header">Use Case 3.2: Đăng nhập Portal (Chủ quán)</div>
+        <table class="uml-table">
+            <tr><th>Tác nhân</th><td>Chủ quán</td></tr>
+            <tr><th>Chuỗi sự kiện chính</th><td>
+                1. Truy cập `dashboard.html`.<br>
+                2. Nhập Email và Mật khẩu.<br>
+                3. Hash SHA-256 mật khẩu để xác thực.<br>
+                4. Kiểm tra cờ <code>IsLocked</code> để cho phép vào.
+            </td></tr>
+        </table>
+
+        <!-- 7. ADMIN: BẢO MẬT -->
+        <div class="uml-header">Use Case 4.1: Quản lý & Kick-out (Admin)</div>
+        <table class="uml-table">
+            <tr><th>Tác nhân</th><td>Quản trị viên, Firestore Realtime</td></tr>
+            <tr><th>Mức độ ưu tiên</th><td>Tối quan trọng (Bảo mật)</td></tr>
+            <tr><th>Tiền điều kiện</th><td>Tài khoản có quyền <code>admin</code>.</td></tr>
+            <tr><th>Chuỗi sự kiện chính</th><td>
+                1. Admin theo dõi danh sách <code>IsOnline = true</code>.<br>
+                2. Admin ấn nút <strong>Khóa tài khoản</strong>.<br>
+                3. Hệ thống cập nhật <code>IsLocked = true</code>.<br>
+                4. Client nhận Snapshot và tự động xóa Session.
+            </td></tr>
+        </table>
+    </section>
+
+    <!-- ACTIVITY DIAGRAM -->
+    <section id="uml-activity">
+        <div class="section-header">
+            <div class="icon" style="background:#fff3e0;color:var(--warning);">⚙️</div>
+            <div>
+                <div class="section-num">Phần 07</div>
+                <h2>Sơ đồ Hoạt động (Activity Diagram)</h2>
+            </div>
+        </div>
+
+        <div class="uml-header">6.1 Khách hàng: Luồng Đăng nhập (Username/Password + SHA-256)</div>
+        <textarea class="uml-diagram">
+@startuml
+|User|
+start
+:Mở màn hình Login;
+:Nhập Username/Pass;
+|System|
+:Mã hóa Password (SHA-256);
+:Gửi hash lên Firebase Auth;
+if (Khớp thông tin?) then (Có)
+  :Lấy UID & Session;
+  :Cập nhật IsOnline = true;
+  :Lưu Local Storage (Secure);
+  :Chuyển vào Bản đồ;
+else (Không)
+  :Báo lỗi "Thông tin sai";
+endif
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">6.2 Khách hàng: Định vị & Vẽ Marker Maps</div>
+        <textarea class="uml-diagram">
+@startuml
+start
+:Khởi động Google Maps SDK;
+:Yêu cầu quyền GPS;
+if (Quyền cho phép?) then (Có)
+  :Lấy Current Location;
+  :Query Firestore POIs;
+  while (Còn POI?) is (Còn)
+    :Tạo Marker định danh;
+    :Gắn Event Click Popup;
+    :Vẽ Marker lên Map;
+  endwhile
+else (Không)
+  :Báo lỗi "Cần cấp quyền GPS";
+endif
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">6.3 Khách hàng: Geofencing (Bán kính 30-50m)</div>
+        <textarea class="uml-diagram">
+@startuml
+start
+:Lắng nghe GPS (1s);
+:Tính Haversine tới POI gần nhất;
+if (Khoảng cách <= poi.Radius?) then (Trong phạm vi)
+  if (Chưa tự động phát?) then (Chưa)
+    :Đẩy Local Push Noti;
+    :Rung & Gợi ý xem quán;
+    :Đánh dấu HasAutoPlayed;
+  else (Đã rồi)
+    :Bỏ qua;
+  endif
+else (Ngoài phạm vi)
+  :Reset HasAutoPlayed = false;
+endif
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">6.4 Khách hàng: Chọn ngôn ngữ & Phát Audio</div>
+        <textarea class="uml-diagram">
+@startuml
+start
+:Mở Detail Page;
+:Hiển thị Cờ ngôn ngữ;
+:Chọn ngôn ngữ (En/Ja/Zh/Vi);
+:Load Description[lang] từ DB;
+:Bấm nút Play;
+if (Hỗ trợ Speech SDK?) then (Có)
+  :Khởi tạo Utterance;
+  :Phát thuyết minh AI;
+  :Atomic increment audioListenCount;
+else (Không)
+  :Hiển thị text thuần;
+endif
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">6.5 Chủ quán: Đăng ký & Kích hoạt bởi Admin</div>
+        <textarea class="uml-diagram">
+@startuml
+|Chủ quán|
+start
+:Nhập thông tin quán;
+:Xác thực tọa độ chính xác;
+|System|
+:Tạo Account (IsLocked = true);
+:Gửi thông báo tới Admin;
+|Admin|
+:Kiểm tra hồ sơ quán;
+if (Hợp lệ?) then (Đạt)
+  :Cập nhật IsLocked = false;
+  :Mở quyền truy cập Portal;
+else (Vi phạm)
+  :Yêu cầu bổ sung thông tin;
+endif
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">6.6 Chủ quán: Quản lý POI & Dịch thuật</div>
+        <textarea class="uml-diagram">
+@startuml
+start
+:Mở Portal Dashboard;
+:Chọn quán cần chỉnh sửa;
+:Cập nhật Description (Vi/En/Ja/Zh);
+:Lưu mảng languages vào Firestore;
+:Cập nhật Ảnh (Url1 - Url5);
+:Hệ thống Sync Real-time tới App;
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">6.7 Chủ quán: Xem Thống kê lượt nghe</div>
+        <textarea class="uml-diagram">
+@startuml
+start
+:Mở Tab Analytics;
+:Truy vấn 'audioListenCount';
+:Lọc theo mốc thời gian;
+:Hiển thị biểu đồ Nghe nhiều;
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">6.8 Admin: Giám sát Trạng thái Trực tuyến</div>
+        <textarea class="uml-diagram">
+@startuml
+start
+:Vào Admin Control;
+:Tải danh sách IsOnline = true;
+:Checking các hành vi vi phạm;
+if (Phát hiện?) then (Có)
+  :Tiến hành lệnh Kick-out;
+else (Không)
+  :Tiếp tục theo dõi;
+endif
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">6.9 Admin: Quy trình Ép đăng xuất (Real-time Snapshot)</div>
+        <textarea class="uml-diagram">
+@startuml
+|Admin|
+start
+:Bấm "Lock Account";
+|Firebase|
+:Update field isLocked = true;
+|User Hub|
+:onSnapshot nhận payload;
+if (Payload.isLocked == true?) then (Trigger)
+  :Xóa local Login State;
+  :Popup thông báo "Khóa bởi Admin";
+  :Đẩy về login.html;
+endif
+stop
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+    </section>
+
+    <!-- SEQUENCE DIAGRAM -->
+    <section id="uml-sequence">
+        <div class="section-header">
+            <div class="icon" style="background:#fce4ec;color:#c2185b;">⏱️</div>
+            <div>
+                <div class="section-num">Phần 08</div>
+                <h2>Sơ đồ Tuần tự (Sequence Diagram)</h2>
+            </div>
+        </div>
+
+        <div class="uml-header">7.1 Luồng Xác thực: Username/Password + SHA-256</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Người dùng" as User
+participant "App UI" as UI
+participant "SHA-256 Engine" as Crypt
+database "Firestore" as DB
+
+User -> UI: Nhập Username/Password
+UI -> Crypt: ComputeHash(password)
+Crypt --> UI: Trả về passwordHash
+UI -> DB: GetDocument(username)
+DB --> UI: Trả về User Data
+UI -> UI: So sánh hash
+UI -> DB: update(IsOnline: true)
+UI -> User: Đưa vào Dashboard
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.2 Luồng Tải dữ liệu Bản đồ (Thực thể restaurants)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+participant "Google Maps SDK" as Map
+participant "Service Layer" as Service
+database "Firestore" as DB
+
+Map -> Service: requestPOIs()
+Service -> DB: query(restaurants).where(isApproved: true)
+DB --> Service: Stream POIs (R01, R02, etc.)
+Service -> Map: Render Markers on Canvas
+Map --> User: Hiển thị bản đồ ẩm thực
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.3 Luồng Xử lý Geofence (Bán kính động)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+participant "GPS" as GPS
+participant "Calculator" as Calc
+participant "UI Noti" as Noti
+
+GPS -> Calc: userLat, userLng
+Calc -> Calc: distance = Haversine(user, poi)
+alt distance <= poi.Radius
+    Calc -> Noti: Trigger Popup(poiName)
+    Noti --> User: Rung & Thông báo
+else distance > poi.Radius + Gap
+    Calc -> Calc: Reset HasAutoPlayed
+end
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.4 Luồng Quét QR & Tải chi tiết</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Khách hàng" as User
+participant "Scanner" as Cam
+participant "Web UI" as UI
+database "Firestore" as DB
+
+User -> Cam: Quét QR tại bàn
+Cam -> UI: resolve(restaurantId)
+UI -> DB: get(restaurantId)
+DB --> UI: Trả về {DescriptionVI/EN/JA/ZH}
+UI -> UI: Render chi tiết & Cờ ngôn ngữ
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.5 Luồng Web Speech API (Phát thuyết minh)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+participant "Web UI" as UI
+participant "SpeechSynthesis" as TTS
+participant "OS Audio" as Audio
+
+UI -> UI: Select Language (e.g. JA)
+UI -> TTS: speak(descriptionJA, 'ja-JP')
+TTS -> Audio: Gửi PCM Stream tới Driver
+Audio --> User: Phát giọng nói AI
+TTS -> UI: callback onEnd()
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.6 Luồng Khởi tạo POI & Admin Activation</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Portal" as UI
+database "Firestore" as DB
+actor "Admin" as Admin
+
+Owner -> UI: Submit POI Form
+UI -> DB: set(status: locked)
+Admin -> DB: Duyệt hồ sơ (isApproved & isLocked)
+DB -->> UI: Real-time Snapshot
+UI -> Owner: "Tài khoản đã được kích hoạt!"
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.7 Luồng Cập nhật Đa ngôn ngữ (Firestore Map)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+database "Firestore" as DB
+
+Owner -> DB: update({DescriptionVI, DescriptionEN...})
+Note over DB: Dữ liệu được lưu vào Map object
+DB -->> App: Client onSnapshot trigger
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.8 Luồng Thống kê lượt nghe (Atomic increment)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+participant "Audio Player" as UI
+database "Firestore" as DB
+
+UI -> DB: update(audioListenCount: FieldValue.increment(1))
+Note over DB: Đảm bảo tính nhất quán (Atomic)
+DB --> UI: Success
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.9 Luồng Bảo mật: Real-time Kick-out</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Admin
+database "Firebase" as DB
+participant "Target Client" as Client
+
+Admin -> DB: set(isLocked: true)
+DB --[#red]> Client: onSnapshot() push
+Client -> Client: Check isLocked == true
+Client -> Client: Clear SecureStorage
+Client -> User: Popup "Khóa bởi Admin"
+Client -> UI: Redirect(login.html)
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+    </section>
+
+    <!-- SCRIPT RENDER TỰ ĐỘNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/plantuml-encoder@1.4.0/dist/plantuml-encoder.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const textareas = document.querySelectorAll('.uml-diagram');
+            const renders = document.querySelectorAll('.uml-render');
+            
+            textareas.forEach((textarea, index) => {
+                const code = textarea.value.trim();
+                if (code) {
+                    renders[index].innerHTML = '<span style="color:#64748b; font-style:italic;">Đang khởi tạo sơ đồ...</span>';
+                    try {
+                        // Sử dụng thư viện plantuml-encoder để tạo mã
+                        const encoded = plantumlEncoder.encode(code);
+                        const url = 'https://www.plantuml.com/plantuml/svg/' + encoded;
+                        
+                        // Tạo đối tượng ảnh để kiểm tra load thành công
+                        const img = new Image();
+                        img.onload = function() {
+                            renders[index].innerHTML = '';
+                            renders[index].appendChild(img);
+                            img.style.maxWidth = '100%';
+                            img.style.height = 'auto';
+                            img.style.backgroundColor = 'white';
+                            img.style.padding = '10px';
+                            img.style.borderRadius = '8px';
+                        };
+                        img.onerror = function() {
+                            renders[index].innerHTML = "<span style='color:red;'>Lỗi: Không thể tải ảnh từ Server PlantUML.</span>";
+                        };
+                        img.src = url;
+                    } catch (err) {
+                        renders[index].innerHTML = "<span style='color:red;'>Lỗi mã hóa: " + err.message + "</span>";
+                    }
+                }
+            });
+        });
+    </script>
 </body>
-
 </html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng Nhập – Vĩnh Khánh Street</title>
+  <meta name="description" content="Cổng đăng nhập dành cho chủ quán tại Vĩnh Khánh Street, Quận 4."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #667EEA;
+      --primary2: #764BA2;
+      --surface: #ffffff;
+      --bg: #f0f4ff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --input-bg: #f8faff;
+      --error: #e53e3e;
+      --radius: 14px;
+      --shadow: 0 8px 32px rgba(102,126,234,.18);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated gradient background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #667EEA 0%, #764BA2 50%, #f093fb 100%);
+      animation: bgShift 8s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    @keyframes bgShift {
+      0%   { filter: hue-rotate(0deg);   }
+      100% { filter: hue-rotate(30deg);  }
+    }
+
+    /* Floating blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .35;
+      animation: float 10s ease-in-out infinite;
+      z-index: 0;
+    }
+    .blob-1 { width: 400px; height: 400px; background: #ff6b6b; top: -120px; right: -100px; animation-delay: 0s; }
+    .blob-2 { width: 300px; height: 300px; background: #48dbfb; bottom: -80px; left: -80px; animation-delay: 3s; }
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+    }
+
+    /* Glass card */
+    .card {
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 36px;
+      box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.5);
+      animation: slideUp .5s cubic-bezier(.22,.68,0,1.2) both;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px) scale(.97); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* Logo area */
+    .logo-wrap {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .logo-icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, #ff6b6b, #ffa500);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      font-size: 34px;
+      box-shadow: 0 8px 24px rgba(255,107,107,.4);
+      margin-bottom: 12px;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 8px 24px rgba(255,107,107,.4); }
+      50%      { box-shadow: 0 8px 36px rgba(255,107,107,.7); }
+    }
+    .logo-title {
+      font-size: 22px; font-weight: 800;
+      background: linear-gradient(135deg, #667EEA, #764BA2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo-sub {
+      font-size: 13px; color: var(--muted); margin-top: 4px;
+    }
+
+    .form-title {
+      text-align: center;
+      font-size: 18px; font-weight: 700;
+      color: var(--text);
+      margin-bottom: 24px;
+      letter-spacing: .5px;
+    }
+
+    /* Field group */
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      font-size: 13px; font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap .icon {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      pointer-events: none;
+    }
+    .input-wrap input {
+      width: 100%;
+      height: 50px;
+      background: var(--input-bg);
+      border: 1.8px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 14px 0 42px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .input-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102,126,234,.15);
+      background: #fff;
+    }
+
+    /* Eye toggle */
+    .eye-btn {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; font-size: 18px;
+      color: var(--muted);
+      transition: color .2s;
+    }
+    .eye-btn:hover { color: var(--primary); }
+
+    /* Error message */
+    .error-msg {
+      display: none;
+      background: #fff5f5;
+      border: 1px solid #fca5a5;
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--error);
+      font-size: 13px;
+      margin-bottom: 16px;
+      align-items: center; gap: 8px;
+    }
+    .error-msg.show { display: flex; }
+
+    /* Submit button */
+    .btn-primary {
+      width: 100%;
+      height: 52px;
+      background: linear-gradient(135deg, #667EEA, #764BA2);
+      color: #fff;
+      border: none; border-radius: var(--radius);
+      font-size: 16px; font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 6px 20px rgba(102,126,234,.4);
+    }
+    .btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(102,126,234,.5); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary .ripple {
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,.15);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .btn-primary:active .ripple { opacity: 1; }
+    .btn-primary:disabled {
+      opacity: .7; cursor: not-allowed; transform: none;
+    }
+
+    /* Spinner inside button */
+    .spinner {
+      display: none;
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,.5);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-primary.loading .btn-text { display: none; }
+    .btn-primary.loading .spinner  { display: block; }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 20px 0 16px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
+    }
+    .divider span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+    /* Register link */
+    .register-row {
+      text-align: center;
+      font-size: 14px; color: var(--muted);
+    }
+    .register-row a {
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .register-row a:hover { color: var(--primary2); text-decoration: underline; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 11px; color: rgba(255,255,255,.65);
+      margin-top: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="wrapper">
+    <div class="card">
+      <!-- Logo -->
+      <div class="logo-wrap">
+        <div class="logo-icon">🍜</div>
+        <div class="logo-title">Vĩnh Khánh Street</div>
+        <div class="logo-sub">Cổng quản lý dành cho chủ quán</div>
+      </div>
+
+      <div class="form-title">— ĐĂNG NHẬP —</div>
+
+      <!-- Error banner -->
+      <div class="error-msg" id="errorMsg">
+        <span>⚠️</span>
+        <span id="errorText"></span>
+      </div>
+
+      <!-- Form -->
+      <form id="loginForm" novalidate>
+        <!-- Tên tài khoản -->
+        <div class="field">
+          <label for="username">Tên tài khoản</label>
+          <div class="input-wrap">
+            <span class="icon">👤</span>
+            <input type="text" id="username" placeholder="Nhập tên tài khoản..." autocomplete="username" required/>
+          </div>
+        </div>
+
+        <!-- Mật khẩu -->
+        <div class="field">
+          <label for="password">Mật khẩu</label>
+          <div class="input-wrap">
+            <span class="icon">🔒</span>
+            <input type="password" id="password" placeholder="Nhập mật khẩu..." autocomplete="current-password" required/>
+            <button type="button" class="eye-btn" id="eyeBtn" aria-label="Hiện mật khẩu">👁️</button>
+          </div>
+        </div>
+
+        <!-- Nút đăng nhập -->
+        <button type="submit" class="btn-primary" id="loginBtn">
+          <div class="ripple"></div>
+          <span class="btn-text">Đăng Nhập</span>
+          <div class="spinner"></div>
+        </button>
+      </form>
+
+      <div class="divider"><span>hoặc</span></div>
+
+      <div class="register-row">
+        Chưa có tài khoản?
+        <a href="register.html" id="goRegister">Đăng ký ngay →</a>
+      </div>
+    </div>
+
+    <p class="footer-note">© 2025 Vĩnh Khánh Street – Quận 4, TP.HCM</p>
+  </div>
+
+  <script type="module">
+    // ── Firebase ────────────────────────────────────────────────────────────
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc }
+      from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAj0Lm-RYZ0_9BIqjxqJ5ja-QV4z5DXrFE",
+      authDomain: "vinhkhanhstreet-dda5d.firebaseapp.com",
+      projectId: "vinhkhanhstreet-dda5d",
+      storageBucket: "vinhkhanhstreet-dda5d.firebasestorage.app",
+      messagingSenderId: "250371727417",
+      appId: "1:250371727417:web:921e00a706d83b6379ade8"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    // ── Hash SHA-256 ────────────────────────────────────────────────────────
+    async function sha256(str) {
+      const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+
+    // ── Tự động tạo tài khoản admin nếu chưa tồn tại ──────────────────────
+    async function ensureAdminExists() {
+      try {
+        const adminRef = doc(db, 'admins', 'admin');
+        const snap = await getDoc(adminRef);
+        if (!snap.exists()) {
+          const hash = await sha256('123456');
+          await setDoc(adminRef, {
+            passwordHash: hash,
+            role: 'admin',
+            createdAt: new Date().toISOString()
+          });
+          console.log('[Setup] Tài khoản admin đã được tạo tự động.');
+        }
+      } catch(e) { console.warn('Không thể tạo admin:', e.message); }
+    }
+    ensureAdminExists();
+
+    // ── DOM ─────────────────────────────────────────────────────────────────
+    const form      = document.getElementById('loginForm');
+    const btnLogin  = document.getElementById('loginBtn');
+    const errorMsg  = document.getElementById('errorMsg');
+    const errorText = document.getElementById('errorText');
+    const eyeBtn    = document.getElementById('eyeBtn');
+    const pwdInput  = document.getElementById('password');
+
+    // Hiện/ẩn mật khẩu
+    eyeBtn.addEventListener('click', () => {
+      const show = pwdInput.type === 'password';
+      pwdInput.type = show ? 'text' : 'password';
+      eyeBtn.textContent = show ? '🙈' : '👁️';
+    });
+
+    function showError(msg) {
+      errorText.textContent = msg;
+      errorMsg.classList.add('show');
+      // Rung animation
+      errorMsg.animate([{transform:'translateX(-6px)'},{transform:'translateX(6px)'},
+                        {transform:'translateX(-4px)'},{transform:'translateX(0)'}],
+                       {duration: 300});
+    }
+    function hideError() { errorMsg.classList.remove('show'); }
+
+    // ── Submit ──────────────────────────────────────────────────────────────
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!username || !password) {
+        showError('Vui lòng nhập đầy đủ tên tài khoản và mật khẩu.'); return;
+      }
+
+      btnLogin.disabled = true;
+      btnLogin.classList.add('loading');
+
+      try {
+        const hash = await sha256(password);
+
+        // ── Kiểm tra Admin trước ──────────────────────────────────────────
+        const adminRef  = doc(db, 'admins', username);
+        const adminSnap = await getDoc(adminRef);
+
+        if (adminSnap.exists()) {
+          const adminData = adminSnap.data();
+          if (adminData.passwordHash !== hash) {
+            showError('Mật khẩu không đúng.'); return;
+          }
+          // Đăng nhập Admin thành công
+          sessionStorage.setItem('ownerUsername', username);
+          sessionStorage.setItem('isAdmin', 'true');
+          window.location.href = 'admin-dashboard.html';
+          return;
+        }
+
+        // ── Kiểm tra Owner thông thường ───────────────────────────────────
+        const ownerRef  = doc(db, 'owners', username);
+        const ownerSnap = await getDoc(ownerRef);
+
+        if (!ownerSnap.exists()) {
+          showError('Tên tài khoản không tồn tại.'); return;
+        }
+
+        const data = ownerSnap.data();
+
+        // Kiểm tra khóa tài khoản
+        if (data.IsLocked === true) {
+          showError('⛔ Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.'); return;
+        }
+
+        if (data.passwordHash !== hash) {
+          showError('Mật khẩu không đúng.'); return;
+        }
+
+        // Cập nhật lượt đăng nhập và thời gian hoạt động
+        await updateDoc(ownerRef, {
+          LoginCount: (data.LoginCount || 0) + 1,
+          LastActiveAt: new Date()
+        });
+
+        // Lưu session
+        sessionStorage.setItem('ownerUsername', username);
+        sessionStorage.setItem('ownerRestaurantId', data.restaurantId ?? '');
+        sessionStorage.removeItem('isAdmin');
+        
+        // Chuyển về trang quản lý
+        window.location.href = 'dashboard.html';
+
+      } catch (err) {
+        showError('Lỗi kết nối: ' + err.message);
+      } finally {
+        btnLogin.disabled = false;
+        btnLogin.classList.remove('loading');
+      }
+    });
+  </script>
+</body>
+</html>
