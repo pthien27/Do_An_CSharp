@@ -271,7 +271,7 @@
 
     <!-- Tab Navigation -->
     <div class="tab-nav">
-        <button class="tab-btn active" id="tab-poi" onclick="switchTab('poi')">
+        <button class="tab-btn" id="tab-poi" onclick="switchTab('poi')">
             <i class="fa-solid fa-store"></i> Quản lý POI
             <span class="tab-badge" id="count-poi">0</span>
         </button>
@@ -288,7 +288,7 @@
     <div class="container">
 
         <!-- ══ TAB 1: QUẢN LÝ POI ══ -->
-        <div class="page-section active" id="section-poi">
+        <div class="page-section" id="section-poi">
             <div class="section-header">
                 <div>
                     <div class="section-title">🏪 Quản lý Địa điểm</div>
@@ -453,8 +453,15 @@ const db  = getFirestore(app);
 window.switchTab = (tab) => {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('section-' + tab).classList.add('active');
-    document.getElementById('tab-' + tab).classList.add('active');
+    
+    const section = document.getElementById('section-' + tab);
+    const button  = document.getElementById('tab-' + tab);
+    
+    if (section && button) {
+        section.classList.add('active');
+        button.classList.add('active');
+        sessionStorage.setItem('adminActiveTab', tab);
+    }
 };
 
 window.doLogout = () => {
@@ -732,6 +739,9 @@ async function loadStats() {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
+const savedTab = sessionStorage.getItem('adminActiveTab') || 'poi';
+switchTab(savedTab);
+
 loadAccounts();
 loadStats();
 </script>

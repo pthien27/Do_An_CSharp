@@ -819,10 +819,6 @@
         };
 
         window.deletePoi = async (id, name) => {
-            if (_poiCount <= 1) {
-                alert('⚠️ Hệ thống yêu cầu mỗi chủ quán phải có ít nhất 1 địa điểm. Bạn không thể xóa địa điểm cuối cùng này.');
-                return;
-            }
             if (confirm(`Bạn có chắc chắn muốn xóa địa điểm "${name}" không? Hành động này không thể hoàn tác.`)) {
                 try {
                     await deleteDoc(doc(db, "restaurants", id));
