@@ -62,14 +62,14 @@
                             <Grid RowDefinitions="Auto,4" RowSpacing="{StaticResource size60}"
                                  SemanticProperties.Description="{Binding Description}">
                                 <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
+                                    <VisualStateGroup x:Name="IconCommonStates">
+                                        <VisualState Name="IconNormal">
                                             <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" Value="Transparent"/>
                                                 <Setter TargetName="SelectedIndicator" Property="BoxView.IsVisible" Value="False"/>
                                             </VisualState.Setters>
                                         </VisualState>
-                                        <VisualState x:Name="Selected">
+                                        <VisualState Name="IconSelected">
                                             <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" Value="Transparent"/>
                                                 <Setter Property="Background" Value="Transparent"/>
@@ -121,14 +121,14 @@
                                 Padding="{OnPlatform '18,0,18,8',Android='18,0,18,0'}"
                                 SemanticProperties.Description="{Binding Title}">
                                 <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
+                                    <VisualStateGroup x:Name="TagCommonStates">
+                                        <VisualState Name="TagNormal">
                                             <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightSecondaryBackground},Dark={StaticResource DarkSecondaryBackground}}"/>
                                                 <Setter TargetName="TagLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground},Dark={StaticResource LightOnDarkBackground}}"/>
                                             </VisualState.Setters>
                                         </VisualState>
-                                        <VisualState x:Name="Selected">
+                                        <VisualState Name="TagSelected">
                                             <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" Value="{Binding DisplayColor}"/>
                                                 <Setter TargetName="TagLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource LightBackground},Dark={StaticResource DarkBackground}}"/>

@@ -10,12 +10,10 @@ namespace VinhKhanhstreet.Services
 {
     public class DatabaseService
     {
-        private readonly ICollectionReference _collection;
+        private ICollectionReference _collection => CrossCloudFirestore.Current.Instance.GetCollection("restaurants");
 
         public DatabaseService()
         {
-            // Kết nối tới collection "restaurants" trên Firebase
-            _collection = CrossCloudFirestore.Current.Instance.GetCollection("restaurants");
         }
 
         public async Task InitAsync()

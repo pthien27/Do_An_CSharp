@@ -7,6 +7,11 @@
   <meta name="description" content="Đăng ký tài khoản chủ quán và POI tại Vĩnh Khánh Street."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -503,6 +508,26 @@
       .row-2 { grid-template-columns: 1fr; }
       .section-card { padding: 18px 16px; }
     }
+
+    /* ── Map Picker Styles ── */
+    #mapPicker {
+      height: 320px;
+      width: 100%;
+      border-radius: 12px;
+      margin: 15px 0;
+      border: 1px solid #cbd5e1;
+      z-index: 10;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .map-hint {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .map-hint i { color: #667EEA; }
   </style>
 </head>
 <body>
@@ -597,18 +622,26 @@
           </div>
         </div>
         <p class="hint">Ví dụ: 10.761204 / 106.703307</p>
+
+        <!-- Interactive Map Picker -->
+        <div class="map-hint">
+            <i class="fa-solid fa-map-pin"></i> 
+            <span>Kéo ghim đỏ để chọn vị trí chính xác trên bản đồ:</span>
+        </div>
+        <div id="mapPicker"></div>
+
         <button class="btn-gps" type="button" id="btnGps" onclick="getGPS()">
           📡 Lấy vị trí hiện tại (GPS)
         </button>
       </div>
 
-      <!-- Bán kính -->
       <div class="field">
         <label class="lbl" for="radius">Bán kính quán (mét) *</label>
         <div class="input-wrap">
           <span class="ico">⭕</span>
-          <input type="number" id="radius" placeholder="Ví dụ: 30" value="30" min="5" max="500"/>
+          <input type="number" id="radius" placeholder="Ví dụ: 30" value="30" min="20" max="100"/>
         </div>
+        <p class="hint">Nên đặt từ 20m - 100m. Bán kính nhỏ giúp thuyết minh chính xác hơn khi khách đứng ngay trước quán.</p>
       </div>
 
       <!-- Tình trạng -->
@@ -894,9 +927,12 @@
           const payText = document.querySelector('#btnPayment .pay-text');
           if (payText) payText.textContent = '💾 Lưu Thay Đổi';
           
-          loadPOI(_editId);
+          await loadPOI(_editId);
         }
       }
+      
+      // Chạy map picker sau khi nạp dữ liệu xong (nếu có)
+      initMapPicker();
     });
 
     async function loadPOI(id) {
@@ -950,14 +986,71 @@
       btn.textContent = show ? '🙈' : '👁️';
     };
 
+    // ── Interactive Map Picker Logic ──────────────────────────────────────────
+    let map = null;
+    let marker = null;
+
+    function initMapPicker() {
+      if (map) return;
+      
+      const latInput = document.getElementById('latitude');
+      const lngInput = document.getElementById('longitude');
+      
+      // Default: Vĩnh Khánh core
+      let startLat = parseFloat(latInput.value) || 10.7612;
+      let startLng = parseFloat(lngInput.value) || 106.7033;
+
+      map = L.map('mapPicker').setView([startLat, startLng], 17);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+
+      // Điểm ghim màu đỏ
+      marker = L.marker([startLat, startLng], {
+        draggable: true
+      }).addTo(map);
+
+      // Kéo ghim -> cập nhật ô nhập liệu
+      marker.on('dragend', () => {
+        const pos = marker.getLatLng();
+        latInput.value = pos.lat.toFixed(6);
+        lngInput.value = pos.lng.toFixed(6);
+      });
+
+      // Gõ số -> cập nhật điểm ghim
+      const syncInputToMap = () => {
+        const lat = parseFloat(latInput.value);
+        const lng = parseFloat(lngInput.value);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          marker.setLatLng([lat, lng]);
+          map.panTo([lat, lng]);
+        }
+      };
+      latInput.addEventListener('input', syncInputToMap);
+      lngInput.addEventListener('input', syncInputToMap);
+      
+      // Sửa lỗi map bị xám do kích thước ban đầu (nếu modal hay div ẩn)
+      setTimeout(() => map.invalidateSize(), 500);
+    }
+
     window.getGPS = () => {
       const btn = document.getElementById('btnGps');
       btn.textContent = '⏳ Đang lấy vị trí...';
       btn.disabled = true;
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          document.getElementById('latitude').value  = pos.coords.latitude.toFixed(6);
-          document.getElementById('longitude').value = pos.coords.longitude.toFixed(6);
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          document.getElementById('latitude').value  = lat;
+          document.getElementById('longitude').value = lng;
+          
+          // Đồng bộ map
+          if (marker) {
+            marker.setLatLng([lat, lng]);
+            map.setView([lat, lng], 17);
+          }
+          
           btn.textContent = '✅ Đã lấy vị trí GPS';
           btn.disabled = false;
         },
@@ -1158,7 +1251,7 @@
       const shopName    = document.getElementById('shopName').value.trim();
       const lat         = parseFloat(document.getElementById('latitude').value);
       const lng         = parseFloat(document.getElementById('longitude').value);
-      const radius      = parseFloat(document.getElementById('radius').value);
+      const radius      = Math.round(parseFloat(document.getElementById('radius').value));
       const closingTime = document.getElementById('closingTime').value;
       const category    = document.getElementById('category').value;
       const descVI      = document.getElementById('descVI').value.trim();
@@ -1179,7 +1272,10 @@
       if (!shopName)              { showError('Vui lòng nhập tên quán.'); return; }
       if (isNaN(lat))             { showError('Vui lòng nhập vĩ độ hợp lệ.'); return; }
       if (isNaN(lng))             { showError('Vui lòng nhập kinh độ hợp lệ.'); return; }
-      if (isNaN(radius)||radius<5){ showError('Bán kính phải ít nhất 5 mét.'); return; }
+      if (isNaN(radius) || radius < 20 || radius > 100) { 
+        showError('Bán kính quán phải từ 20 mét đến 100 mét để đảm bảo độ chính xác GPS.'); 
+        return; 
+      }
       if (!closingTime)           { showError('Vui lòng nhập giờ đóng cửa.'); return; }
       if (!category)              { showError('Vui lòng chọn phân loại quán.'); return; }
       if (!descVI)                { showError('Vui lòng nhập thuyết minh tiếng Việt.'); return; }

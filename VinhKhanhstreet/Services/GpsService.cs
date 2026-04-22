@@ -21,6 +21,19 @@ namespace VinhKhanhstreet.Services
 
                 if (status == PermissionStatus.Granted)
                 {
+                    // Kích hoạt Foreground Service (Chỉ dành cho Android)
+#if ANDROID
+                    var intent = new Android.Content.Intent(Android.App.Application.Context, typeof(VinhKhanhstreet.Platforms.Android.AndroidLocationService));
+                    if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
+                    {
+                        Android.App.Application.Context.StartForegroundService(intent);
+                    }
+                    else
+                    {
+                        Android.App.Application.Context.StartService(intent);
+                    }
+#endif
+
                     // Vòng lặp lấy vị trí liên tục (Yêu cầu 1: GPS Tracking thời gian thực)
                     while (true)
                     {

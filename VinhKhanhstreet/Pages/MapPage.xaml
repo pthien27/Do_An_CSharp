@@ -182,18 +182,6 @@
                         </Label>
                     </Grid>
 
-                    <!-- NÚT GẦN ĐÂY NẰM CHÍNH XÁC DƯỚI TIÊU ĐỀ THEO YÊU CẦU -->
-                    <Button Grid.Row="1" x:Name="btnGanDayInsideList" 
-                            Text="📍 TÌM QUÁN GẦN ĐÂY" 
-                            BackgroundColor="#27AE60" 
-                            TextColor="White" 
-                            CornerRadius="8" 
-                            HeightRequest="35" 
-                            Padding="5,0"
-                            Margin="0,0,0,10"
-                            FontAttributes="Bold"
-                            FontSize="12"
-                            Clicked="OnAutoNarrateNearbyClicked"/>
 
                     <Grid Grid.Row="2">
                         <!-- Danh sách chính (Tất cả quán) -->
@@ -236,7 +224,28 @@
                     <Label x:Name="lblSettingsTitle" Text="Cài đặt" FontSize="18" FontAttributes="Bold" TextColor="{AppThemeBinding Light=Black, Dark=White}" VerticalOptions="Center" Grid.Column="0"/>
                     
                     <HorizontalStackLayout Grid.Column="1" VerticalOptions="Center">
-                        <Frame BackgroundColor="#FFEDED" 
+                        <!-- NÚT ĐĂNG NHẬP (Chỉ hiện khi là Khách) -->
+                        <Frame x:Name="frmLoginButton"
+                               BackgroundColor="#2ECC71" 
+                               BorderColor="Transparent" 
+                               CornerRadius="8" 
+                               Padding="10,4"
+                               HasShadow="False"
+                               IsVisible="False">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLoginTapped" />
+                            </Frame.GestureRecognizers>
+                            <Label x:Name="lblLogin"
+                                   Text="Đăng nhập" 
+                                   FontSize="11" 
+                                   FontAttributes="Bold" 
+                                   TextColor="White" 
+                                   VerticalOptions="Center"/>
+                        </Frame>
+
+                        <!-- NÚT ĐĂNG XUẤT (Chỉ hiện khi đã đăng nhập) -->
+                        <Frame x:Name="frmLogoutButton"
+                               BackgroundColor="#FFEDED" 
                                BorderColor="#FF6B6B" 
                                CornerRadius="8" 
                                Padding="10,4"

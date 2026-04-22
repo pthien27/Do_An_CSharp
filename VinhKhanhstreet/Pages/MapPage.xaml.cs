@@ -15,7 +15,7 @@ public partial class MapPage : ContentPage
     private float _currentPitch = 1.0f; // Độ vang giọng đọc
     private float _currentVolume = 1.0f; // Âm lượng giọng đọc
     private string _currentTab = "All"; // Quản lý danh sách đang mở (All / Favorites)
-    private Microsoft.Maui.Controls.Maps.Circle _userScanCircle; // Vòng tròn quét GPS
+    private Microsoft.Maui.Controls.Maps.Circle _pulseCircle; // Vòng tròn nhịp đập Pulse
     private bool _isSearchBarFocused = false;
     private bool _isSequentialReading = false; // Biến khóa cờ thao tác đọc tuần tự
     private List<PoiModel> _lastNearbyResults; // Ghi nhớ danh sách quán gần đây mới nhất
@@ -31,10 +31,16 @@ public partial class MapPage : ContentPage
     private bool _isConfirmedSave = false;
     private float _tempPitch;
     private float _tempVolume;
+    private bool _isPulseRunning = false;
+    private CancellationTokenSource? _pulseCts;
+    private IDispatcherTimer? _heartbeatTimer;
+    private string? _deviceId;
     private string _nextLang = "vi"; // Ngôn ngữ đang chọn thử trong menu
     private string _currentUsername; // Lưu tên người dùng hiện tại
     private DateTime _lastFirestoreUpdateTime = DateTime.MinValue; // Throttling gửi tọa độ lên Firebase
     private IListenerRegistration _lockListener; // Real-time listener kiểm tra khóa tài khoản
+
+    // QUẢN LÝ ONLINE PULSE (Thống kê người dùng thực tế)
 
     // [UC1 - Xem Bản Đồ & Danh Sách Quán: Khởi tạo dữ liệu SQLite lên bản đồ]
     // --- CẬP NHẬT DANH SÁCH SONG NGỮ ---
@@ -72,6 +78,18 @@ public partial class MapPage : ContentPage
         base.OnAppearing();
         try
         {
+            // 1. Khởi động Nhịp đập ngay lập tức (Ưu tiên cao nhất)
+            try {
+                _deviceId = Preferences.Default.Get("AppDeviceId", "");
+                if (string.IsNullOrEmpty(_deviceId))
+                {
+                    _deviceId = Guid.NewGuid().ToString();
+                    Preferences.Default.Set("AppDeviceId", _deviceId);
+                }
+                StartHeartbeat();
+                _ = SendPulse(true);
+            } catch { }
+
             _currentUsername = await SecureStorage.Default.GetAsync("CurrentUser");
 
             // Kiểm tra tài khoản có bị khóa/xóa không
@@ -95,13 +113,20 @@ public partial class MapPage : ContentPage
                 }
             }
 
-            // Bắt đầu lắng nghe real-time thay đổi tài khoản (khóa/xóa)
+            // Bắt đầu lắng nghe real-time thay đổi tài khoản (khóa/xóa) - CHỈ KHI ĐÃ ĐĂNG NHẬP
             if (!string.IsNullOrEmpty(_currentUsername))
             {
                 StartLockListener(_currentUsername);
             }
 
             await UpdateStaticUI();
+            
+            // 3. Gửi tín hiệu Online ngay lập tức và bắt đầu nhịp đập
+            _ = SendPulse(true);
+            StartHeartbeat();
+
+            // Bắt đầu hiệu ứng Nhịp đập (Pulse) trên bản đồ
+            StartPulseAnimation();
         }
         catch { }
     }
@@ -109,6 +134,8 @@ public partial class MapPage : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
+        StopHeartbeat();
+
         // Hủy listener khi rời khỏi trang để tránh memory leak
         _lockListener?.Remove();
         _lockListener = null;
@@ -150,6 +177,9 @@ public partial class MapPage : ContentPage
         _lockListener = null;
         var authService = new UserAuthService();
         await authService.SetOnlineStatusAsync(_currentUsername, false);
+        
+        // Báo Offline cho Pulse
+        await SendPulse(false);
 
         SecureStorage.Default.Remove("IsUserLoggedIn");
         SecureStorage.Default.Remove("CurrentUser");
@@ -166,12 +196,100 @@ public partial class MapPage : ContentPage
         if (confirm)
         {
             var authService = new UserAuthService();
-            await authService.SetOnlineStatusAsync(_currentUsername, false);
+            if (!string.IsNullOrEmpty(_currentUsername))
+                await authService.SetOnlineStatusAsync(_currentUsername, false);
 
+            // Xóa sạch dấu vết đăng nhập
             SecureStorage.Default.Remove("IsUserLoggedIn");
             SecureStorage.Default.Remove("CurrentUser");
-            Application.Current.MainPage = new NavigationPage(new VinhKhanhstreet.Pages.UserLoginPage());
+
+            // Cập nhật Nhịp đập về trạng thái Guest ngay lập tức
+            _currentUsername = null;
+            _ = SendPulse(true);
+
+            // Quay lại trang Đăng nhập mặc định (Logic như cũ)
+            Application.Current.MainPage = new NavigationPage(new UserLoginPage());
         }
+    }
+
+    public async void StartHeartbeat()
+    {
+        if (_isPulseRunning) return;
+        _isPulseRunning = true;
+
+        // 1. Gửi tín hiệu đầu tiên ngay lập tức
+        _ = SendPulse(true);
+
+        // 2. Khởi tạo Timer nếu chưa có
+        if (_heartbeatTimer == null)
+        {
+            _heartbeatTimer = Dispatcher.CreateTimer();
+            _heartbeatTimer.Interval = TimeSpan.FromSeconds(30);
+            _heartbeatTimer.Tick += async (s, e) => 
+            {
+                await SendPulse(true);
+            };
+        }
+
+        // 3. Chạy Timer
+        if (!_heartbeatTimer.IsRunning)
+            _heartbeatTimer.Start();
+    }
+
+    public void StopHeartbeat()
+    {
+        _heartbeatTimer?.Stop();
+        _isPulseRunning = false;
+        _pulseCts?.Cancel();
+        
+        // Gửi báo cáo Offline ngay lập tức (Fire and forget)
+        _ = SendPulse(false);
+    }
+
+    private async Task SendPulse(bool isOnline)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_deviceId)) return;
+
+            var pulseData = new Dictionary<string, object>
+            {
+                { "LastHeartbeat", FieldValue.ServerTimestamp },
+                { "IsOnline", isOnline },
+                { "UserType", string.IsNullOrEmpty(_currentUsername) ? "Guest" : "User" },
+                { "Username", _currentUsername ?? "Guest" },
+                { "Platform", DeviceInfo.Platform.ToString() }
+            };
+
+            // 1. Gửi vào bảng Online mới (Dành cho cả Khách)
+            await CrossCloudFirestore.Current.Instance
+                .GetCollection("app_live_sessions")
+                .GetDocument(_deviceId)
+                .SetDataAsync(pulseData, true);
+
+            // 2. Gửi dự phòng vào bảng Users (Nơi chắc chắn Dashboard đang đọc được)
+            if (!string.IsNullOrEmpty(_currentUsername) && _currentUsername != "Guest")
+            {
+                await CrossCloudFirestore.Current.Instance
+                    .GetCollection("users")
+                    .GetDocument(_currentUsername)
+                    .UpdateDataAsync(new { IsOnline = isOnline, LastActiveAt = FieldValue.ServerTimestamp });
+            }
+        }
+        catch (Exception ex) 
+        {
+            // Tạm thời bật thông báo để bạn biết lỗi gì nếu không gửi được
+            MainThread.BeginInvokeOnMainThread(async () => {
+                // Chỉ hiện thông báo lỗi nếu thực sự có lỗi kết nối
+                // await Application.Current.MainPage.DisplayAlert("Lỗi tín hiệu", ex.Message, "OK");
+            });
+        }
+    }
+
+    private async void OnLoginTapped(object sender, EventArgs e)
+    {
+        // Chuyển sang trang Đăng nhập
+        Application.Current.MainPage = new NavigationPage(new UserLoginPage());
     }
 
     private void SwitchToList(CollectionView listToShow)
@@ -275,24 +393,72 @@ public partial class MapPage : ContentPage
         }
     }
 
-    // Hàm vẽ/di chuyển vòng tròn xanh lá vị trí người dùng
+    // Hàm vẽ/di chuyển vòng tròn nhịp đập vị trí người dùng
     private void DrawOrMoveUserCircle(Location location)
     {
-        if (_userScanCircle == null)
+        if (_pulseCircle == null)
         {
-            _userScanCircle = new Microsoft.Maui.Controls.Maps.Circle
+            _pulseCircle = new Microsoft.Maui.Controls.Maps.Circle
             {
                 Center = location,
-                Radius = Distance.FromMeters(30),
+                Radius = Distance.FromMeters(0),
                 StrokeColor = Color.FromArgb("#882ECC71"),
-                StrokeWidth = 8,
-                FillColor = Color.FromArgb("#332ECC71")
+                StrokeWidth = 4,
+                FillColor = Color.FromArgb("#222ECC71")
             };
-            mapVinhKhanh.MapElements.Add(_userScanCircle);
+            mapVinhKhanh.MapElements.Add(_pulseCircle);
         }
         else
         {
-            _userScanCircle.Center = location;
+            _pulseCircle.Center = location;
+        }
+    }
+
+    private void StartPulseAnimation()
+    {
+        _pulseCts?.Cancel();
+        _pulseCts = new CancellationTokenSource();
+        _ = AnimatePulseAsync(_pulseCts.Token);
+    }
+
+    private async Task AnimatePulseAsync(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            try
+            {
+                if (_pulseCircle == null) { await Task.Delay(500); continue; }
+
+                // Chu kỳ nhịp đập: Lan tỏa từ 0m đến 40m
+                for (int i = 0; i <= 10; i++)
+                {
+                    if (token.IsCancellationRequested) break;
+
+                    double radius = i * 4; // Bán kính tăng dần từ 0 -> 40m
+                    double opacity = 0.3 - (i * 0.03); // Độ mờ giảm dần
+
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        if (_pulseCircle != null)
+                        {
+                            _pulseCircle.Radius = Distance.FromMeters(radius);
+                            _pulseCircle.FillColor = Color.FromRgba(46, 204, 113, opacity);
+                            _pulseCircle.StrokeColor = Color.FromRgba(46, 204, 113, opacity * 2);
+                        }
+                    });
+
+                    await Task.Delay(80); // Tốc độ lan tỏa
+                }
+
+                // Reset về 0 để bắt đầu nhịp mới
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (_pulseCircle != null) _pulseCircle.Radius = Distance.FromMeters(0);
+                });
+
+                await Task.Delay(400); // Khoảng nghỉ giữa các nhịp
+            }
+            catch { break; }
         }
     }
 
@@ -355,11 +521,18 @@ public partial class MapPage : ContentPage
         
         UpdateListTitle();
         UpdateSettingsMenuVisuals();
+        UpdateTabAesthetics(); 
         
+        bool isLoggedIn = !string.IsNullOrEmpty(_currentUsername);
+        frmLoginButton.IsVisible = !isLoggedIn;
+        frmLogoutButton.IsVisible = isLoggedIn;
+
         // Cập nhật chữ trong Side Menu
         if (_currentLang == "en")
         {
-            lblSettingsTitle.Text = string.IsNullOrEmpty(_currentUsername) ? "Settings" : $"Hello, {_currentUsername}";
+            lblSettingsTitle.Text = !isLoggedIn ? "Hello, Guest" : $"Hello, {_currentUsername}";
+            lblLogin.Text = "Login";
+            lblLogout.Text = "Logout";
             lblSettingsTheme.Text = "Dark Mode";
             lblSettingsLang.Text = "Narration Language";
             lblSettingsPitch.Text = $"Voice Pitch: {_currentPitch:F1}";
@@ -373,7 +546,9 @@ public partial class MapPage : ContentPage
         }
         else if (_currentLang == "ja")
         {
-            lblSettingsTitle.Text = string.IsNullOrEmpty(_currentUsername) ? "設定" : $"こんにちは, {_currentUsername}";
+            lblSettingsTitle.Text = !isLoggedIn ? "こんにちは, ゲスト" : $"こんにちは, {_currentUsername}";
+            lblLogin.Text = "ログイン";
+            lblLogout.Text = "ログアウト";
             lblSettingsTheme.Text = "ダークモード";
             lblSettingsLang.Text = "音声言語";
             lblSettingsPitch.Text = $"声域 (Pitch): {_currentPitch:F1}";
@@ -387,7 +562,9 @@ public partial class MapPage : ContentPage
         }
         else if (_currentLang.StartsWith("zh"))
         {
-            lblSettingsTitle.Text = string.IsNullOrEmpty(_currentUsername) ? "设置" : $"你好, {_currentUsername}";
+            lblSettingsTitle.Text = !isLoggedIn ? "你好, 游客" : $"你好, {_currentUsername}";
+            lblLogin.Text = "登录";
+            lblLogout.Text = "登出";
             lblSettingsTheme.Text = "深色模式";
             lblSettingsLang.Text = "语音语言";
             lblSettingsPitch.Text = $"音高 (Pitch): {_currentPitch:F1}";
@@ -399,9 +576,11 @@ public partial class MapPage : ContentPage
             if (btnSaveSettings != null) btnSaveSettings.Text = "保存设置";
             if (lblLogout != null) lblLogout.Text = "登出";
         }
-        else 
+        else // vi
         {
-            lblSettingsTitle.Text = string.IsNullOrEmpty(_currentUsername) ? "Cài đặt" : $"Chào, {_currentUsername}";
+            lblSettingsTitle.Text = !isLoggedIn ? "Chào, Khách" : $"Chào, {_currentUsername}";
+            lblLogin.Text = "Đăng nhập";
+            lblLogout.Text = "Đăng xuất";
             lblSettingsTheme.Text = "Giao diện tối (Dark mode)";
             lblSettingsLang.Text = "Ngôn ngữ thuyết minh";
             lblSettingsPitch.Text = $"Độ vang giọng: {_currentPitch:F1}";
@@ -413,14 +592,6 @@ public partial class MapPage : ContentPage
             if (btnSaveSettings != null) btnSaveSettings.Text = "LƯU CÀI ĐẶT";
         }
 
-        // Dịch thuật nút Tìm quán gần đây
-        if (btnGanDayInsideList != null)
-        {
-            if (_currentLang == "en") btnGanDayInsideList.Text = "📍 FIND NEARBY RESTAURANTS";
-            else if (_currentLang == "ja") btnGanDayInsideList.Text = "📍 近くの店を探す";
-            else if (_currentLang.StartsWith("zh")) btnGanDayInsideList.Text = "📍 查找附近餐厅";
-            else btnGanDayInsideList.Text = "📍 TÌM QUÁN GẦN ĐÂY";
-        }
 
         // Cập nhật ngôn ngữ cho danh sách CollectionView
         foreach (var poi in _vinhKhanhPois)
@@ -565,7 +736,54 @@ public partial class MapPage : ContentPage
             else if (_currentLang.StartsWith("zh")) poi.StrPlay = "播放中";
             else poi.StrPlay = "Đang phát";
 
+            // MỚI: Hiển thị Spotlight (Vòng tròn xanh lá nhỏ) tại vị trí quán đang đọc
+            MainThread.BeginInvokeOnMainThread(() => {
+                var location = new Location(poi.Latitude, poi.Longitude);
+                if (_spotlightCircle != null) mapVinhKhanh.MapElements.Remove(_spotlightCircle);
+                _spotlightCircle = new Microsoft.Maui.Controls.Maps.Circle
+                {
+                    Center = location,
+                    Radius = Distance.FromMeters(8),
+                    StrokeColor = Color.FromArgb("#FF2ECC71"),
+                    StrokeWidth = 12,
+                    FillColor = Color.FromArgb("#552ECC71")
+                };
+                mapVinhKhanh.MapElements.Add(_spotlightCircle);
+            });
+
             // Sử dụng CancellationToken để có thể ngắt bất cứ lúc nào
+            // Tự động cuộn danh sách đến quán đang được thuyết minh
+            MainThread.BeginInvokeOnMainThread(async () => {
+                try {
+                    // KỸ THUẬT CUỘN KÉP (Double Scroll) - Khắc phục lỗi Rendering của MAUI
+                    // Bước 1: Nhảy nhanh tới mục tiêu để "ép" UI render vùng đó (Không hiệu ứng)
+                    if (_currentTab == "All" && lstAll.ItemsSource != null)
+                    {
+                        lstAll.ScrollTo(poi, position: ScrollToPosition.MakeVisible, animate: false);
+                        await Task.Delay(200); // Chờ 1 chút để UI ổn định
+                        lstAll.ScrollTo(poi, position: ScrollToPosition.Center, animate: true);
+                    }
+                    else if (_currentTab == "Favorites" && lstFav.ItemsSource != null)
+                    {
+                        lstFav.ScrollTo(poi, position: ScrollToPosition.MakeVisible, animate: false);
+                        await Task.Delay(200);
+                        lstFav.ScrollTo(poi, position: ScrollToPosition.Center, animate: true);
+                    }
+                } catch { } 
+            });
+
+            // Ghi lượt nghe App vào Firebase (Fire and forget)
+            if (!string.IsNullOrEmpty(poi.DocumentId))
+            {
+                _ = CrossCloudFirestore.Current.Instance
+                    .GetCollection("restaurants")
+                    .GetDocument(poi.DocumentId)
+                    .UpdateDataAsync(new Dictionary<string, object>
+                    {
+                        { "AppPlayCount", FieldValue.Increment(1) }
+                    });
+            }
+
             await TextToSpeech.Default.SpeakAsync(noidung, options, _ttsCts.Token);
         }
         catch (TaskCanceledException)
@@ -587,32 +805,28 @@ public partial class MapPage : ContentPage
             pin.MarkerClicked += async (s, e) => {
                 e.HideInfoWindow = true; // Ẩn bong bóng trắng hiện tên quán mặc định
                 
+                // KIỂM TRA THÔNG MINH: Nếu đang ở Tab Yêu thích mà quán bấm vào KHÔNG phải Favorite
+                // thì tự động chuyển về Tab Quán ăn để người dùng thấy nội dung.
+                if (_currentTab == "Favorites" && !poi.IsFavorite)
+                {
+                    _currentTab = "All";
+                    SwitchToList(lstAll);
+                    UpdateListTitle();
+                    UpdateTabAesthetics();
+                }
+
                 frmDanhSach.IsVisible = true;
                 if (searchBar != null) searchBar.Text = string.Empty;
 
                 var activeList = GetActiveList();
                 
-                // Cố gắng cuộn đến Item trong List hiện tại (nếu nó tồn tại trong danh sách đó)
-                // Phải Delay 1 chút để UI kịp dựng danh sách nếu frmDanhSach vừa mới IsVisible = true
                 await Task.Delay(100);
                 try 
                 {
                     activeList.ScrollTo(poi, position: ScrollToPosition.Start, animate: true);
                 }
-                catch { } // An toàn nếu POI không nằm trong danh sách hiện tại (VD: TAB Favorites)
+                catch { } // An toàn tuyệt đối nhờ try-catch
 
-                // MỚI: Chỉ hiển thị Spotlight khi nhấn ghim (Bỏ Zoom theo yêu cầu)
-                var location = new Location(poi.Latitude, poi.Longitude);
-                if (_spotlightCircle != null) mapVinhKhanh.MapElements.Remove(_spotlightCircle);
-                _spotlightCircle = new Microsoft.Maui.Controls.Maps.Circle
-                {
-                    Center = location,
-                    Radius = Distance.FromMeters(8),
-                    StrokeColor = Color.FromArgb("#FF2ECC71"),
-                    StrokeWidth = 12,
-                    FillColor = Color.FromArgb("#552ECC71")
-                };
-                mapVinhKhanh.MapElements.Add(_spotlightCircle);
 
                 await PhatThuyetMinh(poi);
             };
@@ -664,15 +878,17 @@ public partial class MapPage : ContentPage
     // MỚI: Phím bấm độc lập cho Tính năng Quán Gần Đây
     private void OnShowNearbyTapped(object sender, EventArgs e)
     {
-        bool isNearAtLeastOne = _vinhKhanhPois.Any(p => p.DistanceInMeters <= 50); // Cố định mốc tìm gần 50 mét
+        // Sử dụng bán kính Radius của từng quán (giới hạn an toàn từ 20m - 100m)
+        bool isNearAtLeastOne = _vinhKhanhPois.Any(p => p.DistanceInMeters <= Math.Clamp(p.Radius, 20, 100)); 
         
         if (isNearAtLeastOne)
         {
             if (_currentTab != "Nearby")
             {
                 _currentTab = "Nearby";
-                var nearbyPois = _vinhKhanhPois.Where(p => p.DistanceInMeters <= 50)
+                var nearbyPois = _vinhKhanhPois.Where(p => p.DistanceInMeters <= Math.Clamp(p.Radius, 20, 100))
                                                .OrderBy(p => p.DistanceInMeters)
+                                               .ThenBy(p => p.Radius) // Ưu tiên quán có bán kính nhỏ hơn nếu khoảng cách bằng nhau
                                                .ToList();
                 _lastNearbyResults = nearbyPois; // Ghi nhớ để X có thể quay lại
                 
@@ -820,8 +1036,6 @@ public partial class MapPage : ContentPage
             // Removed status update
         }
         
-        // MỚI: Chỉ hiển thị Nút "Vị trí gần đây" nếu đang ở màn hình Danh sách Mặc Định (All) và KHÔNG tìm kiếm, KHÔNG xem chi tiết 1 quán
-        btnGanDayInsideList.IsVisible = (_currentTab == "All" && string.IsNullOrWhiteSpace(searchBar?.Text) && (currentSource == null || currentSource.Count > 1 || currentSource == _vinhKhanhPois));
     }
 
     private DateTime _lastSearchTypeTime = DateTime.MinValue;
@@ -1227,18 +1441,6 @@ public partial class MapPage : ContentPage
     {
         if (sender is Button btn && btn.CommandParameter is PoiModel poi)
         {
-            // HIỆN SPOTLIGHT TRÊN BẢN ĐỒ
-            var location = new Location(poi.Latitude, poi.Longitude);
-            if (_spotlightCircle != null) mapVinhKhanh.MapElements.Remove(_spotlightCircle);
-            _spotlightCircle = new Microsoft.Maui.Controls.Maps.Circle
-            {
-                Center = location,
-                Radius = Distance.FromMeters(8),
-                StrokeColor = Color.FromArgb("#FF2ECC71"),
-                StrokeWidth = 12,
-                FillColor = Color.FromArgb("#552ECC71")
-            };
-            mapVinhKhanh.MapElements.Add(_spotlightCircle); // Thêm vòng spotlight vào bản đồ
 
             // PHÁT THUYẾT MINH
             await PhatThuyetMinh(poi, true);
@@ -1273,6 +1475,73 @@ public partial class MapPage : ContentPage
         }
     }
 
+    // [UC6 - Đo Lường Vị Trí GPS (Geofencing): Vòng lặp tracking thiết bị mỗi 1s tính toán Haversine]
+    private async void StartAutoTracking()
+    {
+        await _gpsService.StartTracking((location) => {
+            MainThread.BeginInvokeOnMainThread(async () => {
+                // BUG FIX: .NET MAUI Android soft-keyboard composition drops characters if Map updates layout or moves region
+                if ((DateTime.Now - _lastSearchTypeTime).TotalSeconds < 3 || _isSearchBarFocused)
+                {
+                    return; 
+                }
+
+                mapVinhKhanh.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromMeters(200)));
+                DrawOrMoveUserCircle(location);
+
+                foreach (var p in _vinhKhanhPois)
+                {
+                    p.DistanceInMeters = location.CalculateDistance(new Location(p.Latitude, p.Longitude), DistanceUnits.Kilometers) * 1000;
+                }
+
+                if (!string.IsNullOrEmpty(_currentUsername) && (DateTime.Now - _lastFirestoreUpdateTime).TotalSeconds > 30)
+                {
+                    _lastFirestoreUpdateTime = DateTime.Now;
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await CrossCloudFirestore.Current.Instance.GetCollection("users")
+                                .GetDocument(_currentUsername)
+                                .UpdateDataAsync(new
+                                {
+                                    LastLatitude = location.Latitude,
+                                    LastLongitude = location.Longitude,
+                                    LastActiveAt = DateTime.UtcNow
+                                });
+                        }
+                        catch { }
+                    });
+                }
+
+                // 2. TỰ ĐỘNG THUYẾT MINH (Auto-Guide)
+                var nearestTriggerPOI = _vinhKhanhPois
+                    .Where(p => p.DistanceInMeters <= Math.Clamp(p.Radius, 20, 100) && !p.HasAutoPlayed)
+                    .OrderBy(p => p.DistanceInMeters)
+                    .FirstOrDefault();
+
+                if (nearestTriggerPOI != null && !_isSequentialReading && _currentlyNarratingPoi == null)
+                {
+                    nearestTriggerPOI.HasAutoPlayed = true; 
+
+                    // MỚI: Tự động mở menu quán nếu nó đang đóng để người dùng thấy thông tin
+                    if (!frmDanhSach.IsVisible)
+                    {
+                        frmDanhSach.IsVisible = true;
+                    }
+                    
+                    // Đảm bảo đang ở tab Quán ăn để thấy quán đang đọc
+                    _currentTab = "All";
+                    SwitchToList(lstAll);
+                    UpdateListTitle();
+                    UpdateTabAesthetics(); 
+
+                    _ = PhatThuyetMinh(nearestTriggerPOI, true); 
+                }
+            });
+        });
+    }
+
     private async void OnCardSaveClicked(object sender, EventArgs e)
     {
         if (sender is Button btn && btn.CommandParameter is PoiModel poi)
@@ -1304,150 +1573,20 @@ public partial class MapPage : ContentPage
         {
             var location = new Location(selectedPoi.Latitude, selectedPoi.Longitude);
             mapVinhKhanh.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromMeters(200)));
-            // Chỉ di chuyển tâm bản đồ tới địa điểm, việc phát âm thanh nhường cho nút Play ở thẻ
+            
+            // MỚI: Tự động cuộn danh sách chính đến vị trí quán được chọn
+            try {
+                if (_currentTab == "All")
+                    lstAll.ScrollTo(selectedPoi, position: ScrollToPosition.Center, animate: true);
+                else if (_currentTab == "Favorites")
+                    lstFav.ScrollTo(selectedPoi, position: ScrollToPosition.Center, animate: true);
+            } catch { }
+
             ((CollectionView)sender).SelectedItem = null;
         }
     }
 
-    // [UC6 - Đo Lường Vị Trí GPS (Geofencing): Vòng lặp tracking thiết bị mỗi 1s tính toán Haversine]
-    private async void StartAutoTracking()
-    {
-        await _gpsService.StartTracking((location) => {
-            MainThread.BeginInvokeOnMainThread(async () => {
-                // BUG FIX: .NET MAUI Android soft-keyboard composition drops characters if Map updates layout or moves region
-                // KHOÁ BẢN ĐỒ: Nếu người dùng vừa gõ bàn phím trong 3 giây qua, BỎ QUA NGAY việc Update bản đồ!
-                if ((DateTime.Now - _lastSearchTypeTime).TotalSeconds < 3 || _isSearchBarFocused)
-                {
-                    return; // Đóng băng bản đồ, ưu tiên bàn phím Tiếng Việt!
-                }
 
-                mapVinhKhanh.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromMeters(200)));
-                
-                // Vẽ/di chuyển vòng tròn xanh lá theo vị trí GPS thực tế
-                DrawOrMoveUserCircle(location);
-
-                // 1. CẬP NHẬT KHOẢNG CÁCH CHUẨN XÁC CHO MỌI QUÁN TRƯỚC
-                foreach (var p in _vinhKhanhPois)
-                {
-                    p.DistanceInMeters = location.CalculateDistance(new Location(p.Latitude, p.Longitude), DistanceUnits.Kilometers) * 1000;
-                }
-
-                // 1.5. ĐỒNG BỘ VỊ TRÍ LÊN FIREBASE ĐỂ LÀM THỐNG KÊ (Throttling 30 giây)
-                if (!string.IsNullOrEmpty(_currentUsername) && (DateTime.Now - _lastFirestoreUpdateTime).TotalSeconds > 30)
-                {
-                    _lastFirestoreUpdateTime = DateTime.Now;
-                    _ = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            await CrossCloudFirestore.Current.Instance.GetCollection("users")
-                                .GetDocument(_currentUsername)
-                                .UpdateDataAsync(new
-                                {
-                                    LastLatitude = location.Latitude,
-                                    LastLongitude = location.Longitude,
-                                    LastActiveAt = DateTime.UtcNow
-                                });
-                        }
-                        catch { /* Bỏ qua nếu lỗi mạng */ }
-                    });
-                }
-
-                bool foundAny = _vinhKhanhPois.Any(p => p.DistanceInMeters <= p.Radius);
-                // Removed statusDot.Fill update
-
-                // 2. Tắt chế độ Tự Động Thuyết Minh. Nhường quyền quyết định lại cho người dùng khi bấm Nút "Tìm Quán Gần Đây"
-            });
-        });
-    }
-
-    // MỚI: Tính năng TÌM VÀ THUYẾT MINH THỦ CÔNG khi bấm nút trên giao diện
-    private async void OnAutoNarrateNearbyClicked(object sender, EventArgs e)
-    {
-        if (_isSequentialReading) 
-        {
-            // Tránh bấm nhiều lần chồng âm thanh
-            await DisplayAlert("Thông báo", "Hệ thống đang đọc tiến trình trước, vui lòng đợi!", "Đóng");
-            return; 
-        }
-
-        var poisToRead = _vinhKhanhPois
-            .Where(p => p.DistanceInMeters <= 50) // Quét trong 50 mét
-            .OrderBy(p => p.DistanceInMeters)
-            .ToList();
-
-        if (poisToRead.Any())
-        {
-            _isSequentialReading = true; 
-            _lastNearbyResults = poisToRead; // Ghi nhớ kết quả quét
-            
-            // XÓA logic 1-item, HIỆN NGUYÊN DANH SÁCH GẦN ĐÂY NGAY LẬP TỨC
-            _currentTab = "Nearby"; 
-            frmDanhSach.IsVisible = true;
-            SwitchToList(lstFocus);
-            lstFocus.ItemsSource = poisToRead;
-            UpdateListTitle();
-            UpdateTabAesthetics();
-            
-            // Tạm thời cuộn lên đầu trước khi bắt đầu đọc
-            try { lstFocus.ScrollTo(0, position: ScrollToPosition.Start, animate: false); } catch { }
-
-            foreach (var poi in poisToRead)
-            {
-                // KIỂM TRA: Nếu cờ dừng đã được bật (do phát thủ công hoặc hành động khác ở Tab khác)
-                if (!_isSequentialReading) break;
-
-                _currentlyNarratingPoi = poi; // Ghi nhớ quán đang đọc
-
-                // Spotlight toàn cục
-                var location = new Location(poi.Latitude, poi.Longitude);
-                if (_spotlightCircle != null) mapVinhKhanh.MapElements.Remove(_spotlightCircle);
-                _spotlightCircle = new Microsoft.Maui.Controls.Maps.Circle
-                {
-                    Center = location,
-                    Radius = Distance.FromMeters(8),
-                    StrokeColor = Color.FromArgb("#FF2ECC71"),
-                    StrokeWidth = 12,
-                    FillColor = Color.FromArgb("#552ECC71")
-                };
-                mapVinhKhanh.MapElements.Add(_spotlightCircle);
-
-                // Cuộn tới quán đang được đọc trong danh sách Gần đây
-                if (_currentTab == "Nearby")
-                {
-                    try { lstFocus.ScrollTo(poi, position: ScrollToPosition.Start, animate: true); } catch { }
-                    await Task.Delay(600); 
-                }
-
-                // Thuyết minh tuần tự (Âm thanh)
-                await PhatThuyetMinh(poi, false); 
-                
-                if (!_isSequentialReading) break;
-
-                // Xóa Spotlight sau khi đọc xong
-                if (_spotlightCircle != null)
-                {
-                    mapVinhKhanh.MapElements.Remove(_spotlightCircle);
-                    _spotlightCircle = null;
-                }
-
-                await Task.Delay(400); 
-            }
-            
-            // XỬ LÝ KẾT THÚC
-            if (_isSequentialReading)
-            {
-                _currentlyNarratingPoi = null;
-            }
-            _isSequentialReading = false;
-        }
-        else
-        {
-            if (_currentLang == "vi") await DisplayAlert("Thông báo", "Bạn chưa đến gần khu vực quán ẩm thực nào!", "ĐÓNG");
-            else if (_currentLang == "en") await DisplayAlert("Notice", "You are not near any culinary places!", "CLOSE");
-            else await DisplayAlert("Chú ý", "Không có quán lân cận.", "ĐÓNG");
-        }
-    }
 
     private void UpdateTabAesthetics()
     {

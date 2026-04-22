@@ -17,11 +17,10 @@ namespace VinhKhanhstreet.Services
 
     public class UserAuthService
     {
-        private readonly ICollectionReference _usersCollection;
+        private ICollectionReference _usersCollection => CrossCloudFirestore.Current.Instance.GetCollection("users");
 
         public UserAuthService()
         {
-            _usersCollection = CrossCloudFirestore.Current.Instance.GetCollection("users");
         }
 
         public async Task<bool> RegisterAsync(string username, string password)

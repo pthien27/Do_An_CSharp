@@ -659,11 +659,18 @@
                 <p id="statsSubtitle" style="color: #64748b; margin-top: 5px;">Dữ liệu thời gian thực</p>
             </div>
             
-            <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-                <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; width: 100%; max-width: 250px;">
-                    <div style="font-size: 32px; margin-bottom: 10px;">🎧</div>
+            <div style="display: flex; gap: 16px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
+                <!-- Luot nghe Web -->
+                <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; flex: 1; min-width: 130px;">
+                    <div style="font-size: 28px; margin-bottom: 8px;">🌐</div>
                     <div id="audioStatsCount" style="font-size: 28px; font-weight: 800; color: #0f172a;">--</div>
-                    <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Lượt nghe Web</div>
+                    <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">LUOT NGHE WEB</div>
+                </div>
+                <!-- Luot nghe App -->
+                <div style="background: #ecfdf5; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #a7f3d0; flex: 1; min-width: 130px;">
+                    <div style="font-size: 28px; margin-bottom: 8px;">📱</div>
+                    <div id="appStatsCount" style="font-size: 28px; font-weight: 800; color: #065f46;">--</div>
+                    <div style="font-size: 12px; color: #059669; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">LUOT NGHE APP</div>
                 </div>
             </div>
 
@@ -727,7 +734,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot, doc, deleteDoc }
+        import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, deleteDoc }
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -775,10 +782,16 @@
             </div>
             <div class="badge-qr-group">
                 <span class="status-badge ${statusClass}">${statusText}</span>
-                <div class="qr-placeholder" onclick="viewQR('${id}', '${data.name}')">
-                    <div id="qr-small-${id}" style="width: 50px; height: 50px; background: white; padding: 2px; border-radius: 4px; overflow: hidden;"></div>
-                    <span>Mã QR</span>
-                </div>
+                ${data.isApproved
+                    ? `<div class="qr-placeholder" onclick="viewQR('${id}', '${data.name}')">
+                           <div id="qr-small-${id}" style="width:50px;height:50px;background:white;padding:2px;border-radius:4px;overflow:hidden;"></div>
+                           <span>Ma QR</span>
+                       </div>`
+                    : `<div class="qr-placeholder" style="cursor:not-allowed;opacity:0.5;" title="Cho Admin duyet moi co QR">
+                           <div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:24px;">&#128274;</div>
+                           <span style="color:#f59e0b;">Cho duyet</span>
+                       </div>`
+                }
             </div>
             <p class="poi-desc">${data.DescriptionVI || 'Chưa có mô tả...'}</p>
             
@@ -790,28 +803,33 @@
             <!-- Audio tags removed as per request -->
 
             <div class="card-actions">
+                <button class="btn-edit" style="background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.4); color: #818cf8;" onclick="viewStats('${id}', '${data.name || id}')">
+                    <i class="fa-solid fa-chart-bar"></i> L&#432;&#7907;t nghe
+                </button>
                 <button class="btn-edit" onclick="editPoi('${id}')">
-                    <i class="fa-solid fa-pen"></i> Sửa
+                    <i class="fa-solid fa-pen"></i> S&#7917;a
                 </button>
                 <button class="btn-delete" onclick="deletePoi('${id}', '${data.name}')">
-                    <i class="fa-solid fa-trash"></i> Xóa
+                    <i class="fa-solid fa-trash"></i> X&#243;a
                 </button>
             </div>
         `;
             poiListContainer.appendChild(card);
 
-            // Tự động tạo mã QR nhỏ cho từng quán
-            const baseUrl = window.location.href.split('?')[0].split('#')[0].replace('dashboard.html', 'index.html');
-            const qrUrl = baseUrl + '?id=' + id;
-            
-            new QRCode(document.getElementById(`qr-small-${id}`), {
-                text: qrUrl,
-                width: 50,
-                height: 50,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
+            // Chi tao QR khi da duoc duyet
+            if (data.isApproved) {
+                const baseUrl = window.location.href.split('?')[0].split('#')[0].replace('dashboard.html', 'index.html');
+                const qrUrl = baseUrl + '?id=' + id;
+                new QRCode(document.getElementById(`qr-small-${id}`), {
+                    text: qrUrl,
+                    width: 50,
+                    height: 50,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            }
+
         }
 
         window.editPoi = (id) => {
@@ -891,33 +909,36 @@
         window.viewStats = async (id, name) => {
             const modal = document.getElementById('statsModal');
             document.getElementById('statsTitle').textContent = name;
-            document.getElementById('statsSubtitle').textContent = "Thống kê cho địa điểm này";
+            document.getElementById('statsSubtitle').textContent = "Thong ke cho dia diem nay";
             document.getElementById('audioStatsCount').textContent = "...";
+            document.getElementById('appStatsCount').textContent = "...";
             modal.classList.add('open');
 
             try {
-                // 1. Lấy lượt nghe Audio
                 const snap = await getDoc(doc(db, 'restaurants', id));
-                const audioCount = snap.data().audioListenCount || 0;
-                document.getElementById('audioStatsCount').textContent = audioCount;
-
+                const data = snap.data();
+                document.getElementById('audioStatsCount').textContent = data.audioListenCount || 0;
+                document.getElementById('appStatsCount').textContent = data.AppPlayCount || 0;
             } catch (err) {
-                console.error("Lỗi thống kê:", err);
+                console.error("Loi thong ke:", err);
             }
         };
 
         window.viewStatsSummary = async () => {
-             const modal = document.getElementById('statsModal');
-            document.getElementById('statsTitle').textContent = "Tổng hợp Thống kê";
-            document.getElementById('statsSubtitle').textContent = "Toàn bộ các quán của bạn";
+            const modal = document.getElementById('statsModal');
+            document.getElementById('statsTitle').textContent = "Tong hop Thong ke";
+            document.getElementById('statsSubtitle').textContent = "Toan bo cac quan cua ban";
             document.getElementById('audioStatsCount').textContent = "...";
+            document.getElementById('appStatsCount').textContent = "...";
             modal.classList.add('open');
 
-            let totalAudio = 0;
+            let totalWeb = 0, totalApp = 0;
             for (const poi of _allPoisData) {
-                totalAudio += (poi.audioListenCount || 0);
+                totalWeb += (poi.audioListenCount || 0);
+                totalApp += (poi.AppPlayCount || 0);
             }
-            document.getElementById('audioStatsCount').textContent = totalAudio;
+            document.getElementById('audioStatsCount').textContent = totalWeb;
+            document.getElementById('appStatsCount').textContent = totalApp;
         };
 
         window.closeStats = () => {

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <?xaml-comp compile="true" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -115,9 +115,9 @@
         <!-- 22 -->
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
-                <VisualStateGroup x:Name="CommonStates">
-                    <VisualState x:Name="Normal" />
-                    <VisualState x:Name="Disabled">
+                <VisualStateGroup x:Name="AppLabelCommonStates">
+                    <VisualState Name="AppLabelNormal" />
+                    <VisualState Name="AppLabelDisabled">
                         <VisualState.Setters>
                             <Setter Property="TextColor"
                                     Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />

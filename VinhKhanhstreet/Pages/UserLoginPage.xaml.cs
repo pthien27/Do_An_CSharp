@@ -51,6 +51,7 @@ namespace VinhKhanhstreet.Pages
                 btnLogin.Text = "LOGIN";
                 lblNoAccount.Text = "Don't have an account?";
                 lblRegister.Text = "Register now";
+                btnSkipLogin.Text = "Continue as Guest";
             }
             else if (_currentLang == "ja")
             {
@@ -63,6 +64,7 @@ namespace VinhKhanhstreet.Pages
                 btnLogin.Text = "ログイン";
                 lblNoAccount.Text = "アカウントをお持ちでないですか？";
                 lblRegister.Text = "今すぐ登録";
+                btnSkipLogin.Text = "ゲストとして続行";
             }
             else if (_currentLang.StartsWith("zh"))
             {
@@ -75,6 +77,7 @@ namespace VinhKhanhstreet.Pages
                 btnLogin.Text = "登录";
                 lblNoAccount.Text = "还没有账号？";
                 lblRegister.Text = "立即注册";
+                btnSkipLogin.Text = "以游客身份继续";
             }
             else // vi
             {
@@ -87,6 +90,7 @@ namespace VinhKhanhstreet.Pages
                 btnLogin.Text = "ĐĂNG NHẬP";
                 lblNoAccount.Text = "Chưa có tài khoản?";
                 lblRegister.Text = "Đăng ký ngay";
+                btnSkipLogin.Text = "Vào xem với tư cách Khách";
             }
         }
 
@@ -136,6 +140,16 @@ namespace VinhKhanhstreet.Pages
         private async void OnRegisterTapped(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new UserRegisterPage());
+        }
+
+        private void OnSkipLoginClicked(object sender, EventArgs e)
+        {
+            // MỚI: Xóa sạch dấu vết đăng nhập cũ (nếu có) để đảm bảo vào với tư cách Khách thực thụ
+            SecureStorage.Default.Remove("IsUserLoggedIn");
+            SecureStorage.Default.Remove("CurrentUser");
+
+            // Vào thẳng AppShell (MapPage) với tư cách Khách
+            Application.Current.MainPage = new AppShell();
         }
     }
 }
