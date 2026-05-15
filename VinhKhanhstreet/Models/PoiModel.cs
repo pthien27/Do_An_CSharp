@@ -76,8 +76,15 @@ namespace VinhKhanhstreet.Models
         [MapTo("AudioFile")]
         public string AudioFile { get; set; }  // Tên file audio thu sẵn
         
-        [MapTo("Priority")]
-        public int Priority { get; set; }      // Mức ưu tiên
+        [MapTo("AppPlayCount")]
+        public int AppPlayCount { get; set; } = 0;  // Lượt nghe từ App
+
+        [MapTo("audioListenCount")]
+        public int AudioListenCount { get; set; } = 0; // Lượt nghe từ Web QR
+
+        // Tổng lượt nghe — dùng để TỰ ĐỘNG ưu tiên quán khi khách đứng giữa 2 quán
+        [Ignore]
+        public int TotalListenCount => AppPlayCount + AudioListenCount;
 
         // Thuộc tính để chống spam
         [MapTo("LastActivated")]

@@ -9,8 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Icon FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 
     <style>
         :root {
@@ -229,22 +228,6 @@
         }
 
 
-        /* QR Code Placeholder on Card */
-        .qr-placeholder {
-            width: 65px;
-            height: 65px;
-            border: 2px dashed rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: rgba(16, 185, 129, 0.05);
-            margin-top: 8px; /* Khoảng cách với badge ở trên */
-        }
-
         .badge-qr-group {
             position: absolute;
             top: 24px;
@@ -256,26 +239,7 @@
             z-index: 10;
         }
 
-        .qr-placeholder:hover {
-            border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.15);
-            transform: scale(1.05);
-        }
-
-        .qr-placeholder i {
-            font-size: 24px;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-
-        .qr-placeholder span {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-        }
-
-        /* QR Modal */
+        /* Stats Modal */
         .qr-modal {
             position: fixed;
             inset: 0;
@@ -312,30 +276,6 @@
                 transform: scale(1);
                 opacity: 1;
             }
-        }
-
-        .qr-img-placeholder {
-            width: 250px;
-            height: 250px;
-            margin: 0 auto 20px;
-            border: 4px solid #f1f5f9;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8fafc;
-            color: #cbd5e1;
-            font-size: 60px;
-            position: relative;
-        }
-
-        .qr-img-placeholder::after {
-            content: 'CHƯA CÓ MÃ QR';
-            position: absolute;
-            bottom: 20px;
-            font-size: 13px;
-            font-weight: 800;
-            color: #94a3b8;
         }
 
         .btn-qr-close {
@@ -678,17 +618,7 @@
         </div>
     </div>
 
-    <!-- QR Lightbox Modal -->
-    <div id="qrModal" class="qr-modal" onclick="closeQR()">
-        <div class="qr-box" onclick="event.stopPropagation()">
-            <h3 id="qrTitle" style="color: #0f172a; margin-bottom: 20px;">Vĩnh Khánh Street</h3>
-            <div id="qrLargeContainer" class="qr-img-placeholder" style="background: white; border: none; padding: 10px; display: flex; justify-content: center; align-items: center;">
-                <!-- Large QR Code will be injected here -->
-            </div>
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Quét mã này để xem thông tin quán trên ứng dụng.</p>
-            <button class="btn-qr-close" onclick="closeQR()">Đóng</button>
-        </div>
-    </div>
+
 
     <div id="loadingOverlay">
         <div class="loader"></div>
@@ -782,16 +712,6 @@
             </div>
             <div class="badge-qr-group">
                 <span class="status-badge ${statusClass}">${statusText}</span>
-                ${data.isApproved
-                    ? `<div class="qr-placeholder" onclick="viewQR('${id}', '${data.name}')">
-                           <div id="qr-small-${id}" style="width:50px;height:50px;background:white;padding:2px;border-radius:4px;overflow:hidden;"></div>
-                           <span>Ma QR</span>
-                       </div>`
-                    : `<div class="qr-placeholder" style="cursor:not-allowed;opacity:0.5;" title="Cho Admin duyet moi co QR">
-                           <div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:24px;">&#128274;</div>
-                           <span style="color:#f59e0b;">Cho duyet</span>
-                       </div>`
-                }
             </div>
             <p class="poi-desc">${data.DescriptionVI || 'Chưa có mô tả...'}</p>
             
@@ -816,19 +736,7 @@
         `;
             poiListContainer.appendChild(card);
 
-            // Chi tao QR khi da duoc duyet
-            if (data.isApproved) {
-                const baseUrl = window.location.href.split('?')[0].split('#')[0].replace('dashboard.html', 'index.html');
-                const qrUrl = baseUrl + '?id=' + id;
-                new QRCode(document.getElementById(`qr-small-${id}`), {
-                    text: qrUrl,
-                    width: 50,
-                    height: 50,
-                    colorDark: "#000000",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            }
+
 
         }
 
@@ -857,30 +765,7 @@
             document.getElementById('sidebarOverlay').classList.toggle('open');
         };
 
-        window.viewQR = (id, name) => {
-            const modalContainer = document.getElementById('qrLargeContainer');
-            modalContainer.innerHTML = ''; // Clear previous
-            
-            document.getElementById('qrTitle').textContent = `Mã QR: ${name}`;
-            document.getElementById('qrModal').classList.add('open');
 
-            const baseUrl = window.location.href.split('?')[0].split('#')[0].replace('dashboard.html', 'index.html');
-            const qrUrl = baseUrl + '?id=' + id;
-            
-            // Generate large QR code in modal
-            new QRCode(modalContainer, {
-                text: qrUrl,
-                width: 250,
-                height: 250,
-                colorDark: "#0f172a",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        };
-
-        window.closeQR = () => {
-            document.getElementById('qrModal').classList.remove('open');
-        };
 
         // --- STATISTICS & REAL-TIME LISTENER ---
         let _allPoisData = []; 

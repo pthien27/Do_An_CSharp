@@ -458,7 +458,9 @@
     <!-- HERO -->
     <div class="hero">
         <h1>Hệ Sinh Thái Hướng Dẫn Kỹ Thuật Số Vĩnh Khánh</h1>
-        <p class="subtitle">Nền tảng đa thiết bị (MAUI Android App + Web Portal): Đồng bộ dữ liệu Firebase thời gian thực, Android Foreground Service chạy ngầm GPS, Geofencing tự động phát 4 ngôn ngữ TTS, Bản đồ nhiệt Heatmap (Leaflet.js) và Cổng quản lý Quán bạn điện tử.</p>
+        <p class="subtitle">Nền tảng đa thiết bị (MAUI Android App + Web Portal): Đồng bộ dữ liệu Firebase thời gian
+            thực, Android Foreground Service chạy ngầm GPS, Geofencing tự động phát 4 ngôn ngữ TTS, Bản đồ nhiệt Heatmap
+            (Leaflet.js) và Cổng quản lý Quán bạn điện tử.</p>
         <div class="badges">
             <span class="badge">.NET 9 MAUI Android</span>
             <span class="badge">Firebase Firestore</span>
@@ -502,43 +504,52 @@
             </div>
         </div>
 
-        <p style="margin-bottom:1rem;color:var(--text-secondary);">Hệ thống sử dụng kiến trúc nền tảng đám mây (Cloud-based), phân quyền rõ ràng 3 cấp: Khách hàng — Chủ quán — Admin. Ứng dụng Android chạy Foreground Service để duy trì GPS và Geofencing ngạy cả khi màn hình tắt.</p>
+        <p style="margin-bottom:1rem;color:var(--text-secondary);">Hệ thống sử dụng kiến trúc nền tảng đám mây
+            (Cloud-based), phân quyền rõ ràng 3 cấp: Khách hàng — Chủ quán — Admin. Ứng dụng Android chạy Foreground
+            Service để duy trì GPS và Geofencing ngạy cả khi màn hình tắt.</p>
 
         <div class="arch-grid">
             <div class="arch-module">
                 <div class="mod-icon">☁️</div>
                 <div class="mod-name">Cloud Firestore</div>
-                <div class="mod-desc">Lưu trữ toàn bộ dữ liệu POI, Tọa độ, Trạng thái tài khoản. Lắng nghe thay đổi real-time bằng <code>onSnapshot()</code>.</div>
+                <div class="mod-desc">Lưu trữ toàn bộ dữ liệu POI, Tọa độ, Trạng thái tài khoản. Lắng nghe thay đổi
+                    real-time bằng <code>onSnapshot()</code>.</div>
             </div>
             <div class="arch-module">
                 <div class="mod-icon">🌐</div>
                 <div class="mod-name">Web Portal (Vanilla JS)</div>
-                <div class="mod-desc">Cổng Quận lý cho Chủ quán: Đăng ký, Sửa thông tin, Dịch thuật tự động (Google API), Xuất mã QR định danh.</div>
+                <div class="mod-desc">Cổng Quận lý cho Chủ quán: Đăng ký, Sửa thông tin, Dịch thuật tự động (Google
+                    API), Xuất mã QR định danh.</div>
             </div>
             <div class="arch-module">
                 <div class="mod-icon">📱</div>
                 <div class="mod-name">Android Foreground Service</div>
-                <div class="mod-desc">Service nền chạy liên tục ngay cả khi khóa màn hình. Quét GPS mỗi 10 giây, cập nhật Geofence và đảm bảo thông báo (Notification) luôn tồn tại.</div>
+                <div class="mod-desc">Service nền chạy liên tục ngay cả khi khóa màn hình. Quét GPS mỗi 10 giây, cập
+                    nhật Geofence và đảm bảo thông báo (Notification) luôn tồn tại.</div>
             </div>
             <div class="arch-module">
                 <div class="mod-icon">🔊</div>
                 <div class="mod-name">Text-To-Speech (TTS)</div>
-                <div class="mod-desc">Tích hợp <code>ITextToSpeech</code> của MAUI để tự động xướng thành tiếng thuyết minh khi phát hiện khách đến gần POI (Geofence).</div>
+                <div class="mod-desc">Tích hợp <code>ITextToSpeech</code> của MAUI để tự động xướng thành tiếng thuyết
+                    minh khi phát hiện khách đến gần POI (Geofence).</div>
             </div>
             <div class="arch-module">
                 <div class="mod-icon">🛡️</div>
                 <div class="mod-name">Admin Control + Heatmap</div>
-                <div class="mod-desc">Admin khóa tài khoản real-time (Kick-out), xem thống kê (Leaflet Heatmap), giám sát <code>app_live_sessions</code>.</div>
+                <div class="mod-desc">Admin khóa tài khoản real-time (Kick-out), xem thống kê (Leaflet Heatmap), giám
+                    sát <code>app_live_sessions</code>.</div>
             </div>
             <div class="arch-module">
                 <div class="mod-icon">🗺️</div>
                 <div class="mod-name">Google Maps + Geofence</div>
-                <div class="mod-desc">Ứng dụng .NET 9 MAUI vẽ Marker lên Google Maps native, tính Haversine và kích hoạt Geofence tự động.</div>
+                <div class="mod-desc">Ứng dụng .NET 9 MAUI vẽ Marker lên Google Maps native, tính Haversine và kích hoạt
+                    Geofence tự động.</div>
             </div>
             <div class="arch-module">
                 <div class="mod-icon">🤖</div>
                 <div class="mod-name">Auto-Translate</div>
-                <div class="mod-desc">Tích hợp Google Translate API trực tiếp vào Web Portal, dịch mô tả POI sang 4 ngôn ngữ đồng loạt.</div>
+                <div class="mod-desc">Tích hợp Google Translate API trực tiếp vào Web Portal, dịch mô tả POI sang 4 ngôn
+                    ngữ đồng loạt.</div>
             </div>
         </div>
     </section>
@@ -553,7 +564,9 @@
             </div>
         </div>
 
-        <p style="margin-bottom:1.5rem;color:var(--text-secondary);">Hệ thống sử dụng Firebase Firestore làm cơ sở dữ liệu duy nhất. Dữ liệu POI được khởi tạo qua hàm <code>SeedDataToCloudAsync()</code>, các trường thống kê được cập nhật real-time bằng <code>FieldValue.increment()</code>.</p>
+        <p style="margin-bottom:1.5rem;color:var(--text-secondary);">Hệ thống sử dụng Firebase Firestore làm cơ sở dữ
+            liệu duy nhất. Dữ liệu POI được khởi tạo qua hàm <code>SeedDataToCloudAsync()</code>, các trường thống kê
+            được cập nhật real-time bằng <code>FieldValue.increment()</code>.</p>
 
         <div class="stats-row">
             <div class="stat-card">
@@ -587,11 +600,17 @@
             <div class="card">
                 <h3>Cấu trúc Firestore (các field chính)</h3>
                 <ul>
-                    <li><strong>Cơ sở:</strong> <code>DescriptionVI</code>, <code>DescriptionEN</code>, <code>DescriptionJA</code>, <code>DescriptionZH</code></li>
-                    <li><strong>Phân quyền:</strong> <code>isApproved</code>, <code>IsLocked</code>, <code>isOpen</code></li>
+                    <li><strong>Cơ sở:</strong> <code>DescriptionVI</code>, <code>DescriptionEN</code>,
+                        <code>DescriptionJA</code>, <code>DescriptionZH</code></li>
+                    <li><strong>Phân quyền:</strong> <code>isApproved</code>, <code>IsLocked</code>, <code>isOpen</code>
+                    </li>
                     <li><strong>Thống kê Web:</strong> <code>audioListenCount</code> — lượt nghe từ Web</li>
                     <li><strong>Thống kê App:</strong> <code>AppPlayCount</code> — lượt nghe từ MAUI App</li>
-                    <li><strong>Giám sát:</strong> Coll. <code>app_live_sessions</code> — theo dõi thiết bị đang Online</li>
+                    <li><strong>Ưu tiên tự động:</strong> <code>TotalListenCount</code> =
+                        <code>AppPlayCount + audioListenCount</code> — hệ thống tự tính, xác định quán phát trước khi
+                        khách đứng giữa 2 POI cùng bán kính. Không cần Admin hay Owner can thiệp.</li>
+                    <li><strong>Giám sát:</strong> Coll. <code>app_live_sessions</code> — theo dõi thiết bị đang Online
+                    </li>
                     <li><strong>Tài khoản:</strong> <code>LoginCount</code> — tổng lần đăng nhập của mỗi user</li>
                 </ul>
             </div>
@@ -608,17 +627,21 @@
             </div>
         </div>
 
-        <p style="margin-bottom:1.5rem;color:var(--text-secondary);">Chức năng trải nghiệm cốt lõi của App: phát hiện khách lạc đến gần quán và tự động phát giọng thuyết minh, hoạt động ngay cả khi màn hình khóa.</p>
+        <p style="margin-bottom:1.5rem;color:var(--text-secondary);">Chức năng trải nghiệm cốt lõi của App: phát hiện
+            khách lạc đến gần quán và tự động phát giọng thuyết minh, hoạt động ngay cả khi màn hình khóa.</p>
 
         <div class="highlight info">
-            <strong>Android Foreground Service (<code>AndroidLocationService.cs</code>):</strong> Được khai báo trong <code>AndroidManifest.xml</code> với quyền <code>FOREGROUND_SERVICE_LOCATION</code>. Hệ thống hiển thị thông báo dai dẳng (persistent notification) để Android OS không đầy service ra khỏi bộ nhớ.
+            <strong>Android Foreground Service (<code>AndroidLocationService.cs</code>):</strong> Được khai báo trong
+            <code>AndroidManifest.xml</code> với quyền <code>FOREGROUND_SERVICE_LOCATION</code>. Hệ thống hiển thị thông
+            báo dai dẳng (persistent notification) để Android OS không đầy service ra khỏi bộ nhớ.
         </div>
 
         <h3>Quá trình kích hoạt (Life-cycle)</h3>
         <div class="timeline">
             <div class="timeline-item">
                 <h4>1. Khởi động Service — <code>StartTracking()</code></h4>
-                <p>Khi quyền GPS được cấp, <code>GpsService.StartTracking()</code> tự động gọi <code>StartForegroundServiceCompat()</code> trên Android.</p>
+                <p>Khi quyền GPS được cấp, <code>GpsService.StartTracking()</code> tự động gọi
+                    <code>StartForegroundServiceCompat()</code> trên Android.</p>
             </div>
             <div class="timeline-item">
                 <h4>2. Quét GPS mỗi 10 giây — <code>OnLocationChanged()</code></h4>
@@ -626,11 +649,13 @@
             </div>
             <div class="timeline-item">
                 <h4>3. Kích hoạt Geofence — <code>HighlightPoiOnMap(poi.Id)</code></h4>
-                <p>Nếu khoảng cách ≤ <code>poi.Radius</code> và cờ <code>HasAutoPlayed == false</code>: Highlight Marker, gọi <code>CallCrossTTS()</code> phát tiếng.</p>
+                <p>Nếu khoảng cách ≤ <code>poi.Radius</code> và cờ <code>HasAutoPlayed == false</code>: Highlight
+                    Marker, gọi <code>CallCrossTTS()</code> phát tiếng.</p>
             </div>
             <div class="timeline-item">
                 <h4>4. Tải cờ chống Spam — <code>ResetAutoPlayFlag()</code></h4>
-                <p>Khi thiết bị rời xa hơn <code>poi.Radius + 30m</code>, cờ <code>HasAutoPlayed</code> được đặt lại về <code>false</code>.</p>
+                <p>Khi thiết bị rời xa hơn <code>poi.Radius + 30m</code>, cờ <code>HasAutoPlayed</code> được đặt lại về
+                    <code>false</code>.</p>
             </div>
         </div>
     </section>
@@ -645,27 +670,33 @@
 
         <div class="card-grid">
             <div class="card">
-                <h3>QR Code “Không chạm” (Web)</h3>
-                <p>Khách hàng không bị bắt buộc tải App. Chủ quán in mã QR từ Dashboard đặt tại bàn. Khách dùng camera gốc quét mã để mở trang thông tin quán trên trình duyệt.</p>
+                <h3>QR Code tự động sinh (Hệ thống)</h3>
+                <p>Khi Admin duyệt quán (<code>isApproved = true</code>), hệ thống <strong>tự động sinh mã QR</strong>
+                    định danh duy nhất (<code>qrUrl</code>) lưu trên Firestore. Chủ quán tải QR từ Dashboard và in đặt
+                    tại bàn. Khách dùng camera quét để mở trang thông tin trên trình duyệt — không cần tải App.</p>
             </div>
             <div class="card">
                 <h3>Thuyết Minh TTS (Web bằng <code>SpeechSynthesis</code>)</h3>
-                <p>Sau khi quét mã QR, khách nhấn 1 nút. Trình duyệt gọi <code>SpeechSynthesisUtterance</code> đọc mô tả các ngữ điệu (Vi, Anh, Nhật, Trung) và ghi nhận <code>audioListenCount</code>.</p>
+                <p>Sau khi quét mã QR, khách nhấn 1 nút. Trình duyệt gọi <code>SpeechSynthesisUtterance</code> đọc mô tả
+                    các ngữ điệu (Vi, Anh, Nhật, Trung) và ghi nhận <code>audioListenCount</code>.</p>
             </div>
             <div class="card">
                 <h3>Foreground Service TTS (App Android)</h3>
-                <p>MAUI App sử dụng <code>ITextToSpeech</code> để phát giọng thuyết minh ngay cả khi màn hình khóa. Gây phát thiết bị được ghi vào <code>AppPlayCount</code> trên Firestore (Atomic).</p>
+                <p>MAUI App sử dụng <code>ITextToSpeech</code> để phát giọng thuyết minh ngay cả khi màn hình khóa. Gây
+                    phát thiết bị được ghi vào <code>AppPlayCount</code> trên Firestore (Atomic).</p>
             </div>
             <div class="card">
                 <h3>Admin Dashboard + Heatmap</h3>
-                <p>Admin xem thống kê tài khoản, giám sát thiết bị đang online qua <code>app_live_sessions</code> và xem Bản đồ nhiệt (Leaflet Heatmap) phân bố lượt nghe thực tế trên đường phố.</p>
+                <p>Admin xem thống kê tài khoản, giám sát thiết bị đang online qua <code>app_live_sessions</code> và xem
+                    Bản đồ nhiệt (Leaflet Heatmap) phân bố lượt nghe thực tế trên đường phố.</p>
             </div>
         </div>
 
         <div class="code-block">
             <span class="comment">// Web: TTS + Ghi nhận Thống kê (Firebase)</span><br>
             <span class="keyword">function</span> <span class="fn">startReading</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span> utterance = <span class="keyword">new</span> SpeechSynthesisUtterance(text);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span> utterance = <span class="keyword">new</span>
+            SpeechSynthesisUtterance(text);<br>
             &nbsp;&nbsp;&nbsp;&nbsp;utterance.lang = getBestVoice(currentLang);<br>
             &nbsp;&nbsp;&nbsp;&nbsp;window.speechSynthesis.speak(utterance);<br>
             <br>
@@ -674,8 +705,10 @@
             }<br>
             <br>
             <span class="comment">// App Android: Foreground Service gọi TTS + Ghi AppPlayCount</span><br>
-            <span class="keyword">async</span> Task CallCrossTTS(<span class="keyword">string</span> text, <span class="keyword">string</span> lang) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;await TextToSpeech.Default.SpeakAsync(text, <span class="keyword">new</span> SpeechOptions { Locale = lang });<br>
+            <span class="keyword">async</span> Task CallCrossTTS(<span class="keyword">string</span> text, <span
+                class="keyword">string</span> lang) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;await TextToSpeech.Default.SpeakAsync(text, <span class="keyword">new</span>
+            SpeechOptions { Locale = lang });<br>
             &nbsp;&nbsp;&nbsp;&nbsp;await DatabaseService.IncrementAppPlayCountAsync(poiId);<br>
             }
         </div>
@@ -686,13 +719,59 @@
     <!-- ========================================= -->
     <style>
         /* Tối ưu riêng cho phần Đặc tả và Sơ đồ */
-        .uml-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; background: var(--surface); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .uml-table th, .uml-table td { border: 1px solid var(--border); padding: 14px 18px; text-align: left; vertical-align: top; }
-        .uml-table th { background-color: rgba(46, 125, 50, 0.05); color: var(--primary-dark); font-weight: 700; width: 25%; }
-        .uml-diagram { display: none; }
-        .uml-render { display: flex; justify-content: center; background: white; padding: 2rem; border: 2px dashed #c8e6c9; border-radius: 12px; margin: 1.5rem 0; overflow-x: auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-        .uml-render img { max-width: 100%; height: auto; }
-        .uml-header { font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); margin-top: 2.5rem; border-left: 4px solid var(--primary); padding-left: 12px; }
+        .uml-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+            background: var(--surface);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .uml-table th,
+        .uml-table td {
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .uml-table th {
+            background-color: rgba(46, 125, 50, 0.05);
+            color: var(--primary-dark);
+            font-weight: 700;
+            width: 25%;
+        }
+
+        .uml-diagram {
+            display: none;
+        }
+
+        .uml-render {
+            display: flex;
+            justify-content: center;
+            background: white;
+            padding: 2rem;
+            border: 2px dashed #c8e6c9;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .uml-render img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .uml-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-top: 2.5rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+        }
     </style>
 
     <section id="uml-usecase">
@@ -704,7 +783,8 @@
             </div>
         </div>
 
-        <p style="color:var(--text-secondary);">Sơ đồ hóa các chức năng của hệ thống dưới góc độ của 3 nhóm người dùng: Khách hàng, Chủ quán và Quản trị viên.</p>
+        <p style="color:var(--text-secondary);">Sơ đồ hóa các chức năng của hệ thống dưới góc độ của 3 nhóm người dùng:
+            Khách hàng, Chủ quán và Quản trị viên.</p>
 
         <div class="uml-header">1. Sơ đồ Tổng quan Hệ thống (3 tác nhân — Full Feature)</div>
         <textarea class="uml-diagram">
@@ -902,7 +982,7 @@ UC_Err ..> UC_Login : <<mở rộng>>
 @enduml
         </textarea>
         <div class="uml-render"></div>
-        
+
         <div class="uml-header">3.3 Chủ quán: Thêm & Quản lý Thông tin Quán</div>
         <textarea class="uml-diagram">
 @startuml
@@ -1078,178 +1158,320 @@ Admin --> UC_Stats
         <!-- 2.1 KHÁCH HÀANG: ĐĂNG NHẬP -->
         <div class="uml-header">Use Case 2.1: Đăng nhập (Khách hàng)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Khách hàng (Người dùng cuối)</td></tr>
-            <tr><th>Mức độ ưu tiên</th><td>Trung bình</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Người dùng đã tải App MAUI.</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Hệ thống hiển thị Form đăng nhập.<br>
-                2. Người dùng nhập Username/Password.<br>
-                3. Hệ thống thực hiện <strong>Hash SHA-256</strong> mật khẩu vừa nhập.<br>
-                4. Hệ thống so khớp PasswordHash với Firestore.<br>
-                5. Ghi nhận <code>LoginCount += 1</code> và chuyển hướng vào Bản đồ chính.
-            </td></tr>
-            <tr><th>Ngoại lệ</th><td>Sai mật khẩu: Thông báo lỗi "Tài khoản hoặc mật khẩu không chính xác".</td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Khách hàng (Người dùng cuối)</td>
+            </tr>
+            <tr>
+                <th>Mức độ ưu tiên</th>
+                <td>Trung bình</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Người dùng đã tải App MAUI.</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Hệ thống hiển thị Form đăng nhập.<br>
+                    2. Người dùng nhập Username/Password.<br>
+                    3. Hệ thống thực hiện <strong>Hash SHA-256</strong> mật khẩu vừa nhập.<br>
+                    4. Hệ thống so khớp PasswordHash với Firestore.<br>
+                    5. Ghi nhận <code>LoginCount += 1</code> và chuyển hướng vào Bản đồ chính.
+                </td>
+            </tr>
+            <tr>
+                <th>Ngoại lệ</th>
+                <td>Sai mật khẩu: Thông báo lỗi "Tài khoản hoặc mật khẩu không chính xác".</td>
+            </tr>
         </table>
 
         <!-- 2.2 KHÁCH HÀNG: BẢN ĐỒ & GEOFENCE -->
         <div class="uml-header">Use Case 2.2: Khám phá Bản đồ & Vẽ Marker (Khách hàng)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Khách hàng, GPS System</td></tr>
-            <tr><th>Mức độ ưu tiên</th><td>Cao</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Đã đăng nhập, đã bật Location Service.</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Hệ thống lấy tọa độ GPS thời gian thực.<br>
-                2. Truy vấn Firestore lấy danh sách quán <code>isApproved == true</code>.<br>
-                3. Hiển thị Marker lên Google Maps.<br>
-                4. Foreground Service chạy nền, liên tục quét GPS mỗi 10 giây.
-            </td></tr>
-            <tr><th>Ngoại lệ</th><td>Mất GPS: Báo "Đang tìm tín hiệu...".</td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Khách hàng, GPS System</td>
+            </tr>
+            <tr>
+                <th>Mức độ ưu tiên</th>
+                <td>Cao</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Đã đăng nhập, đã bật Location Service.</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Hệ thống lấy tọa độ GPS thời gian thực.<br>
+                    2. Truy vấn Firestore lấy danh sách quán <code>isApproved == true</code>.<br>
+                    3. Hiển thị Marker lên Google Maps.<br>
+                    4. Foreground Service chạy nền, liên tục quét GPS mỗi 10 giây.
+                </td>
+            </tr>
+            <tr>
+                <th>Ngoại lệ</th>
+                <td>Mất GPS: Báo "Đang tìm tín hiệu...".</td>
+            </tr>
         </table>
 
         <!-- 2.3 KHÁCH HÀNG: AUDIO -->
         <div class="uml-header">Use Case 2.3: Nghe Thuyết minh Đa ngôn ngữ — Web QR (Khách hàng)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Khách hàng, Web Speech API</td></tr>
-            <tr><th>Mức độ ưu tiên</th><td>Cao</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Khách quét mã QR và mở trang Web.</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Khách tải trang chi tiết quán qua link QR.<br>
-                2. Hệ thống tải văn bản mô tả (DescriptionVI/EN/JA/ZH).<br>
-                3. Người dùng chọn ngôn ngữ và ấn Play.<br>
-                4. Hệ thống gọi bộ máy TTS của hệ điều hành (<code>SpeechSynthesisUtterance</code>).<br>
-                5. Tăng nguyên tử (Atomic) giá trị <code>audioListenCount</code> lên +1.
-            </td></tr>
-            <tr><th>Ngoại lệ</th><td>Không hỗ trợ TTS: Hiển thị văn bản thuần.</td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Khách hàng, Web Speech API</td>
+            </tr>
+            <tr>
+                <th>Mức độ ưu tiên</th>
+                <td>Cao</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Khách quét mã QR và mở trang Web.</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Khách tải trang chi tiết quán qua link QR.<br>
+                    2. Hệ thống tải văn bản mô tả (DescriptionVI/EN/JA/ZH).<br>
+                    3. Người dùng chọn ngôn ngữ và ấn Play.<br>
+                    4. Hệ thống gọi bộ máy TTS của hệ điều hành (<code>SpeechSynthesisUtterance</code>).<br>
+                    5. Tăng nguyên tử (Atomic) giá trị <code>audioListenCount</code> lên +1.
+                </td>
+            </tr>
+            <tr>
+                <th>Ngoại lệ</th>
+                <td>Không hỗ trợ TTS: Hiển thị văn bản thuần.</td>
+            </tr>
         </table>
 
         <!-- 2.4 FOREGROUND TTS -->
         <div class="uml-header">Use Case 2.4: Foreground Service GPS & Tự động TTS (Khách hàng)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Khách hàng, Android OS</td></tr>
-            <tr><th>Mức độ ưu tiên</th><td>Rất Cao</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Đã cấp quyền GPS và Notification trên Android.</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. <code>GpsService.StartTracking()</code> gọi <code>StartForegroundServiceCompat()</code>.<br>
-                2. Android OS cấp phép Service chạy liên tục với Persistent Notification.<br>
-                3. Service quét GPS mỗi 10 giây qua <code>OnLocationChanged()</code>.<br>
-                4. <code>CalculateHaversineDistance()</code> kiểm tra từng POI.<br>
-                5. Nếu khoảng cách ≤ Radius và cờ <code>HasAutoPlayed == false</code>: gọi <code>CallCrossTTS()</code>.<br>
-                6. Ghi nhận <code>AppPlayCount += 1</code> trên Firestore (Atomic).
-            </td></tr>
-            <tr><th>Ngoại lệ</th><td>Màn hình khóa: Service vẫn chạy được nhờ Foreground Service.</td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Khách hàng, Android OS</td>
+            </tr>
+            <tr>
+                <th>Mức độ ưu tiên</th>
+                <td>Rất Cao</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Đã cấp quyền GPS và Notification trên Android.</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. <code>GpsService.StartTracking()</code> gọi <code>StartForegroundServiceCompat()</code>.<br>
+                    2. Android OS cấp phép Service chạy liên tục với Persistent Notification.<br>
+                    3. Service quét GPS mỗi 10 giây qua <code>OnLocationChanged()</code>.<br>
+                    4. <code>CalculateHaversineDistance()</code> kiểm tra từng POI.<br>
+                    5. Nếu khoảng cách ≤ Radius và cờ <code>HasAutoPlayed == false</code>: gọi
+                    <code>CallCrossTTS()</code>.<br>
+                    6. Ghi nhận <code>AppPlayCount += 1</code> trên Firestore (Atomic).
+                </td>
+            </tr>
+            <tr>
+                <th>Ngoại lệ</th>
+                <td>Màn hình khóa: Service vẫn chạy được nhờ Foreground Service.</td>
+            </tr>
         </table>
 
         <!-- 3.1 CHỦ QUÁN: ĐĂNG KÝ -->
         <div class="uml-header">Use Case 3.1: Đăng ký & Kích hoạt (Chủ quán)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Chủ quán, Quản trị viên</td></tr>
-            <tr><th>Mức độ ưu tiên</th><td>Rất Cao</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Chủ quán điền form đăng ký trên <code>register.html</code>.<br>
-                2. Hệ thống khởi tạo trạng thái <code>IsLocked = true</code>, <code>isApproved = false</code>.<br>
-                3. Admin kiểm tra hồ sơ và cập nhật <code>IsLocked = false</code>, <code>isApproved = true</code>.<br>
-                4. Hệ thống đẩy <code>onSnapshot()</code> để thông báo Chủ quán được kích hoạt.
-            </td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Chủ quán, Quản trị viên</td>
+            </tr>
+            <tr>
+                <th>Mức độ ưu tiên</th>
+                <td>Rất Cao</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Chủ quán điền form đăng ký trên <code>register.html</code>.<br>
+                    2. Hệ thống khởi tạo trạng thái <code>IsLocked = true</code>, <code>isApproved = false</code>.<br>
+                    3. Admin kiểm tra hồ sơ và cập nhật <code>IsLocked = false</code>,
+                    <code>isApproved = true</code>.<br>
+                    4. Hệ thống đẩy <code>onSnapshot()</code> để thông báo Chủ quán được kích hoạt.
+                </td>
+            </tr>
         </table>
 
         <!-- 3.2 CHỦ QUÁN: ĐĂNG NHẬP -->
         <div class="uml-header">Use Case 3.2: Đăng nhập Portal (Chủ quán)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Chủ quán</td></tr>
-            <tr><th>Mức độ ưu tiên</th><td>Cao</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Tài khoản đã được Admin duyệt.</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Truy cập <code>dashboard.html</code>.<br>
-                2. Nhập Username và Mật khẩu.<br>
-                3. Hệ thống Hash SHA-256 mật khẩu để xác thực.<br>
-                4. Kiểm tra cờ <code>IsLocked</code> — nếu bị khóa thì từ chối.<br>
-                5. Ghi nhận <code>LoginCount += 1</code> và chuyển vào Dashboard.
-            </td></tr>
-            <tr><th>Ngoại lệ</th><td>Tài khoản bị khóa: Hiển thị cảnh báo và chặn đăng nhập.</td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Chủ quán</td>
+            </tr>
+            <tr>
+                <th>Mức độ ưu tiên</th>
+                <td>Cao</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Tài khoản đã được Admin duyệt.</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Truy cập <code>dashboard.html</code>.<br>
+                    2. Nhập Username và Mật khẩu.<br>
+                    3. Hệ thống Hash SHA-256 mật khẩu để xác thực.<br>
+                    4. Kiểm tra cờ <code>IsLocked</code> — nếu bị khóa thì từ chối.<br>
+                    5. Ghi nhận <code>LoginCount += 1</code> và chuyển vào Dashboard.
+                </td>
+            </tr>
+            <tr>
+                <th>Ngoại lệ</th>
+                <td>Tài khoản bị khóa: Hiển thị cảnh báo và chặn đăng nhập.</td>
+            </tr>
         </table>
 
         <!-- 3.3 CHỦ QUÁN: QUẢN LÝ POI -->
         <div class="uml-header">Use Case 3.3: Quản lý & Cập nhật POI (Chủ quán)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Chủ quán</td></tr>
-            <tr><th>Mức độ ưu tiên</th><td>Cao</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Đã đăng nhập Dashboard và được Admin duyệt.</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Chủ quán nhấn nút Sửa trên quán cần cập nhật.<br>
-                2. Cập nhật mô tả đa ngôn ngữ (Vi/En/Ja/Zh) — có nút "Dịch tự động".<br>
-                3. Cập nhật tọa độ bằng cách kéo Marker hoặc nút "Lấy GPS".<br>
-                4. Quản lý ảnh bằng link URL.<br>
-                5. Lưu lên Firestore và hệ thống tự động sinh mã QR định danh (<code>qrUrl</code>).<br>
-                6. Theo dõi tổng lượt nghe (<code>audioListenCount</code> + <code>AppPlayCount</code>).
-            </td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Chủ quán</td>
+            </tr>
+            <tr>
+                <th>Mức độ ưu tiên</th>
+                <td>Cao</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Đã đăng nhập Dashboard và được Admin duyệt.</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Chủ quán nhấn nút Sửa trên quán cần cập nhật.<br>
+                    2. Cập nhật mô tả đa ngôn ngữ (Vi/En/Ja/Zh) — có nút "Dịch tự động".<br>
+                    3. Cập nhật tọa độ bằng cách kéo Marker hoặc nút "Lấy GPS".<br>
+                    4. Quản lý ảnh bằng link URL.<br>
+                    5. Lưu lên Firestore và hệ thống tự động sinh mã QR định danh (<code>qrUrl</code>).<br>
+                    6. Theo dõi tổng lượt nghe (<code>audioListenCount</code> + <code>AppPlayCount</code>).
+                </td>
+            </tr>
         </table>
 
         <!-- 4.1 ADMIN: XÁC THỰC -->
         <div class="uml-header">Use Case 4.1: Đăng nhập & Xác thực Admin</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Quản trị viên</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Truy cập trang <code>login.html</code></td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Nhập thông tin quản trị.<br>
-                2. Hệ thống kiểm tra Hash SHA-256.<br>
-                3. Hệ thống xác minh quyền <code>admin</code> trong Firestore.<br>
-                4. Chuyển hướng đến <code>admin-dashboard.html</code>.
-            </td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Quản trị viên</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Truy cập trang <code>login.html</code></td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Nhập thông tin quản trị.<br>
+                    2. Hệ thống kiểm tra Hash SHA-256.<br>
+                    3. Hệ thống xác minh quyền <code>admin</code> trong Firestore.<br>
+                    4. Chuyển hướng đến <code>admin-dashboard.html</code>.
+                </td>
+            </tr>
         </table>
 
         <!-- 4.2 ADMIN: QUẢN LÝ POI -->
         <div class="uml-header">Use Case 4.2: Phê duyệt & Quản lý POI (Admin)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Quản trị viên</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Đã đăng nhập Admin Dashboard.</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Xem danh sách quán đang chờ duyệt.<br>
-                2. Kiểm tra thông tin tọa độ và mô tả.<br>
-                3. Nhấn nút <strong>Duyệt</strong> (Approve).<br>
-                4. Cập nhật cờ <code>isApproved = true</code> — Quán xuất hiện trên Map ngay lập tức.<br>
-                5. Hệ thống tự động sinh QR Code cho quán.
-            </td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Quản trị viên</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Đã đăng nhập Admin Dashboard.</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Xem danh sách quán đang chờ duyệt.<br>
+                    2. Kiểm tra thông tin tọa độ và mô tả.<br>
+                    3. Nhấn nút <strong>Duyệt</strong> (Approve).<br>
+                    4. Cập nhật cờ <code>isApproved = true</code> — Quán xuất hiện trên Map ngay lập tức.<br>
+                    5. Hệ thống tự động sinh QR Code cho quán.
+                </td>
+            </tr>
         </table>
 
         <!-- 4.3 ADMIN: QUẢN LÝ TÀI KHOẢN -->
         <div class="uml-header">Use Case 4.3: Quản lý Tài khoản & Kick-out Real-time (Admin)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Quản trị viên</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Giám sát danh sách thiết bị qua <code>app_live_sessions</code>.<br>
-                2. Phát hiện hành vi vi phạm.<br>
-                3. Nhấn <strong>Khóa tài khoản</strong>.<br>
-                4. Firebase cập nhật <code>IsLocked = true</code> — thiết bị người dùng nhận <code>onSnapshot()</code> và tự động đăng xuất.
-            </td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Quản trị viên</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Giám sát danh sách thiết bị qua <code>app_live_sessions</code>.<br>
+                    2. Phát hiện hành vi vi phạm.<br>
+                    3. Nhấn <strong>Khóa tài khoản</strong>.<br>
+                    4. Firebase cập nhật <code>IsLocked = true</code> — thiết bị người dùng nhận
+                    <code>onSnapshot()</code> và tự động đăng xuất.
+                </td>
+            </tr>
         </table>
 
         <!-- 4.4 ADMIN: THỐNG KÊ -->
         <div class="uml-header">Use Case 4.4: Theo dõi Thống kê Toàn diện (Admin)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Quản trị viên, Hệ thống Real-time</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Mở tab Thống kê trên Admin Dashboard.<br>
-                2. Hệ thống lắng nghe collection <code>users</code> + <code>owners</code> qua <code>onSnapshot()</code>.<br>
-                3. <code>updateStatsUI()</code> tổng hợp: Tổng tài khoản, Tổng login, Tài khoản khóa.<br>
-                4. Lắng nghe <code>app_live_sessions</code> để đếm thiết bị đang cập nhật Heartbeat.<br>
-                5. Lắng nghe <code>restaurants</code> để render Leaflet Heatmap phân bố lượt nghe.
-            </td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Quản trị viên, Hệ thống Real-time</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Mở tab Thống kê trên Admin Dashboard.<br>
+                    2. Hệ thống lắng nghe collection <code>users</code> + <code>owners</code> qua
+                    <code>onSnapshot()</code>.<br>
+                    3. <code>updateStatsUI()</code> tổng hợp: Tổng tài khoản, Tổng login, Tài khoản khóa.<br>
+                    4. Lắng nghe <code>app_live_sessions</code> để đếm thiết bị đang cập nhật Heartbeat.<br>
+                    5. Lắng nghe <code>restaurants</code> để render Leaflet Heatmap phân bố lượt nghe.
+                </td>
+            </tr>
         </table>
 
         <!-- 4.5 HEATMAP -->
         <div class="uml-header">Use Case 4.5: Xem Bản đồ nhiệt Heatmap (Admin)</div>
         <table class="uml-table">
-            <tr><th>Tác nhân</th><td>Quản trị viên, Firebase, Leaflet.js</td></tr>
-            <tr><th>Mức độ ưu tiên</th><td>Trung bình</td></tr>
-            <tr><th>Tiền điều kiện</th><td>Đã đăng nhập Admin Dashboard.</td></tr>
-            <tr><th>Chuỗi sự kiện chính</th><td>
-                1. Admin chuyển đến khu vực Heatmap.<br>
-                2. Hệ thống gọi <code>showHeatmapIfReady()</code>.<br>
-                3. <code>initHeatmap()</code> khởi tạo bản đồ Leaflet nếu chưa có.<br>
-                4. Lắng nghe <code>restaurants</code> qua <code>onSnapshot()</code>.<br>
-                5. <code>extractIntensityArray()</code> tính cường độ = (AppPlayCount + audioListenCount) / max.<br>
-                6. <code>L.heatLayer(points).addTo(heatMap)</code> vẽ bản đồ nhiệt.
-            </td></tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td>Quản trị viên, Firebase, Leaflet.js</td>
+            </tr>
+            <tr>
+                <th>Mức độ ưu tiên</th>
+                <td>Trung bình</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td>Đã đăng nhập Admin Dashboard.</td>
+            </tr>
+            <tr>
+                <th>Chuỗi sự kiện chính</th>
+                <td>
+                    1. Admin chuyển đến khu vực Heatmap.<br>
+                    2. Hệ thống gọi <code>showHeatmapIfReady()</code>.<br>
+                    3. <code>initHeatmap()</code> khởi tạo bản đồ Leaflet nếu chưa có.<br>
+                    4. Lắng nghe <code>restaurants</code> qua <code>onSnapshot()</code>.<br>
+                    5. <code>extractIntensityArray()</code> tính cường độ = (AppPlayCount + audioListenCount) / max.<br>
+                    6. <code>L.heatLayer(points).addTo(heatMap)</code> vẽ bản đồ nhiệt.
+                </td>
+            </tr>
         </table>
     </section>
 
@@ -1579,7 +1801,11 @@ stop
             </div>
         </div>
 
-        <div class="uml-header">7.1 Luồng Xác thực: Username/Password + SHA-256</div>
+        <h3
+            style="margin-top: 30px; margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px;">
+            NHÓM 1: KHÁCH HÀNG (APP & WEB)</h3>
+
+        <div class="uml-header">7.1 Khách hàng: Luồng Xác thực Username/Password + SHA-256</div>
         <textarea class="uml-diagram">
 @startuml
 autonumber
@@ -1600,7 +1826,7 @@ UI --> User: return Task.CompletedTask
         </textarea>
         <div class="uml-render"></div>
 
-        <div class="uml-header">7.2 Luồng Tải dữ liệu Bản đồ (Thực thể restaurants)</div>
+        <div class="uml-header">7.2 Khách hàng: Luồng Tải dữ liệu Bản đồ</div>
         <textarea class="uml-diagram">
 @startuml
 autonumber
@@ -1617,15 +1843,16 @@ Map --> User: void
         </textarea>
         <div class="uml-render"></div>
 
-        <div class="uml-header">7.3 Luồng Xử lý Geofence (Bán kính động & Chạy ngầm)</div>
+        <div class="uml-header">7.3 Khách hàng: Luồng Xử lý Geofence & Ghi nhận AppPlayCount</div>
         <textarea class="uml-diagram">
 @startuml
 autonumber
 participant "Android OS" as OS
-participant "Foregrond Service" as Serv
+participant "Foreground Service" as Serv
 participant "Calculator" as Calc
 participant "App UI" as UI
 participant "Audio Player" as Audio
+database "Firestore" as DB
 
 OS -> Serv: OnLocationChanged(Location loc)
 Serv -> Calc: CheckGeofences(loc.Latitude, loc.Longitude)
@@ -1634,6 +1861,7 @@ alt distance <= poi.Radius
     Calc -> UI: HighlightPoiOnMap(poi.Id)
     Calc -> Audio: CallCrossTTS(poi.Description, lang)
     Audio --> OS: PlayAudioStream()
+    Audio -> DB: updateDoc(docRef, {AppPlayCount: increment(1)})
 else distance > poi.Radius + 30m
     Calc -> Calc: ResetAutoPlayFlag(poi.Id) = false
 end
@@ -1641,44 +1869,91 @@ end
         </textarea>
         <div class="uml-render"></div>
 
-        <div class="uml-header">7.4 Lu&#7891;ng &#272;&#7847;u cu&#7889;i: T&#7841;o QR &rarr; Kh&#225;ch qu&#233;t &rarr; M&#7903; Web Audio</div>
+        <div class="uml-header">7.3b Khách hàng: Thuật toán Xác định Quán Gần Nhất (Distance, Priority, Radius)</div>
         <textarea class="uml-diagram">
 @startuml
 autonumber
-actor "Chủ quán" as Owner
-participant "Web Portal" as Portal
-database "Firestore" as DB
-participant "QR Generator" as QR
 actor "Khách hàng" as User
-participant "Camera / Browser" as Cam
-participant "Web Audio Page" as Web
-participant "SpeechSynthesis" as TTS
+participant "App (MapPage.xaml.cs)" as App
+database "Danh sách POI (RAM)" as Mem
 
-== Chủ quán lưu thông tin & sinh QR ==
-Owner -> Portal: SavePoiForm(poiData)
-Portal -> DB: UpdateDocAsync(docRef, {DescriptionVI, EN, JA, ZH})
-DB --> Portal: DocumentSnapshot (poiId)
-Portal -> QR: GenerateQR("index.html?id=" + poiId)
-QR --> Owner: displayQRCode(canvas)
+User -> App: Di chuyển (Thay đổi GPS) / Hoặc Bấm "Gần đây"
+App -> Mem: Quét các POI thỏa mãn: Distance <= Radius
+Mem --> App: Danh sách các quán lân cận (nearbyPois)
 
-== Khách quét QR & mở trang ==
-User -> Cam: ScanQRCode(printed QR)
-Cam -> Web: window.location.href = "index.html?id=poiId"
-Web -> DB: getDoc(doc(db, "restaurants", poiId))
-DB --> Web: DocumentSnapshot<PoiModel>
-Web -> Web: RenderPoiDetails(snapshot.data())
+App -> App: BƯỚC 1: Sắp xếp theo Khoảng cách (Tăng dần)
+note right of App
+  OrderBy(DistanceInMeters)
+  Ưu tiên quán ở gần khách nhất.
+end note
 
-== Khách nghe thuyết minh + Ghi thống kê ==
-User -> Web: clickPlayButton()
-Web -> TTS: new SpeechSynthesisUtterance(description, lang)
-Web -> TTS: window.speechSynthesis.speak(utterance)
-TTS --> User: PlayAudioStream()
-Web -> DB: updateDoc(docRef, {audioListenCount: increment(1)})
+App -> App: BƯỚC 2: Xét Độ Ưu Tiên (Tie-breaker 1)
+note right of App
+  ThenByDescending(Priority)
+  Nếu 2 quán cách đều nhau, quán có 
+  Priority cao hơn sẽ xếp trên.
+end note
+
+App -> App: BƯỚC 3: Xét Bán Kính (Tie-breaker 2)
+note right of App
+  ThenBy(Radius)
+  Nếu khoảng cách và Priority giống hệt nhau, 
+  quán có bán kính nhỏ hơn sẽ xếp trên.
+end note
+
+alt Chế độ Auto-play TTS
+    App -> App: Chọn POI đứng ĐẦU TIÊN (nearestTriggerPOI)
+    App -> User: Phát Audio Thuyết minh cho POI đó
+else Chế độ Xem "Quán Gần Đây"
+    App -> User: Hiển thị danh sách đã sắp xếp 3 lớp
+end
 @enduml
         </textarea>
         <div class="uml-render"></div>
 
-        <div class="uml-header">7.5 Lu&#7891;ng Web Speech API Chi ti&#7871;t (&#272;a ng&#244;n ng&#7919; + Ghi th&#7889;ng k&#234;)</div>
+        <div class="uml-header">7.4 Khách hàng: Luồng Đầu cuối Quét QR (Quán cụ thể & Danh sách chung)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Khách hàng" as User
+participant "Camera / Browser" as Cam
+participant "Trang Web" as Web
+participant "SpeechSynthesis" as TTS
+database "Firestore" as DB
+
+User -> Cam: ScanQRCode(Mã QR in sẵn)
+
+alt Mã QR Quán cụ thể (index.html)
+    Cam -> Web: window.location.href = "index.html?id=poiId"
+    Web -> DB: getDoc(doc(db, "restaurants", poiId))
+    DB --> Web: DocumentSnapshot<PoiModel>
+    Web -> Web: RenderPoiDetails(snapshot.data())
+
+    User -> Web: clickPlayButton()
+    Web -> TTS: new SpeechSynthesisUtterance(description, lang)
+    Web -> TTS: window.speechSynthesis.speak(utterance)
+    TTS --> User: PlayAudioStream()
+    Web -> DB: updateDoc(docRef, {audioListenCount: increment(1)})
+
+else Mã QR Danh sách chung (store-list.html)
+    Cam -> Web: window.location.href = "store-list.html"
+    
+    Web -> Web: randomVal = Math.random() (0 hoặc 1)
+    alt randomVal == 0
+        Web -> User: alert("kiểm tra cấu hình:\\nMạnh")
+    else randomVal == 1
+        Web -> User: alert("kiểm tra cấu hình:\\nYếu")
+    end
+
+    Web -> DB: onSnapshot(collection("restaurants"))
+    DB --> Web: Array<PoiModel>
+    Web -> Web: Render danh sách quán
+end
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.5 Khách hàng: Luồng Web Speech API Chi tiết (Đa ngôn ngữ + Ghi thống kê)</div>
         <textarea class="uml-diagram">
 @startuml
 autonumber
@@ -1703,7 +1978,12 @@ DB --> UI: WriteResult
         </textarea>
         <div class="uml-render"></div>
 
-        <div class="uml-header">7.6 Luồng Khởi tạo POI & Admin Activation</div>
+
+        <h3
+            style="margin-top: 40px; margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px;">
+            NHÓM 2: CHỦ QUÁN (OWNER PORTAL)</h3>
+
+        <div class="uml-header">7.6 Chủ quán: Luồng Đăng ký POI & Chờ Admin Duyệt</div>
         <textarea class="uml-diagram">
 @startuml
 autonumber
@@ -1721,140 +2001,7 @@ UI -> Owner: DisplayAlert("Tài khoản kích hoạt")
         </textarea>
         <div class="uml-render"></div>
 
-        <div class="uml-header">7.7 Luồng Cập nhật Đa ngôn ngữ (Firestore Map)</div>
-        <textarea class="uml-diagram">
-@startuml
-autonumber
-actor "Chủ quán" as Owner
-database "Firestore" as DB
-
-Owner -> UI: SavePoiTranslation(poiId, translationsMap)
-UI -> DB: updateDoc(docRef, {translations: translationsMap})
-DB -->> App: onSnapshot(QuerySnapshot)
-@enduml
-        </textarea>
-        <div class="uml-render"></div>
-
-        <div class="uml-header">7.8 Luồng Thống kê lượt nghe (Atomic increment)</div>
-        <textarea class="uml-diagram">
-@startuml
-autonumber
-participant "Audio Player" as UI
-database "Firestore" as DB
-
-UI -> DB: updateDoc(docRef, {audioListenCount: increment(1)})
-DB --> UI: Task<void>
-@enduml
-        </textarea>
-        <div class="uml-render"></div>
-
-        <div class="uml-header">7.9 Luồng Bảo mật: Real-time Kick-out</div>
-        <textarea class="uml-diagram">
-@startuml
-autonumber
-actor "Admin" as Admin
-database "Firebase" as DB
-participant "Target Client" as Client
-
-Admin -> DB: updateDoc(doc(db, "owners", id), {IsLocked: true})
-DB --[#red]> Client: onSnapshot(DocumentSnapshot)
-Client -> Client: EnsureNotLocked(snapshot)
-Client -> Client: SecureStorage.RemoveAll()
-Client -> UI: ShowAlert("Khóa bởi Admin")
-Client -> UI: Shell.Current.GoToAsync("//LoginPage")
-@enduml
-        </textarea>
-        <div class="uml-render"></div>
-
-        <div class="uml-header">7.10 Admin: Luồng Phê duyệt POI mới</div>
-        <textarea class="uml-diagram">
-@startuml
-autonumber
-actor "Admin" as Ad
-database "Firebase" as DB
-participant "Owner Dashboard" as Web
-
-Ad -> DB: updateDoc(doc(db, "restaurants", id), {isApproved: true})
-DB -->> Web: onSnapshot(QuerySnapshot)
-Web -> Web: toggleStatusUI(id, true)
-Web -> Web: generateQRCode(id)
-@enduml
-        </textarea>
-        <div class="uml-render"></div>
-
-        <div class="uml-header">7.11 Admin: Luồng Thống kê Tổng quan (Users & Logs)</div>
-        <textarea class="uml-diagram">
-@startuml
-autonumber
-actor "Admin" as Ad
-database "Firebase" as DB
-participant "Admin UI" as UI
-
-Ad -> UI: switchTab("stats")
-UI -> DB: onSnapshot(collection(db, "users"))
-UI -> DB: onSnapshot(collection(db, "owners"))
-DB -->> UI: QuerySnapshot
-UI -> UI: updateStatsUI()
-UI -> UI: document.getElementById().textContent = value
-@enduml
-        </textarea>
-        <div class="uml-render"></div>
-
-        <div class="uml-header">7.12 Admin: Luồng Giám sát Thiết bị Đang hoạt động (Live Sessions)</div>
-        <textarea class="uml-diagram">
-@startuml
-autonumber
-actor "Admin" as Ad
-database "Firebase" as DB
-participant "Admin UI" as UI
-
-Ad -> UI: View Live Sessions
-UI -> DB: onSnapshot(collection(db, "app_live_sessions"))
-DB -->> UI: QuerySnapshot
-UI -> UI: filter(s => (now - s.LastHeartbeat) < 25s)
-UI -> UI: getElementById("stat-active-realtime").innerText = actCnt
-@enduml
-        </textarea>
-        <div class="uml-render"></div>
-
-        <div class="uml-header">7.13 Admin: Luồng Render Bản đồ nhiệt (Heatmap)</div>
-        <textarea class="uml-diagram">
-@startuml
-autonumber
-actor "Admin" as Ad
-database "Firebase" as DB
-participant "JS Scripts" as Logic
-participant "Leaflet Container" as Map
-
-Ad -> Logic: window.onload()
-Logic -> DB: onSnapshot(collection(db, "restaurants"))
-DB -->> Logic: Array<PoiModel>
-Logic -> Logic: extractIntensityArray(pois)
-Logic -> Map: L.heatLayer(pointsArray).addTo(heatMap)
-Map --> Ad: void
-@enduml
-        </textarea>
-        <div class="uml-render"></div>
-
-        <div class="uml-header">7.14 Chủ quán: Luồng Dịch thuật tự động (Google API Internal)</div>
-        <textarea class="uml-diagram">
-@startuml
-autonumber
-actor "Chủ quán" as Owner
-participant "Portal UI" as UI
-participant "Google API" as GAPI
-
-Owner -> UI: autoTranslate()
-UI -> UI: document.getElementById("descVI").value
-UI -> GAPI: fetch("https://translate.googleapis.com/...&q=descVI")
-GAPI --> UI: Promise<Response>
-UI -> UI: .then(res => res.json())
-UI -> UI: document.getElementById("descEN").value = text
-@enduml
-        </textarea>
-        <div class="uml-render"></div>
-
-        <div class="uml-header">7.15 Chủ quán: Luồng Tương tác Bản đồ & Ghim Vị trí</div>
+        <div class="uml-header">7.7 Chủ quán: Luồng Tương tác Bản đồ & Ghim Vị trí</div>
         <textarea class="uml-diagram">
 @startuml
 autonumber
@@ -1873,6 +2020,191 @@ Owner -> Form: db.collection("restaurants").doc().set(...)
 @enduml
         </textarea>
         <div class="uml-render"></div>
+
+        <div class="uml-header">7.8 Chủ quán: Luồng Dịch thuật tự động (Google API Internal)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Portal UI" as UI
+participant "Google API" as GAPI
+
+Owner -> UI: autoTranslate()
+UI -> UI: document.getElementById("descVI").value
+UI -> GAPI: fetch("https://translate.googleapis.com/...&q=descVI")
+GAPI --> UI: Promise<Response>
+UI -> UI: .then(res => res.json())
+UI -> UI: document.getElementById("descEN").value = text
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.9 Chủ quán: Luồng Cập nhật Đa ngôn ngữ (Firestore Map)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Portal UI" as UI
+database "Firestore" as DB
+
+Owner -> UI: SavePoiTranslation(poiId, translationsMap)
+UI -> DB: updateDoc(docRef, {translations: translationsMap})
+DB -->> UI: onSnapshot(QuerySnapshot)
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.10 Chủ quán: Luồng Sinh mã QR (Sau khi đăng ký/sửa)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Web Portal" as Portal
+database "Firestore" as DB
+participant "QR Generator" as QR
+
+Owner -> Portal: SavePoiForm(poiData)
+Portal -> DB: UpdateDocAsync(docRef, {DescriptionVI, EN, JA, ZH})
+DB --> Portal: DocumentSnapshot (poiId)
+Portal -> QR: GenerateQR("index.html?id=" + poiId)
+QR --> Owner: displayQRCode(canvas)
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.11 Chủ quán: Luồng Xem Thống kê lượt nghe Web & App</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Dashboard UI" as UI
+database "Firestore" as DB
+
+Owner -> UI: Nhấn nút "Thống kê"
+UI -> UI: Hiển thị Stats Modal (Loading)
+UI -> DB: GetCollectionAsync("restaurants", where: "ownerId == currentUserId")
+DB -->> UI: QuerySnapshot<PoiModel>
+UI -> UI: Tính tổng audioListenCount (Web)
+UI -> UI: Tính tổng AppPlayCount (App)
+UI -> UI: Gán số liệu vào audioStatsCount & appStatsCount
+UI --> Owner: Cập nhật giao diện Modal
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+
+        <h3
+            style="margin-top: 40px; margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px;">
+            NHÓM 3: QUẢN TRỊ VIÊN (ADMIN PORTAL)</h3>
+
+        <div class="uml-header">7.12 Admin: Luồng Phê duyệt POI mới</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Ad
+database "Firebase" as DB
+participant "Owner Dashboard" as Web
+
+Ad -> DB: updateDoc(doc(db, "restaurants", id), {isApproved: true})
+DB -->> Web: onSnapshot(QuerySnapshot)
+Web -> Web: toggleStatusUI(id, true)
+Web -> Web: generateQRCode(id)
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.13 Admin: Luồng Bảo mật (Real-time Kick-out)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Admin
+database "Firebase" as DB
+participant "Target Client" as Client
+participant "App UI" as UI
+
+Admin -> DB: updateDoc(doc(db, "owners", id), {IsLocked: true})
+DB --[#red]> Client: onSnapshot(DocumentSnapshot)
+Client -> Client: EnsureNotLocked(snapshot)
+Client -> Client: SecureStorage.RemoveAll()
+Client -> UI: ShowAlert("Khóa bởi Admin")
+Client -> UI: Shell.Current.GoToAsync("//LoginPage")
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.14 Admin: Luồng Thống kê Tổng quan (Users & Logs)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Ad
+database "Firebase" as DB
+participant "Admin UI" as UI
+
+Ad -> UI: switchTab("stats")
+UI -> DB: onSnapshot(collection(db, "users"))
+UI -> DB: onSnapshot(collection(db, "owners"))
+DB -->> UI: QuerySnapshot
+UI -> UI: updateStatsUI()
+UI -> UI: document.getElementById().textContent = value
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.15 Admin: Luồng Giám sát Thiết bị Đang hoạt động (Live Sessions)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Ad
+participant "Admin UI" as UI
+database "Firebase\n(app_live_sessions)" as DB
+
+Ad -> UI: Mở Tab Thống kê (View Live Sessions)
+UI -> DB: onSnapshot(collection("app_live_sessions"))
+activate DB
+DB -->> UI: Trả về mảng QuerySnapshot (Real-time)
+deactivate DB
+
+== Tiền xử lý dữ liệu ==
+UI -> UI: filter(s => s.LastHeartbeat != null)
+UI -> UI: map() trích xuất DeviceId, UserType, Platform
+UI -> UI: sort(lastSeen DESC) (Mới nhất lên đầu)
+
+== Render Bảng & Tính tổng Online ==
+loop Duyệt từng thiết bị trong danh sách
+    UI -> UI: Tính diffSec = (now - lastSeen) / 1000
+    alt isOnline == true && diffSec < 25s
+        UI -> UI: Cấp trạng thái = "🟢 Online"
+        UI -> UI: actCnt = actCnt + 1
+    else
+        UI -> UI: Cấp trạng thái = "⚫ Offline"
+    end
+    UI -> UI: insertAdjacentHTML(tbody, rowData)
+end
+
+UI -> UI: getElementById("stat-active-realtime").innerText = actCnt
+UI --> Ad: Cập nhật giao diện toàn bộ (Bảng & Số đếm)
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.16 Admin: Luồng Render Bản đồ nhiệt (Heatmap)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Ad
+database "Firebase" as DB
+participant "JS Scripts" as Logic
+participant "Leaflet Container" as Map
+
+Ad -> Logic: window.onload()
+Logic -> DB: onSnapshot(collection(db, "restaurants"))
+DB -->> Logic: Array<PoiModel>
+Logic -> Logic: extractIntensityArray(pois)
+Logic -> Map: L.heatLayer(pointsArray).addTo(heatMap)
+Map --> Ad: void
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
     </section>
 
     <!-- SCRIPT RENDER TỰ ĐỘNG -->
@@ -1882,7 +2214,7 @@ Owner -> Form: db.collection("restaurants").doc().set(...)
         document.addEventListener("DOMContentLoaded", function () {
             const textareas = document.querySelectorAll('.uml-diagram');
             const renders = document.querySelectorAll('.uml-render');
-            
+
             textareas.forEach((textarea, index) => {
                 const code = textarea.value.trim();
                 if (code) {
@@ -1891,10 +2223,10 @@ Owner -> Form: db.collection("restaurants").doc().set(...)
                         // Sử dụng thư viện plantuml-encoder để tạo mã
                         const encoded = plantumlEncoder.encode(code);
                         const url = 'https://www.plantuml.com/plantuml/svg/' + encoded;
-                        
+
                         // Tạo đối tượng ảnh để kiểm tra load thành công
                         const img = new Image();
-                        img.onload = function() {
+                        img.onload = function () {
                             renders[index].innerHTML = '';
                             renders[index].appendChild(img);
                             img.style.maxWidth = '100%';
@@ -1903,7 +2235,7 @@ Owner -> Form: db.collection("restaurants").doc().set(...)
                             img.style.padding = '10px';
                             img.style.borderRadius = '8px';
                         };
-                        img.onerror = function() {
+                        img.onerror = function () {
                             renders[index].innerHTML = "<span style='color:red;'>Lỗi: Không thể tải ảnh từ Server PlantUML. (Do giới hạn Server, F5 lại nhé)</span>";
                         };
                         // Chống Rate Limit bằng cách delay tịnh tiến từng ảnh
@@ -1918,4 +2250,5 @@ Owner -> Form: db.collection("restaurants").doc().set(...)
         });
     </script>
 </body>
+
 </html>

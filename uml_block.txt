@@ -1,0 +1,317 @@
+﻿<!-- SEQUENCE DIAGRAM -->
+    <section id="uml-sequence">
+        <div class="section-header">
+            <div class="icon" style="background:#fce4ec;color:#c2185b;">⏱️</div>
+            <div>
+                <div class="section-num">Phần 08</div>
+                <h2>Sơ đồ Tuần tự (Sequence Diagram)</h2>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 30px; margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px;">NHÓM 1: KHÁCH HÀNG (APP & WEB)</h3>
+        <div class="uml-header">7.1 Luồng Xác thực: Username/Password + SHA-256</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Người dùng" as User
+participant "App UI" as UI
+participant "SHA-256 Engine" as Crypt
+database "Firestore" as DB
+
+User -> UI: btnLogin_Clicked(username, password)
+UI -> Crypt: ComputeHash(password)
+Crypt --> UI: string (passwordHash)
+UI -> DB: GetDocumentAsync("users", username)
+DB --> UI: DocumentSnapshot<User>
+UI -> UI: Compare(hash, snapshot.PasswordHash)
+UI -> DB: UpdateDocAsync(docRef, {IsOnline: true, LoginCount: increment(1)})
+UI --> User: return Task.CompletedTask
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.2 Luồng Tải dữ liệu Bản đồ (Thực thể restaurants)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+participant "Google Maps SDK" as Map
+participant "Service Layer" as Service
+database "Firestore" as DB
+
+Map -> Service: LoadPOIsDataAsync()
+Service -> DB: GetCollectionAsync("restaurants", where: "isApproved==true")
+DB --> Service: QuerySnapshot<PoiModel>
+Service -> Map: CreateMarkers(QuerySnapshot.Docs)
+Map --> User: void
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.3 Luồng Xử lý Geofence (Bán kính động & Chạy ngầm)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+participant "Android OS" as OS
+participant "Foregrond Service" as Serv
+participant "Calculator" as Calc
+participant "App UI" as UI
+participant "Audio Player" as Audio
+
+OS -> Serv: OnLocationChanged(Location loc)
+Serv -> Calc: CheckGeofences(loc.Latitude, loc.Longitude)
+Calc -> Calc: CalculateHaversineDistance(loc, poi)
+alt distance <= poi.Radius
+    Calc -> UI: HighlightPoiOnMap(poi.Id)
+    Calc -> Audio: CallCrossTTS(poi.Description, lang)
+    Audio --> OS: PlayAudioStream()
+else distance > poi.Radius + 30m
+    Calc -> Calc: ResetAutoPlayFlag(poi.Id) = false
+end
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.4 Khách hàng: Luồng Đầu cuối Quét QR Tập trung & Mở Web Audio</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Web Portal" as Portal
+database "Firestore" as DB
+actor "Khách hàng" as User
+participant "Camera / Browser" as Cam
+participant "store-list.html" as List
+participant "index.html (Detail)" as Web
+participant "SpeechSynthesis" as TTS
+
+== Chủ quán lưu thông tin ==
+Owner -> Portal: SavePoiForm(poiData)
+Portal -> DB: UpdateDocAsync(docRef, {DescriptionVI, EN, JA, ZH, Images...})
+DB --> Portal: Task Completed
+Portal -> Portal: Chuyển hướng mượt mà về Dashboard
+Portal --> Owner: Hiển thị thông báo "Lưu thành công"
+
+== Khách quét QR & mở trang ==
+User -> Cam: ScanQRCode(Central QR)
+Cam -> List: window.location.href = "store-list.html"
+List -> DB: getDocs(collection(db, "restaurants"))
+DB --> List: QuerySnapshot
+List -> List: Hiển thị danh sách A-Z (Map Icon)
+
+User -> List: Bấm chọn 1 quán
+List -> Web: window.location.href = "index.html?id=poiId"
+Web -> DB: getDoc(doc(db, "restaurants", poiId))
+DB --> Web: DocumentSnapshot<PoiModel>
+Web -> Web: RenderPoiDetails(snapshot.data())
+
+== Khách nghe thuyết minh + Ghi thống kê ==
+User -> Web: clickPlayButton()
+Web -> TTS: new SpeechSynthesisUtterance(description, lang)
+Web -> TTS: window.speechSynthesis.speak(utterance)
+TTS --> User: PlayAudioStream()
+Web -> DB: updateDoc(docRef, {audioListenCount: increment(1)})
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.5 Khách hàng: Luồng Web Speech API Chi tiết (Đa ngôn ngữ + Ghi thống kê)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Khách hàng" as User
+participant "Web UI" as UI
+participant "SpeechSynthesis" as TTS
+participant "OS Audio" as Audio
+database "Firestore" as DB
+
+User -> UI: clickLanguageFlag("ja")
+UI -> UI: ChangeLanguage("ja-JP")
+User -> UI: clickPlayButton()
+UI -> TTS: new SpeechSynthesisUtterance(descriptionJA)
+UI -> TTS: utterance.lang = "ja-JP"
+UI -> TTS: window.speechSynthesis.speak(utterance)
+TTS -> Audio: OutputAudioEvent()
+Audio --> User: PlayAudioStream()
+TTS -> UI: onend callback
+UI -> DB: updateDoc(docRef, {audioListenCount: increment(1)})
+DB --> UI: WriteResult
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <h3 style="margin-top: 40px; margin-bottom: 15px; color: var(--warning); border-bottom: 2px solid var(--border); padding-bottom: 10px;">NHÓM 2: CHỦ QUÁN (OWNER PORTAL)</h3>
+        <div class="uml-header">7.6 Luồng Khởi tạo POI & Admin Activation</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Portal" as UI
+database "Firestore" as DB
+actor "Admin" as Admin
+
+Owner -> UI: SubmitRegistrationForm(formData)
+UI -> DB: setDoc(docRef, {isLocked: true, isApproved: false})
+Admin -> DB: updateDoc(docRef, {isLocked: false, isApproved: true})
+DB -->> UI: onSnapshot(DocumentSnapshot)
+UI -> Owner: DisplayAlert("Tài khoản kích hoạt")
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.7 Luồng Cập nhật Đa ngôn ngữ (Firestore Map)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+database "Firestore" as DB
+
+Owner -> UI: SavePoiTranslation(poiId, translationsMap)
+UI -> DB: updateDoc(docRef, {translations: translationsMap})
+DB -->> App: onSnapshot(QuerySnapshot)
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.8 Luồng Thống kê lượt nghe (Atomic increment)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+participant "Audio Player" as UI
+database "Firestore" as DB
+
+UI -> DB: updateDoc(docRef, {audioListenCount: increment(1)})
+DB --> UI: Task<void>
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <h3 style="margin-top: 40px; margin-bottom: 15px; color: var(--info); border-bottom: 2px solid var(--border); padding-bottom: 10px;">NHÓM 3: QUẢN TRỊ VIÊN (ADMIN DASHBOARD)</h3>
+        <div class="uml-header">7.9 Luồng Bảo mật: Real-time Kick-out</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Admin
+database "Firebase" as DB
+participant "Target Client" as Client
+
+Admin -> DB: updateDoc(doc(db, "owners", id), {IsLocked: true})
+DB --[#red]> Client: onSnapshot(DocumentSnapshot)
+Client -> Client: EnsureNotLocked(snapshot)
+Client -> Client: SecureStorage.RemoveAll()
+Client -> UI: ShowAlert("Khóa bởi Admin")
+Client -> UI: Shell.Current.GoToAsync("//LoginPage")
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.10 Admin: Luồng Phê duyệt POI mới</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Ad
+database "Firebase" as DB
+participant "Owner Dashboard" as Web
+
+Ad -> DB: updateDoc(doc(db, "restaurants", id), {isApproved: true})
+DB -->> Web: onSnapshot(QuerySnapshot)
+Web -> Web: toggleStatusUI(id, true)
+Web -> Web: Cập nhật giao diện Dashboard
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.11 Admin: Luồng Thống kê Tổng quan (Users & Logs)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Ad
+database "Firebase" as DB
+participant "Admin UI" as UI
+
+Ad -> UI: switchTab("stats")
+UI -> DB: onSnapshot(collection(db, "users"))
+UI -> DB: onSnapshot(collection(db, "owners"))
+DB -->> UI: QuerySnapshot
+UI -> UI: updateStatsUI()
+UI -> UI: document.getElementById().textContent = value
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.12 Admin: Luồng Giám sát Thiết bị Đang hoạt động (Live Sessions)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Ad
+database "Firebase" as DB
+participant "Admin UI" as UI
+
+Ad -> UI: View Live Sessions
+UI -> DB: onSnapshot(collection(db, "app_live_sessions"))
+DB -->> UI: QuerySnapshot
+UI -> UI: filter(s => (now - s.LastHeartbeat) < 25s)
+UI -> UI: getElementById("stat-active-realtime").innerText = actCnt
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.13 Admin: Luồng Render Bản đồ nhiệt (Heatmap)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Admin" as Ad
+database "Firebase" as DB
+participant "JS Scripts" as Logic
+participant "Leaflet Container" as Map
+
+Ad -> Logic: window.onload()
+Logic -> DB: onSnapshot(collection(db, "restaurants"))
+DB -->> Logic: Array<PoiModel>
+Logic -> Logic: extractIntensityArray(pois)
+Logic -> Map: L.heatLayer(pointsArray).addTo(heatMap)
+Map --> Ad: void
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <h3 style="margin-top: 40px; margin-bottom: 15px; color: var(--warning); border-bottom: 2px solid var(--border); padding-bottom: 10px;">NHÓM 2 (TIẾP THEO): CÁC TIỆN ÍCH CHỦ QUÁN</h3>
+        <div class="uml-header">7.14 Chủ quán: Luồng Dịch thuật tự động (Google API Internal)</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Portal UI" as UI
+participant "Google API" as GAPI
+
+Owner -> UI: autoTranslate()
+UI -> UI: document.getElementById("descVI").value
+UI -> GAPI: fetch("https://translate.googleapis.com/...&q=descVI")
+GAPI --> UI: Promise<Response>
+UI -> UI: .then(res => res.json())
+UI -> UI: document.getElementById("descEN").value = text
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+
+        <div class="uml-header">7.15 Chủ quán: Luồng Tương tác Bản đồ & Ghim Vị trí</div>
+        <textarea class="uml-diagram">
+@startuml
+autonumber
+actor "Chủ quán" as Owner
+participant "Interactive Map" as Map
+participant "GPS Engine" as GPS
+participant "Form Input" as Form
+
+Owner -> Map: marker.on('dragend', event)
+Map -> Form: updateLatLngInputs(event.target.getLatLng())
+Owner -> GPS: getLocation()
+GPS -> Browser: navigator.geolocation.getCurrentPosition()
+Browser -> Map: map.setView([lat, lng])
+Map -> Form: updateLatLngInputs(lat, lng)
+Owner -> Form: db.collection("restaurants").doc().set(...)
+@enduml
+        </textarea>
+        <div class="uml-render"></div>
+    </section>
+
+    

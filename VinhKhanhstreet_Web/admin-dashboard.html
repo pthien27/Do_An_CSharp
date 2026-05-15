@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <!-- Leaflet Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -299,16 +299,7 @@
             color: var(--success);
         }
 
-        .qr-thumb {
-            width: 55px;
-            height: 55px;
-            background: white;
-            padding: 2px;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 2px dashed rgba(16, 185, 129, .3);
-            cursor: pointer;
-        }
+
 
         .poi-actions {
             display: grid;
@@ -724,51 +715,7 @@
             }
         }
 
-        /* ── QR Modal ── */
-        .qr-modal {
-            position: fixed;
-            inset: 0;
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, .85);
-            backdrop-filter: blur(8px);
-        }
-
-        .qr-modal.open {
-            display: flex;
-        }
-
-        .qr-box {
-            background: white;
-            padding: 32px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 360px;
-            width: 90%;
-        }
-
-        .qr-box h3 {
-            color: #0f172a;
-            margin-bottom: 16px;
-        }
-
-        .qr-box-container {
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .qr-close {
-            padding: 10px 30px;
-            border: none;
-            background: #0f172a;
-            color: white;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+        /* ── QR Modal (unused - kept for stats modal reuse) ── */
 
         @media (max-width:600px) {
             .poi-grid {
@@ -815,6 +762,9 @@
         </button>
         <button class="tab-btn" id="tab-stats" onclick="switchTab('stats')">
             <i class="fa-solid fa-chart-line"></i> Thống kê
+        </button>
+        <button class="tab-btn" id="tab-qrcode" onclick="switchTab('qrcode')">
+            <i class="fa-solid fa-qrcode"></i> Mã QR
         </button>
     </div>
 
@@ -990,17 +940,36 @@
 
         </div>
 
+        <!-- ══ TAB 4: MÃ QR ══ -->
+        <div class="page-section" id="section-qrcode">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">📱 Mã QR Tra Cứu</div>
+                    <div class="section-sub">Mã QR chung để khách hàng quét xem toàn bộ danh sách quán ăn trên phố</div>
+                </div>
+            </div>
+
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:40px; text-align:center;">
+                <h3 style="font-size:22px; font-weight:800; margin-bottom:10px;">Trang Tổng Hợp Quán Ăn</h3>
+                <p style="color:var(--text-muted); font-size:15px; margin-bottom:30px;">
+                    In mã QR này đặt tại các trạm thông tin, cổng chào hoặc bảng chỉ dẫn chung của Phố Vĩnh Khánh.
+                </p>
+                
+                <div style="background:white; padding:20px; border-radius:16px; display:inline-block; margin-bottom:24px; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://vinhkhanhstreet-dda5d.web.app/store-list.html" alt="QR Code Store List" width="250" height="250" style="display:block; border-radius:8px;">
+                </div>
+
+                <div style="margin-top:10px;">
+                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https://vinhkhanhstreet-dda5d.web.app/store-list.html" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, var(--primary), var(--danger)); color:white; text-decoration:none; padding:12px 28px; border-radius:10px; font-weight:700; font-size:14px; transition:all 0.2s; box-shadow:0 4px 15px rgba(245, 158, 11, 0.3);">
+                        <i class="fa-solid fa-download"></i> Tải ảnh QR chất lượng cao
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- QR Modal -->
-    <div class="qr-modal" id="qrModal" onclick="closeQR()">
-        <div class="qr-box" onclick="event.stopPropagation()">
-            <h3 id="qrModalTitle">Mã QR</h3>
-            <div class="qr-box-container" id="qrLargeBox"></div>
-            <p style="color:#64748b;font-size:13px;margin-bottom:20px;">Quét để nghe thuyết minh</p>
-            <button class="qr-close" onclick="closeQR()">Đóng</button>
-        </div>
-    </div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -1079,11 +1048,6 @@
             const statusLabel = approved ? 'Da duyet' : 'Cho duyet';
             const statusClass = approved ? '' : 'pending';
 
-            // Tach biet HTML QR de tranh loi parse template literal long nhau
-            const qrHtml = approved
-                ? `<div class="qr-thumb" id="qr-admin-${id}" onclick="adminViewQR('${id}','${data.name.replace(/'/g, "\\'")}')"></div>`
-                : `<div class="qr-thumb" style="display:flex;align-items:center;justify-content:center;background:#0f172a;border:2px dashed #475569;border-radius:8px;width:54px;height:54px;font-size:22px;cursor:not-allowed;" title="Chua duyet">&#128274;</div>`;
-
             const approveBtnHtml = approved
                 ? `<button class="btn-approve approved" disabled><i class="fa-solid fa-check-circle"></i> Da duyet</button>`
                 : `<button class="btn-approve" onclick="adminApprovePoi('${id}')"><i class="fa-solid fa-clock"></i> Cho duyet - Bam de duyet</button>`;
@@ -1093,7 +1057,6 @@
             <span class="poi-name">${data.name || 'Ten quan'}</span>
             <div class="badge-qr-group">
                 <span class="status-badge ${statusClass}">${statusLabel}</span>
-                ${qrHtml}
             </div>
         </div>
         <div class="owner-chip"><i class="fa-solid fa-user-tie"></i> ${data.ownerId || 'N/A'}</div>
@@ -1111,14 +1074,6 @@
     `;
             adminPoiGrid.appendChild(card);
 
-            // Chi tao QR khi da duoc duyet
-            if (approved) {
-                const qrUrl = `${location.origin}${location.pathname.replace('admin-dashboard.html', 'index.html')}?id=${id}`;
-                new QRCode(document.getElementById(`qr-admin-${id}`), {
-                    text: qrUrl, width: 52, height: 52,
-                    colorDark: '#0f172a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M
-                });
-            }
         }
 
         window.adminApprovePoi = async (id) => {
@@ -1135,16 +1090,7 @@
             } catch (e) { alert('Lỗi: ' + e.message); }
         };
 
-        // QR Modal
-        window.adminViewQR = (id, name) => {
-            const box = document.getElementById('qrLargeBox');
-            box.innerHTML = '';
-            document.getElementById('qrModalTitle').textContent = `Mã QR: ${name}`;
-            document.getElementById('qrModal').classList.add('open');
-            const qrUrl = `${location.origin}${location.pathname.replace('admin-dashboard.html', 'index.html')}?id=${id}`;
-            new QRCode(box, { text: qrUrl, width: 240, height: 240, colorDark: '#0f172a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
-        };
-        window.closeQR = () => document.getElementById('qrModal').classList.remove('open');
+
 
         // ══════════════════════════════════════════════════════════════════════════
         // TAB 2 – QUẢN LÝ TÀI KHOẢN
@@ -1276,9 +1222,13 @@
             // 1. Tập hợp tất cả Username đang báo Online từ bảng Tài khoản
             const onlineUsers = new Set();
             allAccts.forEach(d => {
-                totalLogins += (d.LoginCount || 0);
                 if (d.IsLocked) lockedCnt++;
                 if (d.IsOnline === true) onlineUsers.add(d.id || d.username);
+            });
+
+            // Chỉ đếm tổng lượt đăng nhập của User (bỏ qua Owner)
+            statsData.users.forEach(d => {
+                totalLogins += (d.LoginCount || 0);
             });
 
             // 2. Tập hợp tất cả các Thiết bị đang báo Online (bao gồm cả Khách)
@@ -1297,7 +1247,7 @@
 
             // 3. TÍNH TỔNG SỐ NGƯỜI ONLINE
             // Chỉ dựa vào app_live_sessions — nguồn dữ liệu duy nhất đáng tin cậy
-            // Bảng users.IsOnline không đáng tin do Android có thể ngắt lệnh gửi Offline
+           
             const activeCnt = activeSessions.length;
 
             const totalAccts = statsData.users.length + statsData.owners.length;

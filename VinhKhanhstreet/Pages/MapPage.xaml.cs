@@ -888,7 +888,8 @@ public partial class MapPage : ContentPage
                 _currentTab = "Nearby";
                 var nearbyPois = _vinhKhanhPois.Where(p => p.DistanceInMeters <= Math.Clamp(p.Radius, 20, 100))
                                                .OrderBy(p => p.DistanceInMeters)
-                                               .ThenBy(p => p.Radius) // Ưu tiên quán có bán kính nhỏ hơn nếu khoảng cách bằng nhau
+                                               .ThenByDescending(p => p.TotalListenCount) // Tự động ưu tiên quán có tổng lượt nghe (Web + App) cao hơn khi khoảng cách bằng nhau
+                                               .ThenBy(p => p.Radius) // Tiếp tục ưu tiên quán có bán kính nhỏ hơn
                                                .ToList();
                 _lastNearbyResults = nearbyPois; // Ghi nhớ để X có thể quay lại
                 
@@ -1518,6 +1519,8 @@ public partial class MapPage : ContentPage
                 var nearestTriggerPOI = _vinhKhanhPois
                     .Where(p => p.DistanceInMeters <= Math.Clamp(p.Radius, 20, 100) && !p.HasAutoPlayed)
                     .OrderBy(p => p.DistanceInMeters)
+                    .ThenByDescending(p => p.TotalListenCount) // MỚI: Xét tổng lượt nghe (Web + App) nếu đứng giữa 2 quán
+                    .ThenBy(p => p.Radius)
                     .FirstOrDefault();
 
                 if (nearestTriggerPOI != null && !_isSequentialReading && _currentlyNarratingPoi == null)
